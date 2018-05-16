@@ -1,23 +1,30 @@
 package com.service.saver.saverservice;
 
-import android.support.design.widget.TabLayout;
+import android.app.Activity;
+import android.content.ClipboardManager;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-   
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-  
 import android.widget.TextView;
+
+import com.service.saver.saverservice.folder.FolderFragment;
+import com.service.saver.saverservice.services.SaverService;
+import com.service.saver.saverservice.tumblr.TumblrFragment;
+import com.service.saver.saverservice.twitter.TwitterFragment;
+import com.service.saver.saverservice.util.ClipDataListener;
 
 public class MainTabActivity extends AppCompatActivity {
 
@@ -35,6 +42,7 @@ public class MainTabActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    public static Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,21 +58,25 @@ public class MainTabActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
-         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        mViewPager.setOffscreenPageLimit(3);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-      FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-      fab.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View view) {
-              Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                      .setAction("Action", null).show();
-          }
-      });
-      
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+        activity = this;
+        new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
+        Intent service = new Intent(this, SaverService.class);
+        this.startService(service);
+
     }
 
 
@@ -90,8 +102,6 @@ public class MainTabActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    
-  
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -105,9 +115,20 @@ public class MainTabActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            switch (position) {
+                case 0: {
+                    return new TwitterFragment();
+                }
+                case 1: {
+                    return new TumblrFragment();
+                }
+
+                case 2: {
+                    return new FolderFragment();
+                }
+                default:
+                    return PlaceholderFragment.newInstance(position);
+            }
         }
 
         @Override
@@ -144,7 +165,7 @@ public class MainTabActivity extends AppCompatActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_tab, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
