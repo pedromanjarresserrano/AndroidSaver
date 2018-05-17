@@ -1,6 +1,8 @@
 package com.service.saver.saverservice.tumblr.model;
 
-public class TumblrModel {
+import java.io.Serializable;
+
+public class TumblrModel implements Serializable {
 
     private Long id;
     private String url;

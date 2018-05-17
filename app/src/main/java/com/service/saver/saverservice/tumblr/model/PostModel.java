@@ -1,6 +1,8 @@
 package com.service.saver.saverservice.tumblr.model;
 
-public class PostModel {
+import java.io.Serializable;
+
+public class PostModel implements Serializable{
     private byte[] preview;
     private Long id;
     private String blogname;

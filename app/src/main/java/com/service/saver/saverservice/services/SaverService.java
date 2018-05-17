@@ -2,12 +2,16 @@ package com.service.saver.saverservice.services;
 
 import android.annotation.SuppressLint;
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.service.saver.saverservice.MainTabActivity;
 import com.service.saver.saverservice.MyApp;
+import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.util.Files;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
@@ -28,22 +32,24 @@ import needle.Needle;
  */
 
 public class SaverService extends IntentService {
+    public static final int ID = 1111111;
     private List<String> listlinks = new ArrayList<>();
-   // private NotificationManager mNotifyManager;
-  //  private NotificationCompat.Builder mBuilder;
+    private NotificationManager mNotifyManager;
+    private NotificationCompat.Builder mBuilder;
 
     public SaverService() {
         super("SaverService");
-     //   mBuilder = new NotificationCompat.Builder((Context) MainTabActivity.activity.getBaseContext(), "SSSAVER");
-    //    mBuilder.setContentTitle("Tweet Download")
-   //             .setContentText("Downloading")
-   //             .setSmallIcon(R.drawable.ic_launcher_foreground);
     }
 
 
     @SuppressLint("NewApi")
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setContentTitle("Download")
+                .setContentText("Downloading")
+                .setSmallIcon(R.drawable.androidicon);
         Needle.onBackgroundThread().execute(() -> {
             while (true) {
                 listlinks = MyApp.getFiles();
@@ -53,44 +59,45 @@ public class SaverService extends IntentService {
                         try {
                             URL url;
                             String[] split = string.split("/");
-                            File file = new File(Files.getRunningDir() + "/" + split[split.length - 1]);
+                            File file = new File(Files.getRunningDir() + "/" + split[split.length - 1] + ".mp4");
                             int count;
                             long progress = 0;
                             try {
                                 url = new URL(string);
                                 URLConnection conection = url.openConnection();
                                 conection.connect();
-                                long lenghtOfFile = conection.getContentLength();
-                                if (file.exists() && file.length() == lenghtOfFile) {
-                                    FancyToast.makeText(MainTabActivity.activity.getBaseContext(), "File Foubnd!", Toast.LENGTH_SHORT, FancyToast.INFO, true).show();
+                                if (file.exists() && file.length() > 0) {
+                                    //               FancyToast.makeText(MainTabActivity.activity.getBaseContext(), "File Found!", Toast.LENGTH_SHORT, FancyToast.INFO, true).show();
+                                    removeSafe(string);
                                     return;
                                 } else {
                                     InputStream input = new BufferedInputStream(url.openStream(), 12192);
                                     OutputStream output = new FileOutputStream(file);
                                     byte data[] = new byte[1024];
                                     long total = 0;
-                               //     mBuilder.setContentText("Downloading");
-                              //      mBuilder.setProgress(0, 0, true)
-                               //             .setContentInfo(file.getName());
-                               //     mNotifyManager.notify(1111111, mBuilder.build());
+                                    mBuilder.setContentText("Downloading");
+                                    mBuilder.setProgress(0, 0, true)
+                                            .setContentInfo(file.getName());
+                                    mNotifyManager.notify(ID, mBuilder.build());
                                     while ((count = input.read(data)) != -1) {
                                         total += count;
                                         output.write(data, 0, count);
                                     }
-                                    FancyToast.makeText(MainTabActivity.activity.getBaseContext(), "Saved!", Toast.LENGTH_SHORT, FancyToast.SUCCESS, true).show();
+                                    //        FancyToast.makeText(MainTabActivity.activity.getBaseContext(), "Saved!", Toast.LENGTH_SHORT, FancyToast.SUCCESS, true).show();
                                     output.flush();
                                     output.close();
                                     input.close();
                                 }
 
                             } catch (Exception e) {
+                                e.printStackTrace();
 
                             } finally {
-                            //    mBuilder.setProgress(0, 0, false).setContentText("Download completed");
-                            //    mNotifyManager.notify(1111111, mBuilder.build());
+                                mBuilder.setProgress(0, 0, false).setContentText("Download completed");
+                                mNotifyManager.notify(ID, mBuilder.build());
                             }
-                           // mBuilder.setProgress(0, 0, false).setContentText("Download completed");
-                           // mNotifyManager.notify(1111111, mBuilder.build());
+                            mBuilder.setProgress(0, 0, false).setContentText("Download completed");
+                            mNotifyManager.notify(ID, mBuilder.build());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

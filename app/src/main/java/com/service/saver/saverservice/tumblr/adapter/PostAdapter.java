@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.service.saver.saverservice.MainTabActivity;
+import com.service.saver.saverservice.MyApp;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.tumblr.holder.PostHolder;
 import com.service.saver.saverservice.tumblr.model.PostModel;
@@ -45,14 +46,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostHolder> {
     public void onBindViewHolder(@NonNull PostHolder holder, int position) {
         PostModel item = getItem(position);
         holder.blog_name.setText(item.getBlogname());
-        holder.caption.setText(Html.fromHtml(item.getFilename()));
+        holder.caption.setText(Html.fromHtml(item.getFilename(), Html.FROM_HTML_MODE_LEGACY));
         holder.caption.setMovementMethod(LinkMovementMethod.getInstance());
         View.OnClickListener onClickListener = v -> {
             FancyToast.makeText(MainTabActivity.activity, "Downloading", Toast.LENGTH_SHORT, FancyToast.INFO, true);
             // ids.add(position);
-
+            MyApp.add(item.getUrl());
         };
-        holder.b.setOnClickListener(onClickListener);
+        holder.saveButton.setOnClickListener(onClickListener);
         Uri uri = Uri.parse(item.getPreviewurl());
         holder.draweeView.setImageURI(uri);
     }
