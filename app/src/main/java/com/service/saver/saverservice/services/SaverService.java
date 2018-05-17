@@ -2,16 +2,12 @@ package com.service.saver.saverservice.services;
 
 import android.annotation.SuppressLint;
 import android.app.IntentService;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.service.saver.saverservice.MainTabActivity;
 import com.service.saver.saverservice.MyApp;
-import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.util.Files;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
@@ -33,15 +29,15 @@ import needle.Needle;
 
 public class SaverService extends IntentService {
     private List<String> listlinks = new ArrayList<>();
-    private NotificationManager mNotifyManager;
-    private NotificationCompat.Builder mBuilder;
+   // private NotificationManager mNotifyManager;
+  //  private NotificationCompat.Builder mBuilder;
 
     public SaverService() {
         super("SaverService");
-        mBuilder = new NotificationCompat.Builder((Context) MainTabActivity.activity.getBaseContext(), "SSSAVER");
-        mBuilder.setContentTitle("Tweet Download")
-                .setContentText("Downloading")
-                .setSmallIcon(R.drawable.ic_launcher_foreground);
+     //   mBuilder = new NotificationCompat.Builder((Context) MainTabActivity.activity.getBaseContext(), "SSSAVER");
+    //    mBuilder.setContentTitle("Tweet Download")
+   //             .setContentText("Downloading")
+   //             .setSmallIcon(R.drawable.ic_launcher_foreground);
     }
 
 
@@ -73,10 +69,10 @@ public class SaverService extends IntentService {
                                     OutputStream output = new FileOutputStream(file);
                                     byte data[] = new byte[1024];
                                     long total = 0;
-                                    mBuilder.setContentText("Downloading");
-                                    mBuilder.setProgress(0, 0, true)
-                                            .setContentInfo(file.getName());
-                                    mNotifyManager.notify(1111111, mBuilder.build());
+                               //     mBuilder.setContentText("Downloading");
+                              //      mBuilder.setProgress(0, 0, true)
+                               //             .setContentInfo(file.getName());
+                               //     mNotifyManager.notify(1111111, mBuilder.build());
                                     while ((count = input.read(data)) != -1) {
                                         total += count;
                                         output.write(data, 0, count);
@@ -90,11 +86,11 @@ public class SaverService extends IntentService {
                             } catch (Exception e) {
 
                             } finally {
-                                mBuilder.setProgress(0, 0, false).setContentText("Download completed");
-                                mNotifyManager.notify(1111111, mBuilder.build());
+                            //    mBuilder.setProgress(0, 0, false).setContentText("Download completed");
+                            //    mNotifyManager.notify(1111111, mBuilder.build());
                             }
-                            mBuilder.setProgress(0, 0, false).setContentText("Download completed");
-                            mNotifyManager.notify(1111111, mBuilder.build());
+                           // mBuilder.setProgress(0, 0, false).setContentText("Download completed");
+                           // mNotifyManager.notify(1111111, mBuilder.build());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

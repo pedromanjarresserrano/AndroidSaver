@@ -2,8 +2,8 @@ package com.service.saver.saverservice;
 
 import android.app.Application;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.service.saver.saverservice.util.Files;
-import com.snatik.storage.Storage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +12,13 @@ import static com.service.saver.saverservice.util.Files.FILELIST;
 
 public class MyApp extends Application {
 
-    public static Storage storage;
     private static List<String> files = new ArrayList<>();
 
     @Override
     public void onCreate() {
         super.onCreate();
-        storage = new Storage(getApplicationContext());
         List<String> list = (List<String>) Files.readObject(FILELIST);
+        Fresco.initialize(this);
 
         if (list != null) {
             files.addAll(list);
