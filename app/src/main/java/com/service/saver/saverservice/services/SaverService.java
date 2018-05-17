@@ -11,8 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 import com.service.saver.saverservice.MyApp;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.tumblr.model.PostModel;
@@ -22,6 +20,7 @@ import com.thin.downloadmanager.DownloadRequest;
 import com.thin.downloadmanager.DownloadStatusListenerV1;
 import com.thin.downloadmanager.ThinDownloadManager;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,6 @@ public class SaverService extends IntentService {
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mBuilder;
     private ThinDownloadManager downloadManager;
-    private RequestQueue queue;
 
     public SaverService() {
         super("SaverService");
@@ -49,7 +47,6 @@ public class SaverService extends IntentService {
         super.onCreate();
         mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         downloadManager = new ThinDownloadManager();
-        queue = Volley.newRequestQueue(this);
 
     }
 
@@ -63,16 +60,19 @@ public class SaverService extends IntentService {
                 listlinks = MyApp.getFiles();
                 try {
                     if (!listlinks.isEmpty()) {
-                        String link = listlinks.get(0);
+                        String link = listlinks.remove(0);
                         URL url;
 
                         String[] split = link.split("/");
                         String[] namelink = link.split(PostModel.NAMESPACE);
-                        Uri downloadUri = Uri.parse((namelink.length > 1 ? namelink[1] : link) );
+                        Uri downloadUri = Uri.parse((namelink.length > 1 ? namelink[1] : link));
                         Uri destinationUri = Uri.parse(Files.getRunningDir() + "/" + (namelink.length > 1 ? namelink[0] : split[split.length - 1]) + ".mp4");
-                        DownloadRequest downloadRequest = getDownloadRequest((namelink.length > 1 ? namelink[1] : link) , downloadUri, destinationUri);
-                        int downloadId = downloadManager.add(downloadRequest);
+                        File f = new File(destinationUri.getPath());
 
+                        if (!f.exists()) {
+                            DownloadRequest downloadRequest = getDownloadRequest((namelink.length > 1 ? namelink[1] : link), downloadUri, destinationUri);
+                            int downloadId = downloadManager.add(downloadRequest);
+                        }
                     }
 
                 } catch (Exception e) {
@@ -94,7 +94,7 @@ public class SaverService extends IntentService {
             String chanel_id = "3000";
             CharSequence name = "Channel Name";
             String description = "Chanel Description";
-            int importance = NotificationManager.IMPORTANCE_LOW;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel mChannel = null;
             mChannel = new NotificationChannel(chanel_id, name, importance);
             mChannel.setDescription(description);
@@ -122,13 +122,16 @@ public class SaverService extends IntentService {
                                 .setContentText("Downloaded")
                                 .setSmallIcon(R.drawable.androidicon)
                                 .setProgress(100, 100, true);
-                        mNotifyManager.notify(ID, mBuilder.build());
+                        mNotifyManager.notify(downloadRequest.getDownloadId(), mBuilder.build());
                     }
 
                     @Override
                     public void onDownloadFailed(DownloadRequest downloadRequest, int errorCode, String errorMessage) {
-
-                    }
+                        mBuilder.setContentTitle("Download")
+                                .setContentText("Downloading error - "+errorMessage)
+                                .setSmallIcon(R.drawable.androidicon)
+                                .setProgress(0, 0, false);
+                        mNotifyManager.notify(downloadRequest.getDownloadId(), mBuilder.build());                    }
 
                     @Override
                     public void onProgress(DownloadRequest downloadRequest, long totalBytes, long downloadedBytes, int progress) {
@@ -137,7 +140,7 @@ public class SaverService extends IntentService {
                                 .setSubText(progress + " % ")
                                 .setSmallIcon(R.drawable.androidicon)
                                 .setProgress(100, 100, true);
-                        mNotifyManager.notify(ID, mBuilder.build());
+                        mNotifyManager.notify(downloadRequest.getDownloadId(), mBuilder.build());
                     }
                 });
     }
