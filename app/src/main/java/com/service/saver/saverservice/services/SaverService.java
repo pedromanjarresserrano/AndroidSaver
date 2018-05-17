@@ -2,9 +2,13 @@ package com.service.saver.saverservice.services;
 
 import android.annotation.SuppressLint;
 import android.app.IntentService;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
@@ -14,6 +18,11 @@ import com.service.saver.saverservice.MyApp;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.util.Files;
 import com.shashank.sony.fancytoastlib.FancyToast;
+import com.thin.downloadmanager.DefaultRetryPolicy;
+import com.thin.downloadmanager.DownloadRequest;
+import com.thin.downloadmanager.DownloadStatusListener;
+import com.thin.downloadmanager.DownloadStatusListenerV1;
+import com.thin.downloadmanager.ThinDownloadManager;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -32,10 +41,11 @@ import needle.Needle;
  */
 
 public class SaverService extends IntentService {
-    public static final int ID = 1111111;
+    public static final int ID = 23;
     private List<String> listlinks = new ArrayList<>();
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mBuilder;
+    private ThinDownloadManager downloadManager;
 
     public SaverService() {
         super("SaverService");
@@ -45,66 +55,28 @@ public class SaverService extends IntentService {
     public void onCreate() {
         super.onCreate();
         mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        downloadManager = new ThinDownloadManager();
+
     }
 
-    @SuppressLint("NewApi")
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        mBuilder = new NotificationCompat.Builder(this);
-        mBuilder.setContentTitle("Download")
-                .setContentText("Downloading")
-                .setSmallIcon(R.drawable.androidicon);
+        mBuilder = getmBuilder();
+
+
         Needle.onBackgroundThread().execute(() -> {
             while (true) {
                 listlinks = MyApp.getFiles();
                 try {
                     if (!listlinks.isEmpty()) {
-                        String string = listlinks.get(0);
-                        try {
-                            URL url;
-                            String[] split = string.split("/");
-                            File file = new File(Files.getRunningDir() + "/" + split[split.length - 1] + ".mp4");
-                            int count;
-                            long progress = 0;
-                            try {
-                                url = new URL(string);
-                                URLConnection conection = url.openConnection();
-                                conection.connect();
-                                if (file.exists() && file.length() > 0) {
-                                    //               FancyToast.makeText(MainTabActivity.activity.getBaseContext(), "File Found!", Toast.LENGTH_SHORT, FancyToast.INFO, true).show();
-                                    removeSafe(string);
-                                    return;
-                                } else {
-                                    InputStream input = new BufferedInputStream(url.openStream(), 12192);
-                                    OutputStream output = new FileOutputStream(file);
-                                    byte data[] = new byte[1024];
-                                    long total = 0;
-                                    mBuilder.setContentText("Downloading");
-                                    mBuilder.setProgress(0, 0, true)
-                                            .setContentInfo(file.getName());
-                                    mNotifyManager.notify(ID, mBuilder.build());
-                                    while ((count = input.read(data)) != -1) {
-                                        total += count;
-                                        output.write(data, 0, count);
-                                    }
-                                    //        FancyToast.makeText(MainTabActivity.activity.getBaseContext(), "Saved!", Toast.LENGTH_SHORT, FancyToast.SUCCESS, true).show();
-                                    output.flush();
-                                    output.close();
-                                    input.close();
-                                }
+                        String link = listlinks.get(0);
+                        URL url;
+                        String[] split = link.split("/");
+                        Uri downloadUri = Uri.parse(link);
+                        Uri destinationUri = Uri.parse(Files.getRunningDir() + "/" + split[split.length - 1] + ".mp4");
+                        DownloadRequest downloadRequest = getDownloadRequest(link, downloadUri, destinationUri);
+                        int downloadId = downloadManager.add(downloadRequest);
 
-                            } catch (Exception e) {
-                                e.printStackTrace();
-
-                            } finally {
-                                mBuilder.setProgress(0, 0, false).setContentText("Download completed");
-                                mNotifyManager.notify(ID, mBuilder.build());
-                            }
-                            mBuilder.setProgress(0, 0, false).setContentText("Download completed");
-                            mNotifyManager.notify(ID, mBuilder.build());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                     }
 
                 } catch (Exception e) {
@@ -117,6 +89,61 @@ public class SaverService extends IntentService {
                 }
             }
         });
+    }
+
+    @NonNull
+    private NotificationCompat.Builder getmBuilder() {
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            String chanel_id = "3000";
+            CharSequence name = "Channel Name";
+            String description = "Chanel Description";
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel mChannel = null;
+            mChannel = new NotificationChannel(chanel_id, name, importance);
+            mChannel.setDescription(description);
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.BLUE);
+            mNotifyManager.createNotificationChannel(mChannel);
+            return new NotificationCompat.Builder(this, chanel_id);
+        } else {
+            return new NotificationCompat.Builder(this);
+
+        }
+
+
+    }
+
+    private DownloadRequest getDownloadRequest(String link, Uri downloadUri, Uri destinationUri) {
+        return new DownloadRequest(downloadUri)
+                .setRetryPolicy(new DefaultRetryPolicy())
+                .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.HIGH)
+                .setStatusListener(new DownloadStatusListenerV1() {
+                    @Override
+                    public void onDownloadComplete(DownloadRequest downloadRequest) {
+                        removeSafe(link);
+                        mBuilder.setContentTitle("Download")
+                                .setContentText("Downloaded")
+                                .setSmallIcon(R.drawable.androidicon)
+                                .setProgress(100, 100, true);
+                        mNotifyManager.notify(ID, mBuilder.build());
+                    }
+
+                    @Override
+                    public void onDownloadFailed(DownloadRequest downloadRequest, int errorCode, String errorMessage) {
+
+                    }
+
+                    @Override
+                    public void onProgress(DownloadRequest downloadRequest, long totalBytes, long downloadedBytes, int progress) {
+                        mBuilder.setContentTitle("Download")
+                                .setContentText("Downloading")
+                                .setSubText(progress + " % ")
+                                .setSmallIcon(R.drawable.androidicon)
+                                .setProgress(100, 100, true);
+                        mNotifyManager.notify(ID, mBuilder.build());
+                    }
+                });
     }
 
     private void removeSafe(String string) {

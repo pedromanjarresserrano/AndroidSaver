@@ -1,8 +1,12 @@
 package com.service.saver.saverservice;
 
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,6 +14,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -37,7 +42,8 @@ public class MainTabActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
+    private NotificationManager mNotifyManager;
+    private NotificationCompat.Builder mBuilder;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -63,11 +69,13 @@ public class MainTabActivity extends AppCompatActivity {
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         activity = this;
         new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
         Intent service = new Intent(this, SaverService.class);
         this.startService(service);
+
 
     }
 
