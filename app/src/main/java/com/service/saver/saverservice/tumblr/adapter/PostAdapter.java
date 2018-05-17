@@ -51,7 +51,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostHolder> {
         View.OnClickListener onClickListener = v -> {
             FancyToast.makeText(MainTabActivity.activity, "Downloading", Toast.LENGTH_SHORT, FancyToast.INFO, true);
             // ids.add(position);
-            MyApp.add(item.getUrl());
+            MyApp.add(item.getName()+":NAME:"+item.getUrl());
         };
         holder.saveButton.setOnClickListener(onClickListener);
         Uri uri = Uri.parse(item.getPreviewurl());

@@ -1,6 +1,5 @@
 package com.service.saver.saverservice.services;
 
-import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -11,26 +10,19 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
 
-import com.service.saver.saverservice.MainTabActivity;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.service.saver.saverservice.MyApp;
 import com.service.saver.saverservice.R;
+import com.service.saver.saverservice.tumblr.model.PostModel;
 import com.service.saver.saverservice.util.Files;
-import com.shashank.sony.fancytoastlib.FancyToast;
 import com.thin.downloadmanager.DefaultRetryPolicy;
 import com.thin.downloadmanager.DownloadRequest;
-import com.thin.downloadmanager.DownloadStatusListener;
 import com.thin.downloadmanager.DownloadStatusListenerV1;
 import com.thin.downloadmanager.ThinDownloadManager;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +38,7 @@ public class SaverService extends IntentService {
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mBuilder;
     private ThinDownloadManager downloadManager;
+    private RequestQueue queue;
 
     public SaverService() {
         super("SaverService");
@@ -56,6 +49,7 @@ public class SaverService extends IntentService {
         super.onCreate();
         mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         downloadManager = new ThinDownloadManager();
+        queue = Volley.newRequestQueue(this);
 
     }
 
@@ -71,10 +65,12 @@ public class SaverService extends IntentService {
                     if (!listlinks.isEmpty()) {
                         String link = listlinks.get(0);
                         URL url;
+
                         String[] split = link.split("/");
-                        Uri downloadUri = Uri.parse(link);
-                        Uri destinationUri = Uri.parse(Files.getRunningDir() + "/" + split[split.length - 1] + ".mp4");
-                        DownloadRequest downloadRequest = getDownloadRequest(link, downloadUri, destinationUri);
+                        String[] namelink = link.split(PostModel.NAMESPACE);
+                        Uri downloadUri = Uri.parse((namelink.length > 1 ? namelink[1] : link) );
+                        Uri destinationUri = Uri.parse(Files.getRunningDir() + "/" + (namelink.length > 1 ? namelink[0] : split[split.length - 1]) + ".mp4");
+                        DownloadRequest downloadRequest = getDownloadRequest((namelink.length > 1 ? namelink[1] : link) , downloadUri, destinationUri);
                         int downloadId = downloadManager.add(downloadRequest);
 
                     }

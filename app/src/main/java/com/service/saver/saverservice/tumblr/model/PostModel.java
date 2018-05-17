@@ -2,7 +2,8 @@ package com.service.saver.saverservice.tumblr.model;
 
 import java.io.Serializable;
 
-public class PostModel implements Serializable{
+public class PostModel implements Serializable {
+    public static String NAMESPACE = ":NAME:";
     private byte[] preview;
     private Long id;
     private String blogname;
