@@ -41,11 +41,15 @@ public class SaverService extends IntentService {
         super("SaverService");
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+    }
 
     @SuppressLint("NewApi")
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setContentTitle("Download")
                 .setContentText("Downloading")
