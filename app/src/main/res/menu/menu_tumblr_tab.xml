@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <!-- Settings, should always be in the overflow -->
+    <item
+        android:id="@+id/get_from_user"
+        android:title="Get form user" />
+    <item
+        android:id="@+id/login_with_tumblr"
+        android:title="Login with Tumblr" />
+
+
+</menu>

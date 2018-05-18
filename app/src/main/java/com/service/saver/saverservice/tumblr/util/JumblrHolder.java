@@ -13,14 +13,22 @@ import java.util.List;
 import java.util.Map;
 
 public class JumblrHolder {
+    public static String TOKEN_KEY = "uxdOglGfxNpMlRjuwcNOQ6fTQC9egcnC9nDaEkYJvYRopRArET";
+
+    public static String TOEKN_SECRET = "HNxH7lIXDUtJ9SN0M5Djg3B1D2s5Vf6jxAhZTPUg7KAZ70eoz6";
+
+    public static String CONSUMER_KEY = "oiK8MFj4VQX52JEvfyKWi0CvdoZyYATq4SjnRj9fXkMV8T4X1g";
+    public static String CONSUMER_SECRET = "c72SlqTby5ejAMizhv0Pj6IYenCxGBZ2oF5UU6NymOiFPs5dYo";
     JumblrClient client = new JumblrClient(
-            "oiK8MFj4VQX52JEvfyKWi0CvdoZyYATq4SjnRj9fXkMV8T4X1g",
-            "c72SlqTby5ejAMizhv0Pj6IYenCxGBZ2oF5UU6NymOiFPs5dYo"
+            CONSUMER_KEY,
+            CONSUMER_SECRET
     );
+
     public JumblrHolder() {
+
         client.setToken(
-                "uxdOglGfxNpMlRjuwcNOQ6fTQC9egcnC9nDaEkYJvYRopRArET",
-                "HNxH7lIXDUtJ9SN0M5Djg3B1D2s5Vf6jxAhZTPUg7KAZ70eoz6"
+                TOKEN_KEY,
+                TOEKN_SECRET
         );
     }
 

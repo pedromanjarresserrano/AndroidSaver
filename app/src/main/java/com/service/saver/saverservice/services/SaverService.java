@@ -66,7 +66,7 @@ public class SaverService extends IntentService {
                         String[] split = link.split("/");
                         String[] namelink = link.split(PostModel.NAMESPACE);
                         Uri downloadUri = Uri.parse((namelink.length > 1 ? namelink[1] : link));
-                        Uri destinationUri = Uri.parse(Files.getRunningDir() + "/" + (namelink.length > 1 ? namelink[0] : split[split.length - 1]) + ".mp4");
+                        Uri destinationUri = Uri.parse(Files.getRunningDir() + "/" + (namelink.length > 1 ? namelink[0] : split[split.length - 1]));
                         File f = new File(destinationUri.getPath());
 
                         if (!f.exists()) {
@@ -94,7 +94,7 @@ public class SaverService extends IntentService {
             String chanel_id = "3000";
             CharSequence name = "Channel Name";
             String description = "Chanel Description";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
+            int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel mChannel = null;
             mChannel = new NotificationChannel(chanel_id, name, importance);
             mChannel.setDescription(description);

@@ -8,16 +8,19 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.tumblr.adapter.TumblrAdapter;
 import com.service.saver.saverservice.tumblr.model.TumblrModel;
 import com.service.saver.saverservice.tumblr.util.JumblrHolder;
 import com.service.saver.saverservice.util.Files;
 import com.tumblr.jumblr.types.Blog;
+import com.tumblr.loglr.Loglr;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,20 +30,20 @@ import java.util.Optional;
 
 import needle.Needle;
 
-import static com.service.saver.saverservice.util.Files.FILELIST;
-
 
 public class TumblrFragment extends Fragment {
     public static String TUMBLRLIST = "ListTumblrs.sss";
 
     private OnFragmentInteractionListener mListener;
     private List<TumblrModel> tumblrList = new ArrayList<>();
+    private JumblrHolder cl = new JumblrHolder();
+    private TumblrAdapter tumblrAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         List<TumblrModel> list = (List<TumblrModel>) Files.readObject(TUMBLRLIST);
-
+        setHasOptionsMenu(true);
         if (list != null) {
             tumblrList.addAll(list);
         }
@@ -70,17 +73,42 @@ public class TumblrFragment extends Fragment {
         RecyclerView listView = view.findViewById(R.id.list_tumblrs);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getBaseContext());
         listView.setLayoutManager(layoutManager);
-        JumblrHolder cl = new JumblrHolder();
-        TumblrAdapter tumblrAdapter = new TumblrAdapter(tumblrList);
+        tumblrAdapter = new TumblrAdapter(tumblrList);
+        listView.setAdapter(tumblrAdapter);
+        listView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        return view;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.get_from_user: {
+                loadFromUser();
+                return true;
+            }
+            case R.id.login_with_tumblr: {
+                Loglr.INSTANCE
+                        .setConsumerKey(JumblrHolder.CONSUMER_KEY)
+                        .setConsumerSecretKey(JumblrHolder.CONSUMER_SECRET)
+                        .setLoginListener(loginResult -> {
+                            cl.setToken(loginResult.getOAuthToken(), loginResult.getOAuthTokenSecret());
+                        })
+                        .enable2FA(true)
+                        .setUrlCallBack("https://www.tumblr.com/dashboard").initiate(getActivity());
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void loadFromUser() {
         Needle.onBackgroundThread().execute(() -> {
             Map<String, Object> map = new HashMap<>();
             final long[] value = {0L};
             map.put("limit", 20L);
             map.put("offset", value);
             List<Blog> blogs = cl.userFollowing(map);
-            //  String blogAvatar = cl.blogAvatar("fappqueens");
-            //   this.add(new TumblrModel(this.tumblrList.size() + 0L, "fappqueens", blogAvatar));
-
             while (!blogs.isEmpty()) {
                 blogs.stream().forEach(e -> {
                     this.add(new TumblrModel(this.tumblrList.size() + 0L, e.getName(), e.avatar()));
@@ -94,13 +122,8 @@ public class TumblrFragment extends Fragment {
             }
             getActivity().runOnUiThread(() -> {
                 tumblrAdapter.notifyDataSetChanged();
-
             });
-
         });
-        listView.setAdapter(tumblrAdapter);
-        listView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        return view;
     }
 
 
@@ -124,4 +147,11 @@ public class TumblrFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_tumblr_tab, menu);
+    }
+
+
 }
