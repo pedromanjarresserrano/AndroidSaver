@@ -45,6 +45,7 @@ public class ClipDataListener {
         clipBoard.addPrimaryClipChangedListener(listener);
         getLink(clipBoard);
         jtwitter = TwitterFactory.getSingleton();
+
         try {
             jtwitter.setOAuthConsumer(consumerKey, twitterconsumerSecret);
             jtwitter.setOAuthAccessToken(new AccessToken(twitteraccesstoken, twitteraccessSecret));

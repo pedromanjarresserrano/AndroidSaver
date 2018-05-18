@@ -46,5 +46,6 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.11.3'
     implementation 'com.mani:ThinDownloadManager:1.4.0'
     implementation 'com.daksh:loglr:2.1.4'
+    implementation group: 'org.twitter4j', name: 'twitter4j-media-support', version: '4.0.6'
 
 }
