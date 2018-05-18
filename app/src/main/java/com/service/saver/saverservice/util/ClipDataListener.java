@@ -39,12 +39,6 @@ public class ClipDataListener {
     private static Twitter jtwitter;
 
     public ClipDataListener(ClipboardManager clip) {
-        ClipboardManager clipBoard = (ClipboardManager) clip;
-        ClipboardManager.OnPrimaryClipChangedListener listener = () -> {
-            getLink(clipBoard);
-        };
-        clipBoard.addPrimaryClipChangedListener(listener);
-        getLink(clipBoard);
         ConfigurationBuilder cb = new ConfigurationBuilder().setIncludeEntitiesEnabled(true).setIncludeMyRetweetEnabled(true).setIncludeExtAltTextEnabled(true).setTweetModeExtended(true);
         jtwitter = new TwitterFactory(cb.build()).getInstance();
         Twitter singleton = TwitterFactory.getSingleton();
@@ -55,6 +49,13 @@ public class ClipDataListener {
             e.printStackTrace();
 
         }
+        ClipboardManager clipBoard = (ClipboardManager) clip;
+        ClipboardManager.OnPrimaryClipChangedListener listener = () -> {
+            getLink(clipBoard);
+        };
+        clipBoard.addPrimaryClipChangedListener(listener);
+        getLink(clipBoard);
+
     }
 
     private void getLink(ClipboardManager clipBoard) {
