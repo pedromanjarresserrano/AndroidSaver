@@ -58,25 +58,23 @@ public class SaverService extends IntentService {
         Needle.onBackgroundThread().execute(() -> {
             while (true) {
                 listlinks = MyApp.getFiles();
-                try {
-                    if (!listlinks.isEmpty()) {
-                        String link = listlinks.remove(0);
-                        URL url;
-
+                if (!listlinks.isEmpty()) {
+                    String link = listlinks.get(0);
+                    try {
                         String[] split = link.split("/");
                         String[] namelink = link.split(PostModel.NAMESPACE);
                         Uri downloadUri = Uri.parse((namelink.length > 1 ? namelink[1] : link));
                         Uri destinationUri = Uri.parse(Files.getRunningDir() + "/" + (namelink.length > 1 ? namelink[0] : split[split.length - 1]));
                         File f = new File(destinationUri.getPath());
-
                         if (!f.exists()) {
                             DownloadRequest downloadRequest = getDownloadRequest((namelink.length > 1 ? namelink[1] : link), downloadUri, destinationUri);
                             int downloadId = downloadManager.add(downloadRequest);
                         }
+                        removeSafe(link);
+                    } catch (Exception e) {
+                        removeSafe(link);
+                        e.printStackTrace();
                     }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
                 try {
                     Thread.currentThread().sleep(1000L);
@@ -120,18 +118,20 @@ public class SaverService extends IntentService {
                         removeSafe(link);
                         mBuilder.setContentTitle("Download")
                                 .setContentText("Downloaded")
+                                .setSubText("")
                                 .setSmallIcon(R.drawable.androidicon)
-                                .setProgress(100, 100, true);
+                                .setProgress(100, 100, false);
                         mNotifyManager.notify(downloadRequest.getDownloadId(), mBuilder.build());
                     }
 
                     @Override
                     public void onDownloadFailed(DownloadRequest downloadRequest, int errorCode, String errorMessage) {
                         mBuilder.setContentTitle("Download")
-                                .setContentText("Downloading error - "+errorMessage)
+                                .setContentText("Downloading error - " + errorMessage)
                                 .setSmallIcon(R.drawable.androidicon)
                                 .setProgress(0, 0, false);
-                        mNotifyManager.notify(downloadRequest.getDownloadId(), mBuilder.build());                    }
+                        mNotifyManager.notify(downloadRequest.getDownloadId(), mBuilder.build());
+                    }
 
                     @Override
                     public void onProgress(DownloadRequest downloadRequest, long totalBytes, long downloadedBytes, int progress) {

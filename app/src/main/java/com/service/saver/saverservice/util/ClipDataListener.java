@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import needle.Needle;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -34,7 +35,7 @@ public class ClipDataListener {
     static String twitterconsumerSecret = "SjTPZsGa2m5KEuhupwbjh1QUCuxCqTatKUVhG8YHxGqy9oeTTV";
     private List<String> listlinks = new ArrayList<>();
     private List<String> listblogs = new ArrayList<>();
-    private final Twitter jtwitter;
+    private static Twitter jtwitter;
 
     public ClipDataListener(ClipboardManager clip) {
         ClipboardManager clipBoard = (ClipboardManager) clip;
@@ -48,6 +49,8 @@ public class ClipDataListener {
             jtwitter.setOAuthConsumer(consumerKey, twitterconsumerSecret);
             jtwitter.setOAuthAccessToken(new AccessToken(twitteraccesstoken, twitteraccessSecret));
         } catch (Exception e) {
+            e.printStackTrace();
+
         }
     }
 
@@ -93,27 +96,28 @@ public class ClipDataListener {
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void saveTweet(String url) {
+        Needle.onBackgroundThread().execute(() -> {
+                    try {
+                        String split1 = getID(url);
+                        Status status = jtwitter.showStatus(Long.parseLong(split1));
+                        List<MediaEntity> mediaEntities = Arrays.asList(status.getMediaEntities());
+                        if (!mediaEntities.isEmpty()) {
+                            entites(mediaEntities);
+                        } else {
+                            List<URLEntity> urlEntities = Arrays.asList(status.getURLEntities());
+                            if (!urlEntities.isEmpty()) {
+                                split1 = getID(urlEntities.get(0).getExpandedURL());
+                                status = jtwitter.showStatus(Long.parseLong(split1));
+                                mediaEntities = Arrays.asList(status.getMediaEntities());
 
-        try {
-            String split1 = getID(url);
-            Status status = jtwitter.showStatus(Long.parseLong(split1));
-            List<MediaEntity> mediaEntities = Arrays.asList(status.getMediaEntities());
-            if (!mediaEntities.isEmpty()) {
-                entites(mediaEntities);
-            } else {
-                List<URLEntity> urlEntities = Arrays.asList(status.getURLEntities());
-                if (!urlEntities.isEmpty()) {
-                    split1 = getID(urlEntities.get(0).getExpandedURL());
-                    status = jtwitter.showStatus(Long.parseLong(split1));
-                    mediaEntities = Arrays.asList(status.getMediaEntities());
+                            }
+                        }
 
+                    } catch (TwitterException | IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-
-        } catch (TwitterException | IOException e) {
-            e.printStackTrace();
-        }
-
+        );
     }
 
     @SuppressLint("NewApi")
@@ -122,7 +126,7 @@ public class ClipDataListener {
         MediaEntity mediaEntity = mediaEntities.get(0);
         if (mediaEntity.getType().equalsIgnoreCase("photo"))
             MyApp.add(mediaEntity.getMediaURL());
-        else{
+        else {
             String[] split = mediaEntity.getVideoVariants()[0].getUrl().split("\\?");
             String link = split[split.length - 1];
             MyApp.add(link);
