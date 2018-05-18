@@ -26,6 +26,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.URLEntity;
 import twitter4j.auth.AccessToken;
+import twitter4j.conf.ConfigurationBuilder;
 
 public class ClipDataListener {
 
@@ -44,8 +45,9 @@ public class ClipDataListener {
         };
         clipBoard.addPrimaryClipChangedListener(listener);
         getLink(clipBoard);
-        jtwitter = TwitterFactory.getSingleton();
-
+        ConfigurationBuilder cb = new ConfigurationBuilder().setIncludeEntitiesEnabled(true).setIncludeMyRetweetEnabled(true).setIncludeExtAltTextEnabled(true).setTweetModeExtended(true);
+        jtwitter = new TwitterFactory(cb.build()).getInstance();
+        Twitter singleton = TwitterFactory.getSingleton();
         try {
             jtwitter.setOAuthConsumer(consumerKey, twitterconsumerSecret);
             jtwitter.setOAuthAccessToken(new AccessToken(twitteraccesstoken, twitteraccessSecret));
@@ -100,6 +102,8 @@ public class ClipDataListener {
         Needle.onBackgroundThread().execute(() -> {
                     try {
                         String split1 = getID(url);
+                        if (jtwitter == null)
+                            System.err.println("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
                         Status status = jtwitter.showStatus(Long.parseLong(split1));
                         List<MediaEntity> mediaEntities = Arrays.asList(status.getMediaEntities());
                         if (!mediaEntities.isEmpty()) {
