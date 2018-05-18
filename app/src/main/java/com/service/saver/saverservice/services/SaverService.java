@@ -143,6 +143,8 @@ public class SaverService extends IntentService {
                                 .setSmallIcon(R.drawable.androidicon)
                                 .setProgress(0, 0, false);
                         mNotifyManager.notify(downloadId, mBuilder.build());
+                        if (error.isConnectionError())
+                            MyApp.add(link);
                     }
                 });
 
