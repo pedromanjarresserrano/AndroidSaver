@@ -1,14 +1,25 @@
 package com.service.saver.saverservice.tumblr.util;
 
+import com.service.saver.saverservice.MyApp;
+import com.service.saver.saverservice.tumblr.model.PostModel;
 import com.tumblr.jumblr.JumblrClient;
 import com.tumblr.jumblr.request.RequestBuilder;
 import com.tumblr.jumblr.types.Blog;
+import com.tumblr.jumblr.types.Photo;
+import com.tumblr.jumblr.types.PhotoPost;
+import com.tumblr.jumblr.types.PhotoSize;
 import com.tumblr.jumblr.types.Post;
 import com.tumblr.jumblr.types.User;
+import com.tumblr.jumblr.types.Video;
+import com.tumblr.jumblr.types.VideoPost;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.scribe.model.Token;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -191,5 +202,31 @@ public class JumblrHolder {
 
     public RequestBuilder getRequestBuilder() {
         return client.getRequestBuilder();
+    }
+
+    public static List<String> getUrlFile(Post p) {
+        List<String> list = new ArrayList<>();
+        Post.PostType type = p.getType();
+        if (type == Post.PostType.PHOTO) {
+            PhotoPost aux = (PhotoPost) p;
+            for (Photo e : aux.getPhotos()) {
+                String url = e.getOriginalSize().getUrl();
+                String[] filename = url.split("/");
+                list.add(aux.getBlogName() + " - " + filename[filename.length - 1] + ":NAME:" + url);
+            }
+
+        }
+        if (type == Post.PostType.VIDEO) {
+            VideoPost aux = (VideoPost) p;
+            List<Video> videos = aux.getVideos();
+            Video video = videos.get(videos.size() - 1);
+            Document doc = Jsoup.parse(video.getEmbedCode());
+            Elements elements = doc.select("source");
+            String src = elements.attr("src");
+            Elements vid = doc.select("video");
+            if (!src.isEmpty())
+                list.add(aux.getBlogName() + " - " + aux.getId() + ".mp4" + ":NAME:" + src);
+        }
+        return list;
     }
 }

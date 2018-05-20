@@ -15,6 +15,7 @@ import com.shashank.sony.fancytoastlib.FancyToast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -39,7 +40,12 @@ public class ClipDataListener {
     private static Twitter jtwitter;
 
     public ClipDataListener(ClipboardManager clip) {
-        ConfigurationBuilder cb = new ConfigurationBuilder().setIncludeEntitiesEnabled(true).setIncludeMyRetweetEnabled(true).setIncludeExtAltTextEnabled(true).setTweetModeExtended(true);
+        ConfigurationBuilder cb = new ConfigurationBuilder()
+                .setIncludeEntitiesEnabled(true)
+                .setIncludeMyRetweetEnabled(true)
+                .setIncludeExtAltTextEnabled(true)
+                .setTweetModeExtended(true)
+                .setIncludeEmailEnabled(true);
         jtwitter = new TwitterFactory(cb.build()).getInstance();
         Twitter singleton = TwitterFactory.getSingleton();
         try {
@@ -76,7 +82,6 @@ public class ClipDataListener {
                 text = split1[0];
                 if (!checkOnListBlogs(listblogs, text)) {
                     listblogs.add(text);
-                    //        Utility.setListBlogs(listblogs);
                 }
             }
         }
@@ -103,20 +108,10 @@ public class ClipDataListener {
         Needle.onBackgroundThread().execute(() -> {
                     try {
                         String split1 = getID(url);
-                        if (jtwitter == null)
-                            System.err.println("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
                         Status status = jtwitter.showStatus(Long.parseLong(split1));
                         List<MediaEntity> mediaEntities = Arrays.asList(status.getMediaEntities());
                         if (!mediaEntities.isEmpty()) {
                             entites(mediaEntities);
-                        } else {
-                            List<URLEntity> urlEntities = Arrays.asList(status.getURLEntities());
-                            if (!urlEntities.isEmpty()) {
-                                split1 = getID(urlEntities.get(0).getExpandedURL());
-                                status = jtwitter.showStatus(Long.parseLong(split1));
-                                mediaEntities = Arrays.asList(status.getMediaEntities());
-
-                            }
                         }
 
                     } catch (TwitterException | IOException e) {
@@ -133,8 +128,10 @@ public class ClipDataListener {
         if (mediaEntity.getType().equalsIgnoreCase("photo"))
             MyApp.add(mediaEntity.getMediaURL());
         else {
-            String[] split = mediaEntity.getVideoVariants()[0].getUrl().split("\\?");
-            String link = split[split.length - 1];
+            List<MediaEntity.Variant> videoVariants = Arrays.asList(mediaEntity.getVideoVariants());
+            Collections.sort(videoVariants, Comparator.comparingInt(MediaEntity.Variant::getBitrate));
+            String[] split = videoVariants.get(videoVariants.size() - 1).getUrl().split("\\?");
+            String link = split[0];
             MyApp.add(link);
         }
     }

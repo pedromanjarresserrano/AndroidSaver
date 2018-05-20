@@ -11,14 +11,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
+import com.downloader.Error;
+import com.downloader.OnDownloadListener;
+import com.downloader.OnProgressListener;
+import com.downloader.PRDownloader;
+import com.downloader.Priority;
+import com.downloader.Progress;
+import com.downloader.request.DownloadRequest;
 import com.service.saver.saverservice.MyApp;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.tumblr.model.PostModel;
 import com.service.saver.saverservice.util.Files;
-import com.thin.downloadmanager.DefaultRetryPolicy;
-import com.thin.downloadmanager.DownloadRequest;
-import com.thin.downloadmanager.DownloadStatusListenerV1;
-import com.thin.downloadmanager.ThinDownloadManager;
 
 import java.io.File;
 import java.net.URL;
@@ -36,7 +39,6 @@ public class SaverService extends IntentService {
     private List<String> listlinks = new ArrayList<>();
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mBuilder;
-    private ThinDownloadManager downloadManager;
 
     public SaverService() {
         super("SaverService");
@@ -46,8 +48,6 @@ public class SaverService extends IntentService {
     public void onCreate() {
         super.onCreate();
         mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        downloadManager = new ThinDownloadManager();
-
     }
 
     @Override
@@ -63,12 +63,10 @@ public class SaverService extends IntentService {
                     try {
                         String[] split = link.split("/");
                         String[] namelink = link.split(PostModel.NAMESPACE);
-                        Uri downloadUri = Uri.parse((namelink.length > 1 ? namelink[1] : link));
                         Uri destinationUri = Uri.parse(Files.getRunningDir() + "/" + (namelink.length > 1 ? namelink[0] : split[split.length - 1]));
                         File f = new File(destinationUri.getPath());
                         if (!f.exists()) {
-                            DownloadRequest downloadRequest = getDownloadRequest((namelink.length > 1 ? namelink[1] : link), downloadUri, destinationUri);
-                            int downloadId = downloadManager.add(downloadRequest);
+                            getDownloadRequest((namelink.length > 1 ? namelink[1] : link), Files.getRunningDir() + "/", (namelink.length > 1 ? namelink[0] : split[split.length - 1]));
                         }
                         removeSafe(link);
                     } catch (Exception e) {
@@ -108,41 +106,48 @@ public class SaverService extends IntentService {
 
     }
 
-    private DownloadRequest getDownloadRequest(String link, Uri downloadUri, Uri destinationUri) {
-        return new DownloadRequest(downloadUri)
-                .setRetryPolicy(new DefaultRetryPolicy())
-                .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.HIGH)
-                .setStatusListener(new DownloadStatusListenerV1() {
+    private int getDownloadRequest(String link, String dirPath, String fileName) {
+        DownloadRequest build = PRDownloader.download(link, dirPath, fileName)
+                .setPriority(Priority.HIGH)
+                .build();
+        int downloadId = build.getDownloadId();
+
+        return build
+                .setOnProgressListener(new OnProgressListener() {
                     @Override
-                    public void onDownloadComplete(DownloadRequest downloadRequest) {
+                    public void onProgress(Progress progress) {
+                        mBuilder.setContentTitle("Download")
+                                .setContentText("Downloading")
+                                .setSubText((progress.currentBytes * 100) / progress.totalBytes + " % ")
+                                .setSmallIcon(R.drawable.androidicon)
+                                .setProgress(100, 100, true);
+                        mNotifyManager.notify(downloadId, mBuilder.build());
+                    }
+                })
+                .start(new OnDownloadListener() {
+                    @Override
+                    public void onDownloadComplete() {
                         removeSafe(link);
                         mBuilder.setContentTitle("Download")
                                 .setContentText("Downloaded")
                                 .setSubText("")
                                 .setSmallIcon(R.drawable.androidicon)
                                 .setProgress(100, 100, false);
-                        mNotifyManager.notify(downloadRequest.getDownloadId(), mBuilder.build());
+                        mNotifyManager.notify(downloadId, mBuilder.build());
                     }
 
                     @Override
-                    public void onDownloadFailed(DownloadRequest downloadRequest, int errorCode, String errorMessage) {
+                    public void onError(Error error) {
                         mBuilder.setContentTitle("Download")
-                                .setContentText("Downloading error - " + errorMessage)
+                                .setContentText("Downloading error - " + (error.isConnectionError() ? "Conexion error" : "Server Error"))
                                 .setSmallIcon(R.drawable.androidicon)
                                 .setProgress(0, 0, false);
-                        mNotifyManager.notify(downloadRequest.getDownloadId(), mBuilder.build());
-                    }
-
-                    @Override
-                    public void onProgress(DownloadRequest downloadRequest, long totalBytes, long downloadedBytes, int progress) {
-                        mBuilder.setContentTitle("Download")
-                                .setContentText("Downloading")
-                                .setSubText(progress + " % ")
-                                .setSmallIcon(R.drawable.androidicon)
-                                .setProgress(100, 100, true);
-                        mNotifyManager.notify(downloadRequest.getDownloadId(), mBuilder.build());
+                        mNotifyManager.notify(downloadId, mBuilder.build());
+                        if (error.isConnectionError())
+                            MyApp.add(link);
                     }
                 });
+
     }
 
     private void removeSafe(String string) {
