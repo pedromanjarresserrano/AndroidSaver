@@ -1,15 +1,12 @@
 package com.service.saver.saverservice;
 
 import android.app.Activity;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,18 +15,17 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.service.saver.saverservice.folder.FolderFragment;
 import com.service.saver.saverservice.services.SaverService;
 import com.service.saver.saverservice.tumblr.TumblrFragment;
 import com.service.saver.saverservice.twitter.TwitterFragment;
 import com.service.saver.saverservice.util.ClipDataListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainTabActivity extends AppCompatActivity {
 
@@ -57,25 +53,26 @@ public class MainTabActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
+        mSectionsPagerAdapter.addFrag(new TwitterFragment(), "Twitter");
+        mSectionsPagerAdapter.addFrag(new TumblrFragment(), "Tumblr");
+        mSectionsPagerAdapter.addFrag(new FolderFragment(), "Folder");
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(3);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        mViewPager.setOffscreenPageLimit(mSectionsPagerAdapter.getCount());
+        TabLayout tabLayout = findViewById(R.id.tabs);
 
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        tabLayout.setupWithViewPager(mViewPager);
         mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         activity = this;
         new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
         Intent service = new Intent(this, SaverService.class);
         this.startService(service);
-
 
     }
 
@@ -109,67 +106,32 @@ public class MainTabActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case 0: {
-                    return new TwitterFragment();
-                }
-                case 1: {
-                    return new TumblrFragment();
-                }
+            return mFragmentList.get(position);
+        }
 
-                case 2: {
-                    return new FolderFragment();
-                }
-                default:
-                    return PlaceholderFragment.newInstance(position);
-            }
+        public void addFrag(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
-        }
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main_tab, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
+            return mFragmentList.size();
         }
     }
 }

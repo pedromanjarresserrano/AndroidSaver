@@ -1,11 +1,8 @@
 package com.service.saver.saverservice.util;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.widget.Toast;
 
 import com.service.saver.saverservice.MainTabActivity;
@@ -25,7 +22,6 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.URLEntity;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -36,7 +32,6 @@ public class ClipDataListener {
     static String consumerKey = "RjUwa94ScJf6qybLuPzq74yPx";
     static String twitterconsumerSecret = "SjTPZsGa2m5KEuhupwbjh1QUCuxCqTatKUVhG8YHxGqy9oeTTV";
     private List<String> listlinks = new ArrayList<>();
-    private List<String> listblogs = new ArrayList<>();
     private static Twitter jtwitter;
 
     public ClipDataListener(ClipboardManager clip) {
@@ -75,24 +70,7 @@ public class ClipDataListener {
                     saveTweet(text);
                 }
             }
-            if (text.contains("tumblr")) {
-                FancyToast.makeText(MainTabActivity.activity, "Blog received", Toast.LENGTH_SHORT, FancyToast.INFO, true);
-                String[] split = text.split("/");
-                String[] split1 = split[2].split("\\.");
-                text = split1[0];
-                if (!checkOnListBlogs(listblogs, text)) {
-                    listblogs.add(text);
-                }
-            }
         }
-    }
-
-
-    private boolean checkOnListBlogs(List<String> lista, String object) {
-        for (String s : lista) {
-            return s.equals(object);
-        }
-        return false;
     }
 
     private boolean checkOnList(List<String> lista, String object) {
@@ -102,8 +80,6 @@ public class ClipDataListener {
         return false;
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void saveTweet(String url) {
         Needle.onBackgroundThread().execute(() -> {
                     try {

@@ -1,107 +1,90 @@
 package com.service.saver.saverservice.folder;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.service.saver.saverservice.R;
+import com.service.saver.saverservice.folder.adepter.FileAdapter;
+import com.service.saver.saverservice.folder.model.FileModel;
+import com.service.saver.saverservice.util.Files;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FolderFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FolderFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 public class FolderFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private FileAdapter fileAdapter;
+    private List<FileModel> fileModelList = new ArrayList<>();
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FolderFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FolderFragment newInstance(String param1, String param2) {
-        FolderFragment fragment = new FolderFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
     public FolderFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_folder, container, false);
+        View view = inflater.inflate(R.layout.fragment_folder, container, false);
+        RecyclerView listView = view.findViewById(R.id.folder_grid);
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity().getBaseContext(), 3);
+        listView.setLayoutManager(layoutManager);
+        fileAdapter = new FileAdapter(fileModelList);
+        listView.setAdapter(fileAdapter);
+        listView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    @Nullable
+    @Override
+    public View getView() {
+        loadFiles();
+        return super.getView();
+    }
+
+    private void loadFiles() {
+        List<File> fileList = Files.getfiles(Files.getRunningDirByFile());
+        fileList.sort(Comparator.comparingLong(File::lastModified).reversed());
+        if (fileList.size() > fileModelList.size()) {
+            for (File f : fileList) {
+                fileModelList.add(new FileModel(fileModelList.size() + 0L, f.getName(), f.getAbsolutePath()));
+            }
+        }
+        fileAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+
         }
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-         //   throw new RuntimeException(context.toString()                    + " must implement OnFragmentInteractionListener");
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.reload_files_folder: {
+                loadFiles();
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
 }

@@ -1,30 +1,27 @@
 package com.service.saver.saverservice.folder.adepter;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.service.saver.saverservice.MainTabActivity;
-import com.service.saver.saverservice.MyApp;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.folder.holder.FileHolder;
-import com.service.saver.saverservice.tumblr.holder.PostHolder;
-import com.service.saver.saverservice.tumblr.model.PostModel;
-import com.shashank.sony.fancytoastlib.FancyToast;
+import com.service.saver.saverservice.folder.model.FileModel;
+import com.service.saver.saverservice.player.PlayerActivity;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
-public class FolderAdapter extends RecyclerView.Adapter<FileHolder> {
+public class FileAdapter extends RecyclerView.Adapter<FileHolder> {
 
-    private List<PostModel> dataSet;
 
-    public FolderAdapter(List<PostModel> dataSet) {
+    private List<FileModel> dataSet;
+
+    public FileAdapter(List<FileModel> dataSet) {
         this.dataSet = dataSet;
     }
 
@@ -32,7 +29,7 @@ public class FolderAdapter extends RecyclerView.Adapter<FileHolder> {
         return dataSet.size();
     }
 
-    public PostModel getItem(int position) {
+    public FileModel getItem(int position) {
         return dataSet.get(position);
     }
 
@@ -45,18 +42,16 @@ public class FolderAdapter extends RecyclerView.Adapter<FileHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull FileHolder holder, int position) {
-        PostModel item = getItem(position);
-        holder.blog_name.setText(item.getBlogname());
-        holder.caption.setText(Html.fromHtml(item.getFilename(), Html.FROM_HTML_MODE_LEGACY));
-        holder.caption.setMovementMethod(LinkMovementMethod.getInstance());
-        View.OnClickListener onClickListener = v -> {
-            FancyToast.makeText(MainTabActivity.activity, "Downloading", Toast.LENGTH_SHORT, FancyToast.INFO, true);
-            // ids.add(position);
-            MyApp.add(item.getName()+":NAME:"+item.getUrl());
-        };
-        holder.saveButton.setOnClickListener(onClickListener);
-        Uri uri = Uri.parse(item.getPreviewurl());
+        FileModel item = getItem(position);
+        holder.filename.setText(item.getName());
+        Uri uri = Uri.fromFile(new File((item.getFilepath())));
         holder.draweeView.setImageURI(uri);
+        holder.vm.setOnClickListener((v) -> {
+            Intent intent = new Intent(v.getContext(), PlayerActivity.class);
+            intent.putExtra("position", position);
+            intent.putExtra("list",(ArrayList<FileModel>) dataSet);
+            v.getContext().startActivity(intent);
+        });
     }
 
     @Override

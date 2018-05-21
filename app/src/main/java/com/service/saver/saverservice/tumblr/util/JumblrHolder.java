@@ -1,13 +1,10 @@
 package com.service.saver.saverservice.tumblr.util;
 
-import com.service.saver.saverservice.MyApp;
-import com.service.saver.saverservice.tumblr.model.PostModel;
 import com.tumblr.jumblr.JumblrClient;
 import com.tumblr.jumblr.request.RequestBuilder;
 import com.tumblr.jumblr.types.Blog;
 import com.tumblr.jumblr.types.Photo;
 import com.tumblr.jumblr.types.PhotoPost;
-import com.tumblr.jumblr.types.PhotoSize;
 import com.tumblr.jumblr.types.Post;
 import com.tumblr.jumblr.types.User;
 import com.tumblr.jumblr.types.Video;

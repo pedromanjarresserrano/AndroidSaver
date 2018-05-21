@@ -2,13 +2,9 @@ package com.service.saver.saverservice;
 
 import android.app.Application;
 
-import com.downloader.PRDownloader;
-import com.downloader.PRDownloaderConfig;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.service.saver.saverservice.util.Files;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +19,6 @@ public class MyApp extends Application {
         super.onCreate();
         List<String> list = (List<String>) Files.readObject(FILELIST);
         Fresco.initialize(this);
-        PRDownloaderConfig config = PRDownloaderConfig.newBuilder()
-                .setDatabaseEnabled(true)
-                .build();
-        PRDownloader.initialize(getApplicationContext(), config);
         if (list != null) {
             files.addAll(list);
         }

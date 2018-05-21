@@ -5,14 +5,17 @@
     android:id="@+id/control_player"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:theme="@style/AppTheme.NoActionBar">
 
     <TextView
         android:id="@+id/exo_position"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
         android:paddingTop="30dp"
         android:textAlignment="center"
         android:textColor="@color/white"
@@ -28,12 +31,13 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_gravity="bottom"
-            android:progressDrawable="@drawable/apptheme_scrubber_progress_horizontal_holo_dark"
-            android:thumb="@drawable/apptheme_scrubber_control_selector_holo_dark" />
+            android:layout_gravity="bottom" />
+        <!--  android:progressDrawable="@drawable/apptheme_scrubber_progress_horizontal_holo_dark"
+            android:thumb="@drawable/apptheme_scrubber_control_selector_holo_dark" /> -->
+
     </LinearLayout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:id="@+id/controles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,7 +50,7 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:id="@id/back"
+            android:id="@+id/back_button_player"
             style="@style/ExoMediaButton.Previous"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -115,7 +119,7 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:id="@id/next"
+            android:id="@+id/next_button_player"
             style="@style/ExoMediaButton.Next"
             android:layout_width="50dp"
             android:layout_height="50dp"

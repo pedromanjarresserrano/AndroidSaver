@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Files {
@@ -78,15 +79,15 @@ public class Files {
     }
 
     public static File getRunningDirByFile() {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath(), "TweetSaverService");
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "TweetSaverService");
     }
 
     public static File getRunningDirByFile(String s) {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath(), "TweetSaverService/" + s);
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "TweetSaverService/" + s);
     }
 
     public static File getCacheDirByFile() {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath(), "TweetSaverService/cache");
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "TweetSaverService/cache");
     }
 
     public static List<File> getfiles(File dir) {
@@ -94,11 +95,20 @@ public class Files {
         List<File> list = new ArrayList<>();
         if (listFile != null && listFile.length > 0)
             for (int i = 0; i < listFile.length; i++)
-                if (listFile[i].isDirectory())
-                    list.addAll(getfiles(listFile[i]));
-                else if (listFile[i].getName().endsWith(".mp4") || listFile[i].getName().endsWith(".gif"))
-                    list.add(listFile[i]);
+                if (!endsWith(listFile[i].getAbsolutePath(), Arrays.asList("/cache", "/.CACHE")))
+                    if (listFile[i].isDirectory())
+                        list.addAll(getfiles(listFile[i]));
+                    else if (!endsWith(listFile[i].getAbsolutePath(), Arrays.asList(".sss", ".tss", ".txt")))
+                        list.add(listFile[i]);
         return list;
+    }
+
+    private static boolean endsWith(String s, List<String> suffixs) {
+        for (String ends : suffixs) {
+            if (s.endsWith(ends))
+                return true;
+        }
+        return false;
     }
 
     public static String readableFileSize(long size) {
