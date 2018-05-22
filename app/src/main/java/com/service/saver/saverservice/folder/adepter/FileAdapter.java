@@ -13,7 +13,6 @@ import com.service.saver.saverservice.folder.model.FileModel;
 import com.service.saver.saverservice.player.PlayerActivity;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class FileAdapter extends RecyclerView.Adapter<FileHolder> {
@@ -49,7 +48,6 @@ public class FileAdapter extends RecyclerView.Adapter<FileHolder> {
         holder.vm.setOnClickListener((v) -> {
             Intent intent = new Intent(v.getContext(), PlayerActivity.class);
             intent.putExtra("position", position);
-            intent.putExtra("list",(ArrayList<FileModel>) dataSet);
             v.getContext().startActivity(intent);
         });
     }

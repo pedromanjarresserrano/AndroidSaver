@@ -129,6 +129,7 @@ public class MainTabActivity extends AppCompatActivity {
             return mFragmentTitleList.get(position);
         }
 
+
         @Override
         public int getCount() {
             return mFragmentList.size();

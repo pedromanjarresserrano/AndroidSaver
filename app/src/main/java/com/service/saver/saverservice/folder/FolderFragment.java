@@ -1,5 +1,6 @@
 package com.service.saver.saverservice.folder;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,7 +24,7 @@ import java.util.List;
 
 public class FolderFragment extends Fragment {
     private FileAdapter fileAdapter;
-    private List<FileModel> fileModelList = new ArrayList<>();
+    public static List<FileModel> FILE_MODEL_LIST = new ArrayList<>();
 
 
     public FolderFragment() {
@@ -40,9 +41,9 @@ public class FolderFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_folder, container, false);
         RecyclerView listView = view.findViewById(R.id.folder_grid);
-        GridLayoutManager layoutManager = new GridLayoutManager(getActivity().getBaseContext(), 3);
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity().getBaseContext(), getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 3 : 5);
         listView.setLayoutManager(layoutManager);
-        fileAdapter = new FileAdapter(fileModelList);
+        fileAdapter = new FileAdapter(FILE_MODEL_LIST);
         listView.setAdapter(fileAdapter);
         listView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         return view;
@@ -55,12 +56,13 @@ public class FolderFragment extends Fragment {
         return super.getView();
     }
 
+
     private void loadFiles() {
         List<File> fileList = Files.getfiles(Files.getRunningDirByFile());
         fileList.sort(Comparator.comparingLong(File::lastModified).reversed());
-        if (fileList.size() > fileModelList.size()) {
+        if (fileList.size() > FILE_MODEL_LIST.size()) {
             for (File f : fileList) {
-                fileModelList.add(new FileModel(fileModelList.size() + 0L, f.getName(), f.getAbsolutePath()));
+                FILE_MODEL_LIST.add(new FileModel(FILE_MODEL_LIST.size() + 0L, f.getName(), f.getAbsolutePath()));
             }
         }
         fileAdapter.notifyDataSetChanged();

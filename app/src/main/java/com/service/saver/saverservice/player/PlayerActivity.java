@@ -30,9 +30,9 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.service.saver.saverservice.R;
+import com.service.saver.saverservice.folder.FolderFragment;
 import com.service.saver.saverservice.folder.model.FileModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerActivity extends AppCompatActivity {
@@ -58,7 +58,7 @@ public class PlayerActivity extends AppCompatActivity {
         Intent intent = getIntent();
         position = intent.getIntExtra("position", 0);
         simpleExoPlayerView = findViewById(R.id.player_view);
-        list = (ArrayList<FileModel>) getIntent().getSerializableExtra("list");
+        list = FolderFragment.FILE_MODEL_LIST;
         initButtons();
         loadControl = new DefaultLoadControl();
         bandwidthMeter = new DefaultBandwidthMeter();

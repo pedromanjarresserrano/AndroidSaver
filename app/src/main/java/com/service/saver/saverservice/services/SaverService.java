@@ -18,9 +18,12 @@ import com.liulishuo.okdownload.DownloadContext;
 import com.liulishuo.okdownload.DownloadListener;
 import com.liulishuo.okdownload.DownloadSerialQueue;
 import com.liulishuo.okdownload.DownloadTask;
+import com.liulishuo.okdownload.SpeedCalculator;
+import com.liulishuo.okdownload.core.breakpoint.BlockInfo;
 import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
 import com.liulishuo.okdownload.core.cause.EndCause;
-import com.liulishuo.okdownload.core.cause.ResumeFailedCause;
+import com.liulishuo.okdownload.core.listener.DownloadListener4WithSpeed;
+import com.liulishuo.okdownload.core.listener.assist.Listener4SpeedAssistExtend;
 import com.service.saver.saverservice.BuildConfig;
 import com.service.saver.saverservice.MyApp;
 import com.service.saver.saverservice.R;
@@ -62,7 +65,43 @@ public class SaverService extends IntentService {
 
     @NonNull
     private DownloadListener getListener() {
-        return new DownloadListener() {
+        return new DownloadListener4WithSpeed() {
+            @Override
+            public void infoReady(@NonNull DownloadTask task, @NonNull BreakpointInfo info, boolean fromBreakpoint, @NonNull Listener4SpeedAssistExtend.Listener4SpeedModel model) {
+
+            }
+
+            @Override
+            public void progressBlock(@NonNull DownloadTask task, int blockIndex, long currentBlockOffset, @NonNull SpeedCalculator blockSpeed) {
+
+            }
+
+            @Override
+            public void progress(@NonNull DownloadTask task, long currentOffset, @NonNull SpeedCalculator taskSpeed) {
+                mBuilder.setContentTitle("Download")
+                        .setContentText("Downloading")
+                        .setSubText(taskSpeed.getSpeedWithBinaryAndFlush())
+                        //  .setSubText((progress.currentBytes * 100) / progress.totalBytes + " % ")
+                        .setSmallIcon(R.drawable.androidicon)
+                        .setProgress(100, 100, true);
+                mNotifyManager.notify(task.getId(), mBuilder.build());
+            }
+
+            @Override
+            public void blockEnd(@NonNull DownloadTask task, int blockIndex, BlockInfo info, @NonNull SpeedCalculator blockSpeed) {
+
+            }
+
+            @Override
+            public void taskEnd(@NonNull DownloadTask task, @NonNull EndCause cause, @Nullable Exception realCause, @NonNull SpeedCalculator taskSpeed) {
+                mBuilder.setContentTitle("Download")
+                        .setContentText("Downloaded")
+                        .setSubText("")
+                        .setSmallIcon(R.drawable.androidicon)
+                        .setProgress(100, 100, false);
+                mNotifyManager.notify(task.getId(), mBuilder.build());
+            }
+
             @Override
             public void taskStart(@NonNull DownloadTask task) {
 
@@ -78,15 +117,6 @@ public class SaverService extends IntentService {
 
             }
 
-            @Override
-            public void downloadFromBeginning(@NonNull DownloadTask task, @NonNull BreakpointInfo info, @NonNull ResumeFailedCause cause) {
-
-            }
-
-            @Override
-            public void downloadFromBreakpoint(@NonNull DownloadTask task, @NonNull BreakpointInfo info) {
-
-            }
 
             @Override
             public void connectStart(@NonNull DownloadTask task, int blockIndex, @NonNull Map<String, List<String>> requestHeaderFields) {
@@ -103,15 +133,6 @@ public class SaverService extends IntentService {
 
             }
 
-            @Override
-            public void fetchProgress(@NonNull DownloadTask task, int blockIndex, long increaseBytes) {
-                mBuilder.setContentTitle("Download")
-                        .setContentText("Downloading")
-                        //  .setSubText((progress.currentBytes * 100) / progress.totalBytes + " % ")
-                        .setSmallIcon(R.drawable.androidicon)
-                        .setProgress(100, 100, true);
-                mNotifyManager.notify(task.getId(), mBuilder.build());
-            }
 
             @Override
             public void fetchEnd(@NonNull DownloadTask task, int blockIndex, long contentLength) {
@@ -135,15 +156,6 @@ public class SaverService extends IntentService {
                 mNotifyManager.notify(task.getId(), mBuilder.build());
             }
 
-            @Override
-            public void taskEnd(@NonNull DownloadTask task, @NonNull EndCause cause, @Nullable Exception realCause) {
-                mBuilder.setContentTitle("Download")
-                        .setContentText("Downloaded")
-                        .setSubText("")
-                        .setSmallIcon(R.drawable.androidicon)
-                        .setProgress(100, 100, false);
-                mNotifyManager.notify(task.getId(), mBuilder.build());
-            }
         };
     }
 
