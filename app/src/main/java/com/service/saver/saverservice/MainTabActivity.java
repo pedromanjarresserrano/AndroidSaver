@@ -60,6 +60,7 @@ public class MainTabActivity extends AppCompatActivity {
         mSectionsPagerAdapter.addFrag(new TwitterFragment(), "Twitter");
         mSectionsPagerAdapter.addFrag(new TumblrFragment(), "Tumblr");
         mSectionsPagerAdapter.addFrag(new FolderFragment(), "Folder");
+        // mSectionsPagerAdapter.addFrag(new FileModelFragment(), "Folder Kotlin");
         // Set up the ViewPager with the sections adapter.
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);

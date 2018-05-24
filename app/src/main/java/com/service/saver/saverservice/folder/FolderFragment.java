@@ -8,6 +8,8 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +35,6 @@ public class FolderFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -46,6 +47,7 @@ public class FolderFragment extends Fragment {
         fileAdapter = new FileAdapter(FILE_MODEL_LIST);
         listView.setAdapter(fileAdapter);
         listView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -56,6 +58,11 @@ public class FolderFragment extends Fragment {
         return super.getView();
     }
 
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.folder_menu, menu);
+    }
 
     private void loadFiles() {
         List<File> fileList = Files.getfiles(Files.getRunningDirByFile());
