@@ -79,7 +79,7 @@ public class SaverService extends IntentService {
             @Override
             public void progress(@NonNull DownloadTask task, long currentOffset, @NonNull SpeedCalculator taskSpeed) {
                 mBuilder.setContentTitle("Download")
-                        .setContentText("Downloading")
+                        .setContentText("Downloading " + task.getFilename())
                         .setSubText(taskSpeed.getSpeedWithBinaryAndFlush())
                         //  .setSubText((progress.currentBytes * 100) / progress.totalBytes + " % ")
                         .setSmallIcon(R.drawable.androidicon)
@@ -95,7 +95,7 @@ public class SaverService extends IntentService {
             @Override
             public void taskEnd(@NonNull DownloadTask task, @NonNull EndCause cause, @Nullable Exception realCause, @NonNull SpeedCalculator taskSpeed) {
                 mBuilder.setContentTitle("Download")
-                        .setContentText("Downloaded")
+                        .setContentText("Downloaded " + task.getFilename())
                         .setSubText("")
                         .setSmallIcon(R.drawable.androidicon)
                         .setProgress(100, 100, false);

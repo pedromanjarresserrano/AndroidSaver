@@ -89,11 +89,11 @@ public class TumblrFragment extends Fragment {
                 Loglr.INSTANCE
                         .setConsumerKey(JumblrHolder.CONSUMER_KEY)
                         .setConsumerSecretKey(JumblrHolder.CONSUMER_SECRET)
+                        .enable2FA(true)
+                        .setUrlCallBack("https://www.tumblr.com/dashboard")
                         .setLoginListener(loginResult -> {
                             cl.setToken(loginResult.getOAuthToken(), loginResult.getOAuthTokenSecret());
-                        })
-                        .enable2FA(true)
-                        .setUrlCallBack("https://www.tumblr.com/dashboard").initiate(getActivity());
+                        }).initiate(getActivity());
                 return true;
             }
             default:
