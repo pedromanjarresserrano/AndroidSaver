@@ -20,8 +20,6 @@ import android.view.MenuItem;
 
 import com.service.saver.saverservice.folder.FolderFragment;
 import com.service.saver.saverservice.services.SaverService;
-import com.service.saver.saverservice.tumblr.TumblrFragment;
-import com.service.saver.saverservice.twitter.TwitterFragment;
 import com.service.saver.saverservice.util.ClipDataListener;
 
 import java.util.ArrayList;
@@ -57,8 +55,8 @@ public class MainTabActivity extends AppCompatActivity {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        mSectionsPagerAdapter.addFrag(new TwitterFragment(), "Twitter");
-        mSectionsPagerAdapter.addFrag(new TumblrFragment(), "Tumblr");
+    //    mSectionsPagerAdapter.addFrag(new TwitterFragment(), "Twitter");
+      //  mSectionsPagerAdapter.addFrag(new TumblrFragment(), "Tumblr");
         mSectionsPagerAdapter.addFrag(new FolderFragment(), "Folder");
         // mSectionsPagerAdapter.addFrag(new FileModelFragment(), "Folder Kotlin");
         // Set up the ViewPager with the sections adapter.

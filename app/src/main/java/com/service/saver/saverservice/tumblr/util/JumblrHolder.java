@@ -1,5 +1,6 @@
 package com.service.saver.saverservice.tumblr.util;
 
+import com.service.saver.saverservice.util.Files;
 import com.tumblr.jumblr.JumblrClient;
 import com.tumblr.jumblr.request.RequestBuilder;
 import com.tumblr.jumblr.types.Blog;
@@ -21,9 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 public class JumblrHolder {
-    public static String TOKEN_KEY = "uxdOglGfxNpMlRjuwcNOQ6fTQC9egcnC9nDaEkYJvYRopRArET";
+    public static String TOKEN_KEY = ""; //"uxdOglGfxNpMlRjuwcNOQ6fTQC9egcnC9nDaEkYJvYRopRArET";
 
-    public static String TOEKN_SECRET = "HNxH7lIXDUtJ9SN0M5Djg3B1D2s5Vf6jxAhZTPUg7KAZ70eoz6";
+    public static String TOEKN_SECRET = "";// "HNxH7lIXDUtJ9SN0M5Djg3B1D2s5Vf6jxAhZTPUg7KAZ70eoz6";
 
     public static String CONSUMER_KEY = "oiK8MFj4VQX52JEvfyKWi0CvdoZyYATq4SjnRj9fXkMV8T4X1g";
     public static String CONSUMER_SECRET = "c72SlqTby5ejAMizhv0Pj6IYenCxGBZ2oF5UU6NymOiFPs5dYo";
@@ -33,11 +34,20 @@ public class JumblrHolder {
     );
 
     public JumblrHolder() {
-
+/*
         client.setToken(
                 TOKEN_KEY,
                 TOEKN_SECRET
-        );
+        );*/
+        Object TOKEN_KEY = Files.readObject("tumblraccesstoken");
+        Object TOKEN_SECRET = Files.readObject("tumblraccessSecret");
+        if (!(TOKEN_KEY == null || TOEKN_SECRET == null)) {
+            String token_secret = (String) TOKEN_SECRET;
+            String token_key = (String) TOKEN_KEY;
+            client.setToken(token_key, token_secret);
+            JumblrHolder.TOKEN_KEY= token_key;
+            JumblrHolder.TOEKN_SECRET= token_secret;
+        }
     }
 
     public void setToken(String token, String tokenSecret) {

@@ -15,7 +15,7 @@ import java.util.List;
 import needle.Needle;
 
 public class TumblrActivity extends AppCompatActivity {
-    JumblrHolder client = new JumblrHolder();
+    public static JumblrHolder client = new JumblrHolder();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +33,11 @@ public class TumblrActivity extends AppCompatActivity {
                 String id = pathsplit[2];
                 String blog = hostsplit[0];
                 Needle.onBackgroundThread().execute(() -> {
-                    Post post = client.blogPost(blog, Long.valueOf(id));
-                    List<String> urlFile = JumblrHolder.getUrlFile(post);
-                    urlFile.forEach(MyApp::add);
+                    if (!(client.TOEKN_SECRET.isEmpty() && client.TOKEN_KEY.isEmpty())) {
+                        Post post = client.blogPost(blog, Long.valueOf(id));
+                        List<String> urlFile = JumblrHolder.getUrlFile(post);
+                        urlFile.forEach(MyApp::add);
+                    }
                 });
 
             }

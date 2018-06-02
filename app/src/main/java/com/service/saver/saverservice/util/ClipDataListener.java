@@ -27,12 +27,12 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class ClipDataListener {
 
-    static String twitteraccesstoken = "733406466-r8gIEfFqO0T37LPynGFGtrmtx08MplWlEvc0xpZT";
-    static String twitteraccessSecret = "8Uhza0HW7QIGGJMepr6H5RS1CNgeYrZXGld4znKkUuE9N";
+    static String twitteraccesstoken = "";//"733406466-r8gIEfFqO0T37LPynGFGtrmtx08MplWlEvc0xpZT";
+    static String twitteraccessSecret = "";//"8Uhza0HW7QIGGJMepr6H5RS1CNgeYrZXGld4znKkUuE9N";
     static String consumerKey = "RjUwa94ScJf6qybLuPzq74yPx";
     static String twitterconsumerSecret = "SjTPZsGa2m5KEuhupwbjh1QUCuxCqTatKUVhG8YHxGqy9oeTTV";
     private List<String> listlinks = new ArrayList<>();
-    private static Twitter jtwitter;
+    public static Twitter jtwitter;
 
     public ClipDataListener(ClipboardManager clip) {
         ConfigurationBuilder cb = new ConfigurationBuilder()
@@ -42,20 +42,21 @@ public class ClipDataListener {
                 .setTweetModeExtended(true)
                 .setIncludeEmailEnabled(true);
         jtwitter = new TwitterFactory(cb.build()).getInstance();
-        Twitter singleton = TwitterFactory.getSingleton();
         try {
             jtwitter.setOAuthConsumer(consumerKey, twitterconsumerSecret);
-            jtwitter.setOAuthAccessToken(new AccessToken(twitteraccesstoken, twitteraccessSecret));
+            Object twitteraccesstoken = Files.readObject("twitteraccesstoken");
+            Object twitteraccessSecret = Files.readObject("twitteraccessSecret");
+            if (!(twitteraccessSecret == null || twitteraccesstoken == null))
+                jtwitter.setOAuthAccessToken(new AccessToken((String) twitteraccesstoken, (String) twitteraccessSecret));
         } catch (Exception e) {
             e.printStackTrace();
 
         }
-        ClipboardManager clipBoard = (ClipboardManager) clip;
         ClipboardManager.OnPrimaryClipChangedListener listener = () -> {
-            getLink(clipBoard);
+            getLink(clip);
         };
-        clipBoard.addPrimaryClipChangedListener(listener);
-        getLink(clipBoard);
+        clip.addPrimaryClipChangedListener(listener);
+        getLink(clip);
 
     }
 
@@ -84,12 +85,14 @@ public class ClipDataListener {
         Needle.onBackgroundThread().execute(() -> {
                     try {
                         String split1 = getID(url);
-                        Status status = jtwitter.showStatus(Long.parseLong(split1));
-                        List<MediaEntity> mediaEntities = Arrays.asList(status.getMediaEntities());
-                        if (!mediaEntities.isEmpty()) {
-                            entites(mediaEntities);
-                        }
+                        if (jtwitter.getOAuthAccessToken() != null) {
 
+                            Status status = jtwitter.showStatus(Long.parseLong(split1));
+                            List<MediaEntity> mediaEntities = Arrays.asList(status.getMediaEntities());
+                            if (!mediaEntities.isEmpty()) {
+                                entites(mediaEntities);
+                            }
+                        }
                     } catch (TwitterException | IOException e) {
                         e.printStackTrace();
                     }
