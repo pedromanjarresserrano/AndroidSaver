@@ -25,8 +25,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".tumblr.PostActivity" />
+        <activity android:name=".tumblr.TumblrActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
         <receiver
             android:name=".services.BootCompleteReceiver"
             android:enabled="true"
@@ -40,16 +47,6 @@
             android:name=".services.SaverService"
             android:enabled="true"
             android:exported="false" />
-
-        <activity android:name=".tumblr.TumblrActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity>
 
         <provider
             android:name=".provider.GenericFileProvider"

@@ -27,7 +27,6 @@ import com.liulishuo.okdownload.core.listener.assist.Listener4SpeedAssistExtend;
 import com.service.saver.saverservice.BuildConfig;
 import com.service.saver.saverservice.MyApp;
 import com.service.saver.saverservice.R;
-import com.service.saver.saverservice.tumblr.model.PostModel;
 import com.service.saver.saverservice.util.Files;
 
 import java.io.File;
@@ -171,7 +170,7 @@ public class SaverService extends IntentService {
                     String link = listlinks.get(0);
                     try {
                         String[] split = link.split("/");
-                        String[] namelink = link.split(PostModel.NAMESPACE);
+                        String[] namelink = link.split(":NAME:");
                         serialQueue.enqueue(new DownloadTask.Builder((namelink.length > 1 ? namelink[1] : link), Files.getRunningDirByFile())
                                 .setFilename((namelink.length > 1 ? namelink[0] : split[split.length - 1]))
                                 .setPassIfAlreadyCompleted(true)

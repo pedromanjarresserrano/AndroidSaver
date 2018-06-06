@@ -79,15 +79,15 @@ public class Files {
     }
 
     public static File getRunningDirByFile() {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "TweetSaverService");
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "SaverService");
     }
 
     public static File getRunningDirByFile(String s) {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "TweetSaverService/" + s);
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "SaverService/" + s);
     }
 
     public static File getCacheDirByFile() {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "TweetSaverService/cache");
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "SaverService/cache");
     }
 
     public static List<File> getfiles(File dir) {

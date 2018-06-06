@@ -3,11 +3,8 @@ package com.service.saver.saverservice.util;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.widget.Toast;
 
-import com.service.saver.saverservice.MainTabActivity;
 import com.service.saver.saverservice.MyApp;
-import com.shashank.sony.fancytoastlib.FancyToast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,10 +24,10 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class ClipDataListener {
 
-    static String twitteraccesstoken = "";//"733406466-r8gIEfFqO0T37LPynGFGtrmtx08MplWlEvc0xpZT";
-    static String twitteraccessSecret = "";//"8Uhza0HW7QIGGJMepr6H5RS1CNgeYrZXGld4znKkUuE9N";
-    static String consumerKey = "RjUwa94ScJf6qybLuPzq74yPx";
-    static String twitterconsumerSecret = "SjTPZsGa2m5KEuhupwbjh1QUCuxCqTatKUVhG8YHxGqy9oeTTV";
+    public static String twitteraccesstoken = "";//"733406466-r8gIEfFqO0T37LPynGFGtrmtx08MplWlEvc0xpZT";
+    public static String twitteraccessSecret = "";//"8Uhza0HW7QIGGJMepr6H5RS1CNgeYrZXGld4znKkUuE9N";
+    public static String consumerKey = "RjUwa94ScJf6qybLuPzq74yPx";
+    public static String twitterconsumerSecret = "SjTPZsGa2m5KEuhupwbjh1QUCuxCqTatKUVhG8YHxGqy9oeTTV";
     private List<String> listlinks = new ArrayList<>();
     public static Twitter jtwitter;
 
@@ -66,7 +63,7 @@ public class ClipDataListener {
             ClipData.Item item = clipData.getItemAt(0);
             String text = item.getText().toString();
             if (text.contains("//twitter.com/") && text.contains("status")) {
-                FancyToast.makeText(MainTabActivity.activity, "Link received", Toast.LENGTH_SHORT, FancyToast.INFO, true);
+                //FancyToast.makeText(MainTabActivity.clipBoard, "Link received", Toast.LENGTH_SHORT, FancyToast.INFO, true);
                 if (!checkOnList(listlinks, text)) {
                     saveTweet(text);
                 }
