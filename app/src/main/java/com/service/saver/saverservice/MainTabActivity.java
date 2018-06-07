@@ -48,7 +48,7 @@ public class MainTabActivity extends AppCompatActivity {
         mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
-
+        new android.app.AlertDialog.Builder(this).setTitle("Error").setMessage("").setNeutralButton("Ok",null).show();
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

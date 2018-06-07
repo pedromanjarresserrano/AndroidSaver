@@ -57,6 +57,13 @@ public class ClipDataListener {
 
     }
 
+    public static void setTokens(String twitteraccesstoken, String twitteraccessSecret) {
+        Files.savefile("twitteraccesstoken",twitteraccesstoken);
+        Files.savefile("twitteraccessSecret",twitteraccessSecret);
+        jtwitter.setOAuthAccessToken(new AccessToken((String) twitteraccesstoken, (String) twitteraccessSecret));
+
+    }
+
     private void getLink(ClipboardManager clipBoard) {
         ClipData clipData = clipBoard.getPrimaryClip();
         if (clipData != null) {

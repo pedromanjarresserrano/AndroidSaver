@@ -1,52 +1,35 @@
 package com.service.saver.saverservice.folder
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import com.service.saver.saverservice.R
 import com.service.saver.saverservice.folder.model.FileModel
 import com.service.saver.saverservice.util.Files
+import kotlinx.android.synthetic.main.fragment_filemodel_list.view.*
 import java.io.File
-import java.util.Comparator
-import kotlin.collections.ArrayList
+import java.util.Comparator.comparingLong
 
-/**
- * A fragment representing a list of Items.
- * Activities containing this fragment MUST implement the
- * [FileModelFragment.OnListFragmentInteractionListener] interface.
- */
+
 class FileModelFragment : Fragment() {
 
-    // TODO: Customize parameters
-    private var columnCount = 1
     private var FILE_MODEL_LIST = ArrayList<FileModel>();
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_filemodel_list, container, false)
         setHasOptionsMenu(true)
-        // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
-                adapter = MyFileModelRecyclerViewAdapter(FILE_MODEL_LIST)
-            }
+        with(view.list) {
+            GridLayoutManager(context, when {
+                activity!!.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> 3
+                else -> 5
+            })
+            adapter = MyFileModelRecyclerViewAdapter(FILE_MODEL_LIST)
         }
+
         return view
     }
 
@@ -67,7 +50,7 @@ class FileModelFragment : Fragment() {
 
     private fun loadFiles() {
         val fileList = Files.getfiles(Files.getRunningDirByFile())
-        fileList.sortWith(Comparator.comparingLong<File>({ it.lastModified() }).reversed())
+        fileList.sortWith(comparingLong<File>({ it.lastModified() }).reversed())
         if (fileList.size > FILE_MODEL_LIST.size) {
             for (f in fileList) {
                 val fileModel = FileModel(FILE_MODEL_LIST.size + 0L, f.name, f.absolutePath)
@@ -84,16 +67,13 @@ class FileModelFragment : Fragment() {
 
     companion object {
 
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
 
-        // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(columnCount: Int) =
-                FileModelFragment().apply {
-                    arguments = Bundle().apply {
-                        putInt(ARG_COLUMN_COUNT, columnCount)
-                    }
-                }
+        fun newInstance(): FileModelFragment {
+            val fragment = FileModelFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

@@ -13,8 +13,11 @@ import com.service.saver.saverservice.util.ClipDataListener
 import com.tumblr.loglr.Interfaces.LoginListener
 import com.tumblr.loglr.LoginResult
 import com.tumblr.loglr.Loglr
+import com.twitter.sdk.android.core.Callback
+import com.twitter.sdk.android.core.Result
+import com.twitter.sdk.android.core.TwitterException
+import com.twitter.sdk.android.core.TwitterSession
 import kotlinx.android.synthetic.main.fragment_common.view.*
-import twitter4j.auth.AccessToken
 
 
 /**
@@ -29,11 +32,13 @@ class CommonFragment : Fragment() {
     var client = TumblrClient()
     var loggedtwiiter = false
     var loggedtumblr = false
+    val TWITTER_CALLBACK_URL = "oauth://t4jsample"
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_common, container, false)
 
-        if (!(TumblrClient.TOKEN_SECRET!!.isEmpty() && TumblrClient.TOKEN_KEY!!.isEmpty())) {
+        if (TumblrClient.isAuthenticate()) {
             loggedtumblr == true
             view.btn_tumblr.setText("Logged in Tumblr")
         }
@@ -44,7 +49,7 @@ class CommonFragment : Fragment() {
         }
 
         view.btn_tumblr.setOnClickListener({
-            if ((TumblrClient.TOKEN_SECRET!!.isEmpty() && TumblrClient.TOKEN_KEY!!.isEmpty())) {
+            if (!TumblrClient.isAuthenticate()) {
 
                 Loglr
                         .setConsumerKey(TumblrClient.CONSUMER_KEY!!)!!
@@ -62,13 +67,15 @@ class CommonFragment : Fragment() {
                         })!!.initiate(activity!!)
             }
         })
-        view.btn_twitter.setOnClickListener({
-            if ((ClipDataListener.twitteraccesstoken!!.isEmpty() && ClipDataListener.twitteraccessSecret!!.isEmpty())) {
-
-                val oAuthRequestToken = ClipDataListener.jtwitter.getOAuthRequestToken("https://twitter.com/")
-                ClipDataListener.jtwitter.oAuthAccessToken = AccessToken(oAuthRequestToken.token, oAuthRequestToken.tokenSecret)
+        view.btn_twitter.callback = object : Callback<TwitterSession>() {
+            override fun success(result: Result<TwitterSession>) {
+                ClipDataListener.setTokens(result.data.authToken.token, result.data.authToken.secret)
             }
-        })
+
+            override fun failure(exception: TwitterException) {
+                android.app.AlertDialog.Builder(activity).setTitle("Error").setMessage(exception.message).setNeutralButton("Ok", null).show()
+            }
+        }
         val service = Intent(activity, SaverService::class.java)
         view.service_switch.setOnCheckedChangeListener({ _, b: Boolean ->
             if (b)

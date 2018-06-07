@@ -232,12 +232,9 @@ class TumblrClient {
             return list
         }
 
-        fun TOKEN_KEY(TOKEN_KEY: String) {
-            this.TOKEN_KEY = TOKEN_KEY;
+        fun isAuthenticate(): Boolean {
+            return !(TOKEN_KEY.isNullOrEmpty() || TOKEN_SECRET.isNullOrEmpty());
         }
 
-        fun TOKEN_SECRET(TOKEN_SECRET: String) {
-            this.TOKEN_SECRET = TOKEN_SECRET;
-        }
     }
 }
