@@ -20,6 +20,8 @@ import com.twitter.sdk.android.core.TwitterSession
 import kotlinx.android.synthetic.main.fragment_common.view.*
 
 
+
+
 /**
  * A fragment with a Google +1 button.
  * Activities that contain this fragment must implement the

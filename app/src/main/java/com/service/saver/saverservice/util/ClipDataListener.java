@@ -58,8 +58,8 @@ public class ClipDataListener {
     }
 
     public static void setTokens(String twitteraccesstoken, String twitteraccessSecret) {
-        Files.savefile("twitteraccesstoken",twitteraccesstoken);
-        Files.savefile("twitteraccessSecret",twitteraccessSecret);
+        Files.savefile("twitteraccesstoken", twitteraccesstoken);
+        Files.savefile("twitteraccessSecret", twitteraccessSecret);
         jtwitter.setOAuthAccessToken(new AccessToken((String) twitteraccesstoken, (String) twitteraccessSecret));
 
     }
@@ -89,14 +89,15 @@ public class ClipDataListener {
         Needle.onBackgroundThread().execute(() -> {
                     try {
                         String split1 = getID(url);
-                        if (jtwitter.getOAuthAccessToken() != null) {
+                        if (twitteraccesstoken != null && !twitteraccesstoken.isEmpty())
+                            if (jtwitter.getOAuthAccessToken() != null) {
 
-                            Status status = jtwitter.showStatus(Long.parseLong(split1));
-                            List<MediaEntity> mediaEntities = Arrays.asList(status.getMediaEntities());
-                            if (!mediaEntities.isEmpty()) {
-                                entites(mediaEntities);
+                                Status status = jtwitter.showStatus(Long.parseLong(split1));
+                                List<MediaEntity> mediaEntities = Arrays.asList(status.getMediaEntities());
+                                if (!mediaEntities.isEmpty()) {
+                                    entites(mediaEntities);
+                                }
                             }
-                        }
                     } catch (TwitterException | IOException e) {
                         e.printStackTrace();
                     }

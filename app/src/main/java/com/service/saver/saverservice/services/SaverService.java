@@ -57,7 +57,7 @@ public class SaverService extends IntentService {
         final DownloadContext.QueueSet set = new DownloadContext.QueueSet();
         set.setParentPathFile(Files.getRunningDirByFile());
         set.setMinIntervalMillisCallbackProcess(200);
-        final DownloadContext.Builder builder = set.commit();
+        set.commit();
         serialQueue = new DownloadSerialQueue(getListener());
 
     }
@@ -212,38 +212,6 @@ public class SaverService extends IntentService {
 
 
     }
-/*
-    private int getDownloadRequest(String link, String dirPath, String fileName) {
-        DownloadRequest build = PRDownloader.download(link, dirPath, fileName)
-                .setPriority(Priority.HIGH)
-                .build();
-        int downloadId = build.getDownloadId();
-
-        return build
-                .setOnProgressListener(new OnProgressListener() {
-                    @Override
-                    public void onProgress(Progress progress) {
-
-                    }
-                })
-                .start(new OnDownloadListener() {
-                    @Override
-                    public void onDownloadComplete() {
-
-                    }
-
-                    @Override
-                    public void onError(Error error) {
-                        mBuilder.setContentTitle("Download")
-                                .setContentText("Downloading error - " + (error.isConnectionError() ? "Conexion error" : "Server Error"))
-                                .setSmallIcon(R.drawable.androidicon)
-                                .setProgress(0, 0, false);
-                        mNotifyManager.notify(downloadId, mBuilder.build());
-                        MyApp.add(link);
-                    }
-                });
-
-    }*/
 
     private void removeSafe(String string) {
         listlinks.remove(string);

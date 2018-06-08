@@ -13,9 +13,14 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
-import com.service.saver.saverservice.folder.FolderFragment;
+import com.service.saver.saverservice.folder.FileModelFragment;
 import com.service.saver.saverservice.util.ClipDataListener;
+import com.twitter.sdk.android.core.DefaultLogger;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +43,7 @@ public class MainTabActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mSectionsPagerAdapter.addFrag(CommonFragment.Companion.newInstance(), "Home");
-        mSectionsPagerAdapter.addFrag(new FolderFragment(), "Folder");
+        mSectionsPagerAdapter.addFrag(new FileModelFragment(), "Folder");
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(mSectionsPagerAdapter.getCount());
@@ -46,9 +51,13 @@ public class MainTabActivity extends AppCompatActivity {
 
         tabLayout.setupWithViewPager(mViewPager);
         mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-
+        TwitterConfig config = new TwitterConfig.Builder(this)
+                .logger(new DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(new TwitterAuthConfig(ClipDataListener.consumerKey, ClipDataListener.twitterconsumerSecret))
+                .debug(true)
+                .build();
+        Twitter.initialize(config);
         new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
-        new android.app.AlertDialog.Builder(this).setTitle("Error").setMessage("").setNeutralButton("Ok",null).show();
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
