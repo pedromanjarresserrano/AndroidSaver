@@ -1,5 +1,6 @@
 package com.service.saver.saverservice.tumblr.util
 
+import com.service.saver.saverservice.tumblr.TumblrActivity.Companion.client
 import com.service.saver.saverservice.util.Files
 import com.tumblr.jumblr.JumblrClient
 import com.tumblr.jumblr.request.RequestBuilder
@@ -225,7 +226,6 @@ class TumblrClient {
                 val doc = Jsoup.parse(video.embedCode)
                 val elements = doc.select("source")
                 val src = elements.attr("src")
-                val vid = doc.select("video")
                 if (!src.isEmpty())
                     list.add(aux.blogName + " - " + aux.id + ".mp4" + ":NAME:" + src)
             }
@@ -233,7 +233,17 @@ class TumblrClient {
         }
 
         fun isAuthenticate(): Boolean {
-            return !(TOKEN_KEY.isNullOrEmpty() || TOKEN_SECRET.isNullOrEmpty());
+            var TOKEN_KEY = Files.readObject("tumblraccesstoken")
+            var TOKEN_SECRET = Files.readObject("tumblraccessSecret")
+            if (!(TOKEN_KEY == null || TOKEN_SECRET == null)) {
+                val token_secret = TOKEN_SECRET as String
+                val token_key = TOKEN_KEY as String
+                client.setToken(token_key, token_secret)
+                TumblrClient.TOKEN_KEY = token_key
+                TumblrClient.TOKEN_SECRET = token_secret
+                return true
+            } else
+                return false
         }
 
     }

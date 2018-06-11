@@ -26,8 +26,8 @@ public class ClipDataListener {
 
     public static String twitteraccesstoken = "";//"733406466-r8gIEfFqO0T37LPynGFGtrmtx08MplWlEvc0xpZT";
     public static String twitteraccessSecret = "";//"8Uhza0HW7QIGGJMepr6H5RS1CNgeYrZXGld4znKkUuE9N";
-    public static String consumerKey = "RjUwa94ScJf6qybLuPzq74yPx";
-    public static String twitterconsumerSecret = "SjTPZsGa2m5KEuhupwbjh1QUCuxCqTatKUVhG8YHxGqy9oeTTV";
+    public static String consumerKey = "kcj3ehA8TNqzdaTaCGVdIHBQt";
+    public static String twitterconsumerSecret = "ZrKtiohW60UO83DEeRw2ftqshcAq1aXzbxlYJCOMgbPZNuIa34";
     private List<String> listlinks = new ArrayList<>();
     public static Twitter jtwitter;
 
@@ -39,8 +39,9 @@ public class ClipDataListener {
                 .setTweetModeExtended(true)
                 .setIncludeEmailEnabled(true);
         jtwitter = new TwitterFactory(cb.build()).getInstance();
+        jtwitter.setOAuthConsumer(consumerKey, twitterconsumerSecret);
+
         try {
-            jtwitter.setOAuthConsumer(consumerKey, twitterconsumerSecret);
             Object twitteraccesstoken = Files.readObject("twitteraccesstoken");
             Object twitteraccessSecret = Files.readObject("twitteraccessSecret");
             if (!(twitteraccessSecret == null || twitteraccesstoken == null))
@@ -60,6 +61,8 @@ public class ClipDataListener {
     public static void setTokens(String twitteraccesstoken, String twitteraccessSecret) {
         Files.savefile("twitteraccesstoken", twitteraccesstoken);
         Files.savefile("twitteraccessSecret", twitteraccessSecret);
+        ClipDataListener.twitteraccesstoken = twitteraccesstoken;
+        ClipDataListener.twitteraccessSecret = twitteraccessSecret;
         jtwitter.setOAuthAccessToken(new AccessToken((String) twitteraccesstoken, (String) twitteraccessSecret));
 
     }
@@ -89,7 +92,6 @@ public class ClipDataListener {
         Needle.onBackgroundThread().execute(() -> {
                     try {
                         String split1 = getID(url);
-                        if (twitteraccesstoken != null && !twitteraccesstoken.isEmpty())
                             if (jtwitter.getOAuthAccessToken() != null) {
 
                                 Status status = jtwitter.showStatus(Long.parseLong(split1));
@@ -110,7 +112,8 @@ public class ClipDataListener {
         mediaEntities.sort((Comparator.comparingInt(MediaEntity::getVideoAspectRatioHeight)));
         MediaEntity mediaEntity = mediaEntities.get(0);
         if (mediaEntity.getType().equalsIgnoreCase("photo"))
-            MyApp.add(mediaEntity.getMediaURL());
+
+            mediaEntities.stream().map(MediaEntity::getMediaURL).forEach(MyApp::add);
         else {
             List<MediaEntity.Variant> videoVariants = Arrays.asList(mediaEntity.getVideoVariants());
             Collections.sort(videoVariants, Comparator.comparingInt(MediaEntity.Variant::getBitrate));

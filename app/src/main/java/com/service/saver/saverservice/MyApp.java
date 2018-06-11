@@ -22,7 +22,6 @@ public class MyApp extends Application {
         if (list != null) {
             files.addAll(list);
         }
-
     }
 
     public static List<String> getFiles() {

@@ -15,7 +15,6 @@ class TumblrActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tumblr)
-        val extras = intent.extras
         try {
             val text = intent.extras!!.get(Intent.EXTRA_TEXT) as String
             if (text.contains("tumblr")) {

@@ -1,11 +1,13 @@
 package com.service.saver.saverservice
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.service.saver.saverservice.services.SaverService
 import com.service.saver.saverservice.tumblr.TumblrActivity
 import com.service.saver.saverservice.tumblr.util.TumblrClient
@@ -13,13 +15,9 @@ import com.service.saver.saverservice.util.ClipDataListener
 import com.tumblr.loglr.Interfaces.LoginListener
 import com.tumblr.loglr.LoginResult
 import com.tumblr.loglr.Loglr
-import com.twitter.sdk.android.core.Callback
-import com.twitter.sdk.android.core.Result
-import com.twitter.sdk.android.core.TwitterException
-import com.twitter.sdk.android.core.TwitterSession
 import kotlinx.android.synthetic.main.fragment_common.view.*
-
-
+import needle.Needle
+import twitter4j.auth.RequestToken
 
 
 /**
@@ -31,14 +29,15 @@ import kotlinx.android.synthetic.main.fragment_common.view.*
  * create an instance of this fragment.
  */
 class CommonFragment : Fragment() {
-    var client = TumblrClient()
     var loggedtwiiter = false
     var loggedtumblr = false
-    val TWITTER_CALLBACK_URL = "oauth://t4jsample"
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+
         val view = inflater.inflate(R.layout.fragment_common, container, false)
+
 
         if (TumblrClient.isAuthenticate()) {
             loggedtumblr == true
@@ -69,15 +68,32 @@ class CommonFragment : Fragment() {
                         })!!.initiate(activity!!)
             }
         })
-        view.btn_twitter.callback = object : Callback<TwitterSession>() {
-            override fun success(result: Result<TwitterSession>) {
-                ClipDataListener.setTokens(result.data.authToken.token, result.data.authToken.secret)
-            }
-
-            override fun failure(exception: TwitterException) {
-                android.app.AlertDialog.Builder(activity).setTitle("Error").setMessage(exception.message).setNeutralButton("Ok", null).show()
-            }
+        val oAuthRequestToken: RequestToken? = null
+        try {
+            val oAuthRequestToken = ClipDataListener.jtwitter.getOAuthRequestToken() as RequestToken
+        } catch (e: Exception) {
         }
+        view.btn_twitter.setOnClickListener({
+            val redirectURL = oAuthRequestToken!!.getAuthenticationURL()
+            val i = Intent(Intent.ACTION_VIEW)
+            i.data = Uri.parse(redirectURL)
+            activity!!.startActivity(i)
+
+        })
+
+        view.btn_load_pin.setOnClickListener({
+            val text = view.txt_twitter_pin.editableText.toString()
+            if (!text.trim({ it <= ' ' }).isEmpty()) {
+                Needle.onBackgroundThread().execute({
+                    val replace = text.replace("\n", "")
+                    val jtwitter = ClipDataListener.jtwitter
+                    val accessToken = jtwitter.getOAuthAccessToken(oAuthRequestToken, replace)
+                    ClipDataListener.setTokens(accessToken.token, accessToken.tokenSecret)
+                })
+            } else {
+                Toast.makeText(activity, "Enter twitter PIN!", Toast.LENGTH_LONG).show()
+            }
+        })
         val service = Intent(activity, SaverService::class.java)
         view.service_switch.setOnCheckedChangeListener({ _, b: Boolean ->
             if (b)
@@ -89,14 +105,17 @@ class CommonFragment : Fragment() {
         return view
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+
+    }
+
 
     companion object {
 
         fun newInstance(): CommonFragment {
-            val fragment = CommonFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
+            return CommonFragment()
         }
     }
 
