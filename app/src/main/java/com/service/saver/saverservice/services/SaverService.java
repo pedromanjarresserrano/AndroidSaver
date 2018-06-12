@@ -81,7 +81,7 @@ public class SaverService extends IntentService {
                         .setContentText("Downloading " + task.getFilename())
                         .setSubText(taskSpeed.getSpeedWithBinaryAndFlush())
                         //  .setSubText((progress.currentBytes * 100) / progress.totalBytes + " % ")
-                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setSmallIcon(R.drawable.ic_cloud_download)
                         .setProgress(100, 100, true);
                 mNotifyManager.notify(task.getId(), mBuilder.build());
             }
@@ -96,7 +96,7 @@ public class SaverService extends IntentService {
                 mBuilder.setContentTitle("Download")
                         .setContentText("Downloaded " + task.getFilename())
                         .setSubText("")
-                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setSmallIcon(R.drawable.ic_cloud_download)
                         .setProgress(100, 100, false);
                 mNotifyManager.notify(task.getId(), mBuilder.build());
             }
@@ -147,8 +147,7 @@ public class SaverService extends IntentService {
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 mBuilder.setContentTitle("Download")
                         .setContentText("Downloaded " + task.getFilename())
-                        .setSubText("")
-                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setSmallIcon(R.drawable.ic_cloud_download)
                         .setProgress(100, 100, false)
                         .setContentIntent(PendingIntent.getActivity(getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
 
