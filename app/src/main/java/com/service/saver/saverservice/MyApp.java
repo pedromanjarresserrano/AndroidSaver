@@ -14,6 +14,7 @@ public class MyApp extends Application {
 
     private static List<String> files = new ArrayList<>();
 
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -22,6 +23,7 @@ public class MyApp extends Application {
         if (list != null) {
             files.addAll(list);
         }
+
     }
 
     public static List<String> getFiles() {

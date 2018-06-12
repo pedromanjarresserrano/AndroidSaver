@@ -1,7 +1,7 @@
 package com.service.saver.saverservice.tumblr.util
 
-import com.service.saver.saverservice.tumblr.TumblrActivity.Companion.client
-import com.service.saver.saverservice.util.Files
+import android.content.Context
+import android.content.SharedPreferences
 import com.tumblr.jumblr.JumblrClient
 import com.tumblr.jumblr.request.RequestBuilder
 import com.tumblr.jumblr.types.*
@@ -11,6 +11,9 @@ import java.io.IOException
 import java.util.*
 
 class TumblrClient {
+
+    private var settings: SharedPreferences? = null
+    private var context: Context? = null
     internal var client = JumblrClient(
             CONSUMER_KEY,
             CONSUMER_SECRET
@@ -22,26 +25,37 @@ class TumblrClient {
             client.requestBuilder = builder
         }
 
+    constructor(context: Context?) {
+        this.context = context
+    }
+
+
     init {
         /*
         client.setToken(
                 TOKEN_KEY,
                 TOKEN_SECRET
         );*/
-        var TOKEN_KEY = Files.readObject("tumblraccesstoken")
-        var TOKEN_SECRET = Files.readObject("tumblraccessSecret")
-        if (!(TOKEN_KEY == null || TOKEN_SECRET == null)) {
-            val token_secret = TOKEN_SECRET as String
-            val token_key = TOKEN_KEY as String
-            client.setToken(token_key, token_secret)
-            TumblrClient.TOKEN_KEY = token_key
-            TumblrClient.TOKEN_SECRET = token_secret
+        if (context != null) {
+            settings = context!!.getSharedPreferences("settings", 0)
+
+            var TOKEN_KEY = settings!!.getString("tumblraccesstoken", "")
+            var TOKEN_SECRET = settings!!.getString("tumblraccessSecret", "")
+            if (!(TOKEN_KEY == null || TOKEN_SECRET == null)) {
+                val token_secret = TOKEN_SECRET as String
+                val token_key = TOKEN_KEY as String
+                client.setToken(token_key, token_secret)
+                TumblrClient.TOKEN_KEY = token_key
+                TumblrClient.TOKEN_SECRET = token_secret
+            }
         }
     }
 
     fun setToken(token: String, tokenSecret: String) {
-        Files.savefile("tumblraccesstoken", token)
-        Files.savefile("tumblraccessSecret", tokenSecret)
+        settings = context!!.getSharedPreferences("settings", 0)
+        val edit = settings!!.edit()
+        edit.putString("tumblraccesstoken", token).commit()
+        edit.putString("tumblraccessSecret", tokenSecret).commit()
         TumblrClient.TOKEN_KEY = token
         TumblrClient.TOKEN_SECRET = tokenSecret
 
@@ -199,10 +213,20 @@ class TumblrClient {
         return client.newPost(blogName, klass)
     }
 
-    companion object {
-        var TOKEN_KEY: String? = "" //"uxdOglGfxNpMlRjuwcNOQ6fTQC9egcnC9nDaEkYJvYRopRArET";
+    fun isAuthenticate(): Boolean {
+        if (!(TOKEN_KEY.isNullOrEmpty() || TOKEN_SECRET.isNullOrEmpty())) {
+            val token_secret = TOKEN_SECRET as String
+            val token_key = TOKEN_KEY as String
+            setToken(token_key, token_secret)
+            return true
+        } else
+            return false
+    }
 
-        var TOKEN_SECRET: String? = ""// "HNxH7lIXDUtJ9SN0M5Djg3B1D2s5Vf6jxAhZTPUg7KAZ70eoz6";
+    companion object {
+        var TOKEN_KEY: String? = ""
+
+        var TOKEN_SECRET: String? = ""
 
         val CONSUMER_KEY: String? = "oiK8MFj4VQX52JEvfyKWi0CvdoZyYATq4SjnRj9fXkMV8T4X1g"
         val CONSUMER_SECRET: String? = "c72SlqTby5ejAMizhv0Pj6IYenCxGBZ2oF5UU6NymOiFPs5dYo"
@@ -232,19 +256,6 @@ class TumblrClient {
             return list
         }
 
-        fun isAuthenticate(): Boolean {
-            var TOKEN_KEY = Files.readObject("tumblraccesstoken")
-            var TOKEN_SECRET = Files.readObject("tumblraccessSecret")
-            if (!(TOKEN_KEY == null || TOKEN_SECRET == null)) {
-                val token_secret = TOKEN_SECRET as String
-                val token_key = TOKEN_KEY as String
-                client.setToken(token_key, token_secret)
-                TumblrClient.TOKEN_KEY = token_key
-                TumblrClient.TOKEN_SECRET = token_secret
-                return true
-            } else
-                return false
-        }
 
     }
 }

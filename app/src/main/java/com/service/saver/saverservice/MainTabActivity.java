@@ -1,8 +1,6 @@
 package com.service.saver.saverservice;
 
-import android.app.NotificationManager;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
@@ -10,12 +8,14 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.service.saver.saverservice.folder.FileModelFragment;
+import com.service.saver.saverservice.tumblr.util.TumblrClient;
+import com.service.saver.saverservice.twitter.TwitterClient;
 import com.service.saver.saverservice.util.ClipDataListener;
 
 import java.util.ArrayList;
@@ -24,15 +24,17 @@ import java.util.List;
 public class MainTabActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private NotificationManager mNotifyManager;
-    private NotificationCompat.Builder mBuilder;
 
     private ViewPager mViewPager;
+    public static TumblrClient client;
+    public static TwitterClient jtwitter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
+        client = new TumblrClient(this);
+        jtwitter = new TwitterClient(this);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -47,8 +49,10 @@ public class MainTabActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabs);
 
         tabLayout.setupWithViewPager(mViewPager);
-        mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
+        ClipDataListener clipDataListener = new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
+        clipDataListener.onValidLinkCapture(() -> {
+            Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
+        });
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
