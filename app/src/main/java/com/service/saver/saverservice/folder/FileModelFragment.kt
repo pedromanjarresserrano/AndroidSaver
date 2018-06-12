@@ -63,6 +63,7 @@ class FileModelFragment : Fragment() {
         val fileList = Files.getfiles(Files.getRunningDirByFile())
         fileList.sortWith(comparingLong<File>({ it.lastModified() }).reversed())
         if (fileList.size > FILE_MODEL_LIST.size) {
+            FILE_MODEL_LIST.clear()
             for (f in fileList) {
                 val fileModel = FileModel(FILE_MODEL_LIST.size + 0L, f.name, f.absolutePath)
                 FILE_MODEL_LIST.add(fileModel)
