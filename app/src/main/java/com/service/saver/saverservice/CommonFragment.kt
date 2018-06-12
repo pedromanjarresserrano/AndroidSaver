@@ -15,7 +15,6 @@ import com.service.saver.saverservice.MainTabActivity.client
 import com.service.saver.saverservice.MainTabActivity.jtwitter
 import com.service.saver.saverservice.services.SaverService
 import com.service.saver.saverservice.tumblr.util.TumblrClient
-import com.service.saver.saverservice.twitter.TwitterClient
 import com.tumblr.loglr.Interfaces.LoginListener
 import com.tumblr.loglr.LoginResult
 import com.tumblr.loglr.Loglr
@@ -43,10 +42,7 @@ class CommonFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         settings = context!!.getSharedPreferences("settings", 0)
-        if (client == null)
-            client = TumblrClient(activity)
-        if (jtwitter == null)
-            jtwitter = TwitterClient(activity)
+
         val view = inflater.inflate(R.layout.fragment_common, container, false)
 
         view.btn_tumblr.setOnClickListener({
@@ -70,8 +66,7 @@ class CommonFragment : Fragment() {
         })
         var oAuthRequestToken: RequestToken? = null
         try {
-
-            oAuthRequestToken = jtwitter.getOAuthRequestToken()as RequestToken
+            oAuthRequestToken = jtwitter.getOAuthRequestToken()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -81,6 +76,9 @@ class CommonFragment : Fragment() {
                 val i = Intent(Intent.ACTION_VIEW)
                 i.data = Uri.parse(redirectURL)
                 activity!!.startActivity(i)
+            }else{
+                Toast.makeText(activity, "Already logged in Twitter", Toast.LENGTH_LONG).show()
+
             }
         })
 
@@ -143,21 +141,8 @@ class CommonFragment : Fragment() {
                 })).setNegativeButton("Cancel", { _, _ -> }).show()
             })
         }
-        view.btn_twitter.setOnLongClickListener({
-            AlertDialog.Builder(activity!!).setMessage("Logout Twitter?").setPositiveButton("Logout", DialogInterface.OnClickListener({ _, _ ->
-                loggedtwiiter == false
-                view.btn_twitter.setText("Login Twitter")
 
-            })).setNegativeButton("Cancel", { _, _ -> }).show()
-            true
-        })
         return view
-    }
-
-    override fun onStart() {
-        super.onStart()
-        var view = view!!
-
     }
 
     companion object {

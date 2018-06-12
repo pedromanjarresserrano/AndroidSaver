@@ -23,4 +23,9 @@
     <color name="back_tumblr">#505967</color>
     <color name="twitter_color">#00aced</color>
     <color name="tumblr_color">#35465c</color>
+    <color name="tumblr_color_light">#5c799f</color>
+
+    <color name="twitter_color_light">#FF459ECF</color>
+
+
 </resources>

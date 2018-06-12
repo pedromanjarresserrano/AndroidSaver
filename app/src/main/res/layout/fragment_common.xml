@@ -25,12 +25,13 @@
         <Button
             android:id="@+id/btn_tumblr"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:background="@color/tumblr_color"
+            android:background="@drawable/button_round_tumblr"
+            android:drawableLeft="@mipmap/ic_tumblr_icon"
             android:padding="8dp"
             android:text="Login Tumblr"
             android:textColor="@android:color/background_light"
@@ -43,11 +44,14 @@
         <Button
             android:id="@+id/btn_twitter"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:background="@drawable/button_round_twitter"
+            android:drawableLeft="@mipmap/ic_twitter_icon"
             android:padding="8dp"
             android:text="Get Pin Twitter"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="206dp" />
@@ -81,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".15"
                 android:background="@android:color/transparent"
-                android:src="@android:drawable/ic_media_play" />
+                android:src="@drawable/ic_fiber_pin" />
 
         </LinearLayout>
 

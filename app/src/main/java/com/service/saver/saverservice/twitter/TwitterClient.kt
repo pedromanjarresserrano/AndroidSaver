@@ -35,7 +35,7 @@ class TwitterClient {
         jtwitter = TwitterFactory(cb.build()).instance
         jtwitter.setOAuthConsumer(consumerKey, twitterconsumerSecret)
         if (context != null) {
-            settings = context!!.getSharedPreferences("settings", 0)
+            settings = context.getSharedPreferences("settings", 0)
             try {
                 val twitteraccesstoken = settings!!.getString("twitteraccesstoken", "")
                 val twitteraccessSecret = settings!!.getString("twitteraccessSecret", "")
