@@ -42,8 +42,7 @@ public class MainTabActivity extends AppCompatActivity {
             client = new TumblrClient(this);
         if (jtwitter == null)
             jtwitter = new TwitterClient(this);
-        client = new TumblrClient(this);
-        jtwitter = new TwitterClient(this);
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -91,7 +90,7 @@ public class MainTabActivity extends AppCompatActivity {
             Drawable drawable = getResources().getDrawable(mFragmentDrawableList.get(position), null);
             SpannableStringBuilder sb = new SpannableStringBuilder("  " + mFragmentTitleList.get(position)); // space added before text for convenience
             try {
-                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+                drawable.setBounds(5, 5, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
                 ImageSpan span = new ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BASELINE);
                 sb.setSpan(span, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             } catch (Exception e) {

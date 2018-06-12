@@ -21,7 +21,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:context=".folder.FileModelFragment"
-        tools:listitem="@layout/fragment_filemodel">
+        >
 
 
     </android.support.v7.widget.RecyclerView>

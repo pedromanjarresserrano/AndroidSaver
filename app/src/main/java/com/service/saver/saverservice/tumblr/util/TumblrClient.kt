@@ -27,21 +27,13 @@ class TumblrClient {
 
     constructor(context: Context?) {
         this.context = context
-    }
 
-
-    init {
-        /*
-        client.setToken(
-                TOKEN_KEY,
-                TOKEN_SECRET
-        );*/
         if (context != null) {
-            settings = context!!.getSharedPreferences("settings", 0)
+            settings = context.getSharedPreferences("settings", 0)
 
             var TOKEN_KEY = settings!!.getString("tumblraccesstoken", "")
             var TOKEN_SECRET = settings!!.getString("tumblraccessSecret", "")
-            if (!(TOKEN_KEY == null || TOKEN_SECRET == null)) {
+            if (!(TOKEN_KEY.isNullOrEmpty() || TOKEN_SECRET.isNullOrEmpty())) {
                 val token_secret = TOKEN_SECRET as String
                 val token_key = TOKEN_KEY as String
                 client.setToken(token_key, token_secret)

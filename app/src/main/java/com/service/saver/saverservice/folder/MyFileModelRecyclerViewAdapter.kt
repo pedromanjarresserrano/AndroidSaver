@@ -8,8 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.service.saver.saverservice.R
+import com.service.saver.saverservice.folder.holder.FileHolder
 import com.service.saver.saverservice.folder.model.FileModel
 import com.service.saver.saverservice.player.PlayerActivity
+import com.service.saver.saverservice.viewer.ViewerActivity
 import kotlinx.android.synthetic.main.file_folder_item.view.*
 import java.io.File
 
@@ -34,9 +36,15 @@ class MyFileModelRecyclerViewAdapter(
         val uri = Uri.fromFile(File(item.filepath))
         holder.draweeView.setImageURI(uri, holder.mView.context)
         holder.mView.setOnClickListener({
-            val intent = Intent(holder.mView.getContext(), PlayerActivity::class.java)
-            intent.putExtra("position", position)
-            holder.mView.getContext().startActivity(intent)
+            if (item.name.endsWith("mp4")) {
+                val intent = Intent(holder.mView.getContext(), PlayerActivity::class.java)
+                intent.putExtra("position", position)
+                holder.mView.getContext().startActivity(intent)
+            } else {
+                val intent = Intent(holder.mView.getContext(), ViewerActivity::class.java)
+                intent.putExtra("filepath", item.filepath)
+                holder.mView.getContext().startActivity(intent)
+            }
         })
     }
 

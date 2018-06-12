@@ -5,18 +5,17 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="2dp"
-    android:background="@android:color/background_dark"
->
+    android:background="@color/black_overlay">
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/preview_file"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_margin="2dp"
-        android:background="@android:color/background_dark"
+        android:background="@color/common_google_signin_btn_text_light_focused"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:color/background_dark" />
+        app:srcCompat="@color/common_google_signin_btn_text_light_default" />
 
     <TextView
         android:id="@+id/nombre_file"
