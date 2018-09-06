@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.*
 import com.service.saver.saverservice.R
 import com.service.saver.saverservice.folder.model.FileModel
@@ -23,9 +24,12 @@ class FileModelFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_filemodel_list, container, false)
         setHasOptionsMenu(true)
         with(view.list) {
-            layoutManager = GridLayoutManager(context, when {
+            layoutManager = StaggeredGridLayoutManager(when {
                 activity!!.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> 3
                 else -> 5
+            },when {
+                activity!!.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> StaggeredGridLayoutManager.VERTICAL
+                else -> StaggeredGridLayoutManager.HORIZONTAL
             })
             addItemDecoration(DividerItemDecoration(activity, layoutManager!!.layoutDirection))
         }
@@ -61,7 +65,8 @@ class FileModelFragment : Fragment() {
 
     private fun loadFiles() {
         val fileList = Files.getfiles(Files.getRunningDirByFile())
-        fileList.sortWith(comparingLong<File>({ it.lastModified() }).reversed())
+        fileList.sortBy { it.lastModified() }
+        fileList.reverse()
         if (fileList.size > FILE_MODEL_LIST.size) {
             FILE_MODEL_LIST.clear()
             for (f in fileList) {

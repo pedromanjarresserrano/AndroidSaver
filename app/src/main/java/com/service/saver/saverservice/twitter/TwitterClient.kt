@@ -2,6 +2,7 @@ package com.service.saver.saverservice.twitter
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import com.service.saver.saverservice.MyApp
 import needle.Needle
 import twitter4j.MediaEntity
@@ -14,7 +15,7 @@ import twitter4j.conf.ConfigurationBuilder
 import java.io.IOException
 import java.util.*
 
-class TwitterClient {
+class  TwitterClient {
 
     var twitteraccesstoken = ""
     var twitteraccessSecret = ""
@@ -85,14 +86,18 @@ class TwitterClient {
 
     @Throws(IOException::class)
     private fun entites(mediaEntities: List<MediaEntity>) {
-        mediaEntities.sortedWith(Comparator.comparingInt<MediaEntity>({ it.getVideoAspectRatioHeight() }))
+        mediaEntities.sortedBy { it.videoAspectRatioHeight }
         val mediaEntity = mediaEntities[0]
         if (mediaEntity.type.equals("photo", ignoreCase = true))
 
-            mediaEntities.stream().map<String>({ it.getMediaURL() }).forEach({ MyApp.add(it) })
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                mediaEntities.stream().map<String>({ it.getMediaURL() }).forEach({ MyApp.add(it) })
+            }else{
+                mediaEntities.let { (e)->{MyApp.add(e.mediaURL)} }
+            }
         else {
             val videoVariants = Arrays.asList(*mediaEntity.videoVariants)
-            Collections.sort(videoVariants, Comparator.comparingInt<MediaEntity.Variant>({ it.getBitrate() }))
+            videoVariants.sortBy {  it.getBitrate() }
             val split = videoVariants[videoVariants.size - 1].url.split("\\?".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             val link = split[0]
             MyApp.add(link)
