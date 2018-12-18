@@ -36,6 +36,12 @@ public class MyApp extends Application {
         return add;
     }
 
+    public static boolean addAll(List<String> s) {
+        boolean add = files.addAll(s);
+        Files.savefile(FILELIST, files);
+        return add;
+    }
+
     public static boolean remove(String o) {
         boolean remove = files.remove(o);
         Files.savefile(FILELIST, files);

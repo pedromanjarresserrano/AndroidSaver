@@ -29,7 +29,7 @@ android {
             universalApk false
         }
     }
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.2'
 }
 
 dependencies {
@@ -38,7 +38,7 @@ dependencies {
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'com.tumblr:jumblr:0.0.11'
+    implementation 'com.tumblr:jumblr:0.0.13'
     implementation 'org.twitter4j:twitter4j-core:4.0.6'
     implementation 'com.zsoltsafrany:needle:1.0.0'
     implementation 'com.facebook.fresco:fresco:1.9.0'

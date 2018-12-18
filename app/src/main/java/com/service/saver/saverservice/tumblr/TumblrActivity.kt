@@ -7,10 +7,8 @@ import com.service.saver.saverservice.MainTabActivity.client
 import com.service.saver.saverservice.MyApp
 import com.service.saver.saverservice.R
 import com.service.saver.saverservice.tumblr.util.TumblrClient
-
 import needle.Needle
 import java.net.URL
-import java.util.function.Consumer
 
 class TumblrActivity : AppCompatActivity() {
 
@@ -31,7 +29,7 @@ class TumblrActivity : AppCompatActivity() {
                     if (!(TumblrClient.TOKEN_SECRET!!.isEmpty() && TumblrClient.TOKEN_KEY!!.isEmpty())) {
                         val post = client!!.blogPost(blog, java.lang.Long.valueOf(id))
                         val urlFile = TumblrClient.getUrlFile(post)
-                        urlFile.forEach(Consumer<String> { MyApp.add(it) })
+                        MyApp.addAll(urlFile)
                     }
                 }
 
