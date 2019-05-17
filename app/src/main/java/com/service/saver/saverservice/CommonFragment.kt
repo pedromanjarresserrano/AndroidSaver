@@ -1,6 +1,5 @@
 package com.service.saver.saverservice
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -14,6 +13,7 @@ import android.widget.Toast
 import com.service.saver.saverservice.MainTabActivity.client
 import com.service.saver.saverservice.MainTabActivity.jtwitter
 import com.service.saver.saverservice.services.SaverService
+import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper
 import com.service.saver.saverservice.tumblr.util.TumblrClient
 import com.tumblr.loglr.Interfaces.LoginListener
 import com.tumblr.loglr.LoginResult
@@ -37,6 +37,7 @@ class CommonFragment : Fragment() {
     var statusservice = false
     private var settings: SharedPreferences? = null
 
+
     private val STATUS_SERVICE_KEY = "statusservice"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -45,11 +46,10 @@ class CommonFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_common, container, false)
 
-        view.btn_tumblr.setOnClickListener({
+        view.btn_tumblr.setOnClickListener {
             if (!client.isAuthenticate()) {
 
-                Loglr
-                        .setConsumerKey(TumblrClient.CONSUMER_KEY!!)!!
+                Loglr.setConsumerKey(TumblrClient.CONSUMER_KEY!!)!!
                         .setConsumerSecretKey(TumblrClient.CONSUMER_SECRET!!)!!
                         .enable2FA(true)!!
                         .setUrlCallBack("https://www.tumblr.com/dashboard")!!
@@ -63,54 +63,54 @@ class CommonFragment : Fragment() {
                             }
                         })!!.initiate(activity!!)
             }
-        })
+        }
         var oAuthRequestToken: RequestToken? = null
         try {
             oAuthRequestToken = jtwitter.getOAuthRequestToken()
         } catch (e: Exception) {
-            e.printStackTrace()
+          //  e.printStackTrace()
         }
-        view.btn_twitter.setOnClickListener({
+        view.btn_twitter.setOnClickListener {
             if (oAuthRequestToken != null) {
                 val redirectURL = oAuthRequestToken!!.getAuthenticationURL()
                 val i = Intent(Intent.ACTION_VIEW)
                 i.data = Uri.parse(redirectURL)
                 activity!!.startActivity(i)
-            }else{
+            } else {
                 Toast.makeText(activity, "Already logged in Twitter", Toast.LENGTH_LONG).show()
 
             }
-        })
+        }
 
-        view.btn_load_pin.setOnClickListener({
+        view.btn_load_pin.setOnClickListener {
             val text = view.txt_twitter_pin.editableText.toString()
             if (!text.trim({ it <= ' ' }).isEmpty()) {
-                Needle.onBackgroundThread().execute({
-                    val replace = text.replace("\n", "")
-                    val accessToken = jtwitter.getOAuthAccessToken(oAuthRequestToken, replace)
-                    jtwitter.setTokens(accessToken!!.token, accessToken.tokenSecret)
-                    loggedtumblr == true
-                    view.btn_tumblr.setText("Logged in Tumblr")
-                    view.btn_tumblr.setOnClickListener({
-                        AlertDialog.Builder(activity!!).setMessage("Logout Tumblr?").setPositiveButton("Logout", DialogInterface.OnClickListener({ _, _ ->
-                            client!!.setToken("", "")
-                            loggedtumblr == false
-                            view.btn_tumblr.setText("Login Tumblr")
-                        })).setNegativeButton("Cancel", { _, _ -> }).show()
-                    })
-                })
+                Needle.onBackgroundThread().execute {
+                    if (!jtwitter!!.isAuthenticate()) {
+                        val replace = text.replace("\n", "")
+                        val accessToken = jtwitter.getOAuthAccessToken(oAuthRequestToken, replace)
+                        jtwitter.setTokens(accessToken!!.token, accessToken.tokenSecret)
+                        view.btn_twitter.setText("Logged in Twitter")
+                        view.btn_twitter.setOnClickListener {
+                            AlertDialog.Builder(activity!!).setMessage("Logout Twitter?").setPositiveButton("Logout") { _, _ ->
+                                jtwitter!!.setTokens("", "")
+                                view.btn_tumblr.setText("Login Twitter")
+                            }.setNegativeButton("Cancel", { _, _ -> }).show()
+                        }
+                    }
+                }
             } else {
                 Toast.makeText(activity, "Enter twitter PIN!", Toast.LENGTH_LONG).show()
             }
-        })
+        }
         val service = Intent(activity, SaverService::class.java)
-        view.service_switch.setOnCheckedChangeListener({ _, b: Boolean ->
+        view.service_switch.setOnCheckedChangeListener { _, b: Boolean ->
             if (b)
                 activity!!.startService(service)
             else
                 activity!!.stopService(service)
             settings!!.edit().putBoolean(STATUS_SERVICE_KEY, b).commit()
-        })
+        }
 
 
 
@@ -120,26 +120,25 @@ class CommonFragment : Fragment() {
         if (client.isAuthenticate()) {
             loggedtumblr == true
             view.btn_tumblr.setText("Logged in Tumblr")
-            view.btn_tumblr.setOnClickListener({
-                AlertDialog.Builder(activity!!).setMessage("Logout Tumblr?").setPositiveButton("Logout", DialogInterface.OnClickListener({ _, _ ->
+            view.btn_tumblr.setOnClickListener {
+                AlertDialog.Builder(activity!!).setMessage("Logout Tumblr?").setPositiveButton("Logout") { _, _ ->
                     client!!.setToken("", "")
                     loggedtumblr == false
                     view.btn_tumblr.setText("Login Tumblr")
-                })).setNegativeButton("Cancel", { _, _ -> }).show()
-            })
+                }.setNegativeButton("Cancel", { _, _ -> }).show()
+            }
         }
 
         if (jtwitter.isAuthenticate()) {
             loggedtwiiter == true
             view.btn_twitter.setText("Logged in Twitter")
-            view.btn_twitter.setOnClickListener({
-                AlertDialog.Builder(activity!!).setMessage("Logout Twitter?").setPositiveButton("Logout", DialogInterface.OnClickListener({ _, _ ->
+            view.btn_twitter.setOnClickListener {
+                AlertDialog.Builder(activity!!).setMessage("Logout Twitter?").setPositiveButton("Logout") { _, _ ->
                     jtwitter.jtwitter.oAuthAccessToken = null
                     loggedtwiiter == false
                     view.btn_twitter.setText("Login Twitter")
-
-                })).setNegativeButton("Cancel", { _, _ -> }).show()
-            })
+                }.setNegativeButton("Cancel", { _, _ -> }).show()
+            }
         }
 
         return view

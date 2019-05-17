@@ -26,14 +26,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <SeekBar
-            android:id="@+id/exo_progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_gravity="bottom" />
-        <!--  android:progressDrawable="@drawable/apptheme_scrubber_progress_horizontal_holo_dark"
-            android:thumb="@drawable/apptheme_scrubber_control_selector_holo_dark" /> -->
+
+                <com.google.android.exoplayer2.ui.DefaultTimeBar
+                    android:id="@+id/exo_progress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    app:scrubber_color="@color/twitter_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_gravity="bottom" />
+                 <!--android:progressDrawable="@drawable/apptheme_scrubber_progress_horizontal_holo_dark"
+                    android:thumb="@drawable/apptheme_scrubber_control_selector_holo_dark" /> -->
 
     </LinearLayout>
 

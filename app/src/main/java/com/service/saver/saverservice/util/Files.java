@@ -14,61 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Files {
-    public static String FILELIST = "Listfile.sss";
-
-    public static <T> void savefile(String filename, T c) {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    File file = new File(getCacheDir() + filename);
-                    if (!file.exists()) {
-                        file.createNewFile();
-                    }
-
-                    FileOutputStream fos = new FileOutputStream(file);
-                    ObjectOutputStream oos = new ObjectOutputStream(fos);
-                    oos.writeObject(c);
-                    oos.close();
-                    fos.close();
-
-                } catch (Exception e) {
-                    Log.e(String.valueOf(Log.ERROR), e.toString());
-                }
-            }
-        }).start();
-    }
-
-    public static Object readObject(String filename) {
-        try {
-            File file = new File(getCacheDir() + filename);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileInputStream fis = new FileInputStream(file);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            Object object = ois.readObject();
-            return object;
-        } catch (Exception e) {
-            Log.e(String.valueOf(Log.ERROR), e.toString());
-        }
-        return null;
-    }
-
-    public static String getRunningDir() {
-        File file = getRunningDirByFile();
-        if (!file.mkdirs()) {
-            Log.e("WARN", "Directory not created");
-        }
-        return file.getAbsolutePath();
-    }
-
-    public static String getRunningDir(String s) {
-        File file = getRunningDirByFile(s);
-        if (!file.mkdirs()) {
-            Log.e("WARN", "Directory not created");
-        }
-        return file.getAbsolutePath();
-    }
 
     public static String getCacheDir() {
         File file = getCacheDirByFile();
@@ -83,7 +28,7 @@ public class Files {
     }
 
     public static File getRunningDirByFile(String s) {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "SaverService/" + s);
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "SaverService/" + s.replaceAll("[^a-zA-Z0-9]", ""));
     }
 
     public static File getCacheDirByFile() {
@@ -96,9 +41,7 @@ public class Files {
         if (listFile != null && listFile.length > 0)
             for (int i = 0; i < listFile.length; i++)
                 if (!endsWith(listFile[i].getAbsolutePath(), Arrays.asList("/cache", "/.CACHE")))
-                    if (listFile[i].isDirectory())
-                        list.addAll(getfiles(listFile[i]));
-                    else if (!endsWith(listFile[i].getAbsolutePath(), Arrays.asList(".sss", ".tss", ".txt")))
+                    if (!endsWith(listFile[i].getAbsolutePath(), Arrays.asList(".sss", ".tss", ".txt")))
                         list.add(listFile[i]);
         return list;
     }

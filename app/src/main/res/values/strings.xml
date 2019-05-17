@@ -15,4 +15,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <string name="title_activity_viewer">ViewerActivity</string>
+    <string name="download">Download</string>
+    <string name="open_twitter">Open Twitter</string>
+    <string name="show_list_user">Show list user</string>
 </resources>

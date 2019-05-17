@@ -5,7 +5,7 @@
             <solid android:color="@color/tumblr_color_light"/>
             <stroke android:color="@color/tumblr_color_light" android:width="2dp" />
             <!--corners allow us to make the rounded corners button-->
-            <corners android:radius="5dp" />
+            <corners android:radius="50dp" />
         </shape>
     </item>
 </selector>

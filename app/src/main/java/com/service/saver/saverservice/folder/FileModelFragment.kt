@@ -27,7 +27,7 @@ class FileModelFragment : Fragment() {
             layoutManager = StaggeredGridLayoutManager(when {
                 activity!!.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> 3
                 else -> 5
-            },when {
+            }, when {
                 activity!!.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> StaggeredGridLayoutManager.VERTICAL
                 else -> StaggeredGridLayoutManager.HORIZONTAL
             })
@@ -70,7 +70,7 @@ class FileModelFragment : Fragment() {
         if (fileList.size > FILE_MODEL_LIST.size) {
             FILE_MODEL_LIST.clear()
             for (f in fileList) {
-                val fileModel = FileModel(FILE_MODEL_LIST.size + 0L, f.name, f.absolutePath)
+                val fileModel = FileModel(FILE_MODEL_LIST.size + 0L, f.name, f.absolutePath, f.isDirectory)
                 FILE_MODEL_LIST.add(fileModel)
             }
         }

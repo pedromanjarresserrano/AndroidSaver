@@ -3,16 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     tools:context=".CommonFragment">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/transparent"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:orientation="vertical"
@@ -26,10 +28,10 @@
             android:id="@+id/btn_tumblr"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/button_round_tumblr"
             android:drawableLeft="@mipmap/ic_tumblr_white"
             android:padding="8dp"
@@ -45,10 +47,10 @@
             android:id="@+id/btn_twitter"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/button_round_twitter"
-            android:drawableLeft="@mipmap/ic_twitter_icon"
+            android:drawableLeft="@mipmap/twitter_icon_white"
             android:padding="8dp"
             android:text="Get Pin Twitter"
             android:textColor="@color/white"
@@ -68,7 +70,7 @@
                 android:layout_height="match_parent"
                 android:text="Pin Twitter"
                 android:textAlignment="center"
-                android:textColor="@android:color/background_light"
+                android:textColor="@color/primary_text"
                 android:textSize="18sp" />
 
             <EditText
@@ -79,7 +81,7 @@
                 android:gravity="right|center_vertical"
                 android:imeOptions="actionNext"
                 android:singleLine="true"
-                android:textColor="@android:color/background_light"
+                android:textColor="@android:color/black"
                 android:textSize="20dp" />
 
             <ImageButton
@@ -87,7 +89,7 @@
                 android:layout_width="30dp"
                 android:layout_height="match_parent"
                 android:layout_weight=".15"
-                android:background="@android:color/transparent"
+                android:background="@drawable/button_round_twitter"
                 android:src="@drawable/ic_fiber_pin" />
 
         </LinearLayout>
@@ -96,13 +98,13 @@
             android:id="@+id/service_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="40dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:padding="8dp"
             android:text="Service"
-            android:textColor="@android:color/white"
+            android:textColor="@color/primary_text"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

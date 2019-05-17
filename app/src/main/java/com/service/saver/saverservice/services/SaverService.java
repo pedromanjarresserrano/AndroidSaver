@@ -1,6 +1,7 @@
 package com.service.saver.saverservice.services;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -25,8 +26,9 @@ import com.liulishuo.okdownload.core.cause.EndCause;
 import com.liulishuo.okdownload.core.listener.DownloadListener4WithSpeed;
 import com.liulishuo.okdownload.core.listener.assist.Listener4SpeedAssistExtend;
 import com.service.saver.saverservice.BuildConfig;
-import com.service.saver.saverservice.MyApp;
 import com.service.saver.saverservice.R;
+import com.service.saver.saverservice.domain.PostLink;
+import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper;
 import com.service.saver.saverservice.util.Files;
 
 import java.io.File;
@@ -41,10 +43,11 @@ import needle.Needle;
  */
 
 public class SaverService extends IntentService {
-    private List<String> listlinks = new ArrayList<>();
+    private List<PostLink> listlinks = new ArrayList<>();
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mBuilder;
     private DownloadSerialQueue serialQueue;
+    private AdminSQLiteOpenHelper db = null;
 
     public SaverService() {
         super("SaverService");
@@ -59,6 +62,7 @@ public class SaverService extends IntentService {
         set.setMinIntervalMillisCallbackProcess(200);
         set.commit();
         serialQueue = new DownloadSerialQueue(getListener());
+        db = new AdminSQLiteOpenHelper(this.getBaseContext());
 
     }
 
@@ -77,13 +81,6 @@ public class SaverService extends IntentService {
 
             @Override
             public void progress(@NonNull DownloadTask task, long currentOffset, @NonNull SpeedCalculator taskSpeed) {
-                mBuilder.setContentTitle("Download")
-                        .setContentText("Downloading " + task.getFilename())
-                        .setSubText(taskSpeed.getSpeedWithBinaryAndFlush())
-                        //  .setSubText((progress.currentBytes * 100) / progress.totalBytes + " % ")
-                        .setSmallIcon(R.drawable.ic_cloud_download)
-                        .setProgress(100, 100, true);
-                mNotifyManager.notify(task.getId(), mBuilder.build());
             }
 
             @Override
@@ -93,12 +90,7 @@ public class SaverService extends IntentService {
 
             @Override
             public void taskEnd(@NonNull DownloadTask task, @NonNull EndCause cause, @Nullable Exception realCause, @NonNull SpeedCalculator taskSpeed) {
-                mBuilder.setContentTitle("Download")
-                        .setContentText("Downloaded " + task.getFilename())
-                        .setSubText("")
-                        .setSmallIcon(R.drawable.ic_cloud_download)
-                        .setProgress(100, 100, false);
-                mNotifyManager.notify(task.getId(), mBuilder.build());
+                System.out.println("ERROR");
             }
 
             @Override
@@ -164,19 +156,20 @@ public class SaverService extends IntentService {
 
         Needle.onBackgroundThread().execute(() -> {
             while (true) {
-                listlinks = MyApp.getFiles();
+                listlinks = db.getAllUnSavePostLinks();
                 if (!listlinks.isEmpty()) {
-                    String link = listlinks.get(0);
+                    PostLink postLink = listlinks.get(0);
                     try {
-                        String[] split = link.split("/");
-                        String[] namelink = link.split(":NAME:");
-                        serialQueue.enqueue(new DownloadTask.Builder((namelink.length > 1 ? namelink[1] : link), Files.getRunningDirByFile())
+                        String linkUrl = postLink.getUrl();
+                        String[] split = linkUrl.split("/");
+                        String[] namelink = linkUrl.split(":NAME:");
+                        serialQueue.enqueue(new DownloadTask.Builder((namelink.length > 1 ? namelink[1] : linkUrl), Files.getRunningDirByFile(postLink.getUsername().replace("#", "")))
                                 .setFilename((namelink.length > 1 ? namelink[0] : split[split.length - 1]))
                                 .setPassIfAlreadyCompleted(true)
                                 .build());
-                        removeSafe(link);
+                        removeSafe(postLink);
                     } catch (Exception e) {
-                        removeSafe(link);
+                        removeSafe(postLink);
                         e.printStackTrace();
                     }
                 }
@@ -196,26 +189,25 @@ public class SaverService extends IntentService {
             String chanel_id = "3000";
             CharSequence name = "Channel Name";
             String description = "Chanel Description";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_NONE;
             NotificationChannel mChannel = null;
             mChannel = new NotificationChannel(chanel_id, name, importance);
             mChannel.setDescription(description);
             mChannel.enableLights(true);
             mChannel.setLightColor(Color.BLUE);
             mNotifyManager.createNotificationChannel(mChannel);
-            return new NotificationCompat.Builder(this, chanel_id);
+            return new NotificationCompat.Builder(this, chanel_id).setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND).setVibrate(new long[]{0L});
         } else {
-            return new NotificationCompat.Builder(this);
+            return new NotificationCompat.Builder(this).setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND).setVibrate(new long[]{0L});
 
         }
 
 
     }
 
-    private void removeSafe(String string) {
-        listlinks.remove(string);
-        MyApp.remove(string);
-        listlinks = MyApp.getFiles();
+    private void removeSafe(PostLink postLink) {
+        postLink.setSave(true);
+        db.updatePostLink(postLink);
     }
 
 

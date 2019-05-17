@@ -1,13 +1,14 @@
 package com.service.saver.saverservice.twitter
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Build
-import com.service.saver.saverservice.MyApp
+import android.util.Log
+import com.service.saver.saverservice.domain.PostLink
+import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper
 import needle.Needle
 import twitter4j.MediaEntity
 import twitter4j.Twitter
-import twitter4j.TwitterException
 import twitter4j.TwitterFactory
 import twitter4j.auth.AccessToken
 import twitter4j.auth.RequestToken
@@ -15,7 +16,7 @@ import twitter4j.conf.ConfigurationBuilder
 import java.io.IOException
 import java.util.*
 
-class  TwitterClient {
+class TwitterClient {
 
     var twitteraccesstoken = ""
     var twitteraccessSecret = ""
@@ -24,6 +25,7 @@ class  TwitterClient {
     var jtwitter: Twitter
     private var context: Context? = null
     private var settings: SharedPreferences? = null
+    private var db: AdminSQLiteOpenHelper? = null
 
     constructor(context: Context?) {
         this.context = context
@@ -51,6 +53,7 @@ class  TwitterClient {
 
             }
         }
+        db = AdminSQLiteOpenHelper(this.context)
     }
 
     fun setTokens(twitteraccesstoken: String, twitteraccessSecret: String) {
@@ -68,44 +71,67 @@ class  TwitterClient {
         Needle.onBackgroundThread().execute {
             try {
                 val split1 = getID(url)
-                if (jtwitter.getOAuthAccessToken() != null) {
-
+                if (jtwitter.oAuthAccessToken != null && !split1.isNullOrEmpty()) {
                     val status = jtwitter.showStatus(java.lang.Long.parseLong(split1))
-                    val mediaEntities = Arrays.asList<MediaEntity>(*status.getMediaEntities())
-                    if (!mediaEntities.isEmpty()) {
-                        entites(mediaEntities)
+                    val mediaEntities = Arrays.asList<MediaEntity>(*status.mediaEntities)
+                    if (mediaEntities.isNotEmpty()) {
+                        entites(mediaEntities, false, "")
                     }
                 }
-            } catch (e: TwitterException) {
-                e.printStackTrace()
-            } catch (e: IOException) {
-                e.printStackTrace()
+            } catch (e: Exception) {
+                Log.e("ERROR", e.message)
             }
         }
     }
 
     @Throws(IOException::class)
-    private fun entites(mediaEntities: List<MediaEntity>) {
+    fun entites(mediaEntities: List<MediaEntity>, onfolder: Boolean, user: String) {
         mediaEntities.sortedBy { it.videoAspectRatioHeight }
         val mediaEntity = mediaEntities[0]
         if (mediaEntity.type.equals("photo", ignoreCase = true))
+            mediaEntities.let { (e) ->
+                {
+                    var postlink = PostLink()
+                    postlink.url = e.mediaURL
+                    if (onfolder)
+                        postlink.username = user
+                    savePostLink(e.mediaURL, postlink)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                mediaEntities.stream().map<String>({ it.getMediaURL() }).forEach({ MyApp.add(it) })
-            }else{
-                mediaEntities.let { (e)->{MyApp.add(e.mediaURL)} }
+                }
+
             }
         else {
             val videoVariants = Arrays.asList(*mediaEntity.videoVariants)
-            videoVariants.sortBy {  it.getBitrate() }
+            videoVariants.sortBy { it.bitrate }
             val split = videoVariants[videoVariants.size - 1].url.split("\\?".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             val link = split[0]
-            MyApp.add(link)
+            var postlink = PostLink()
+            postlink.url = link
+            if (onfolder)
+                postlink.username = user
+            savePostLink(link, postlink)
+
+        }
+    }
+
+    private fun savePostLink(link: String, postlink: PostLink) {
+        val findlink = this.db!!.getPostLink(link);
+        if (findlink == null) {
+            this.db!!.agregarPostLink(postlink)
+        } else {
+            val builder = AlertDialog.Builder(this.context);
+            builder.setTitle("Already download").setMessage("The file " + postlink.url + " is already download, download again?")
+                    .setPositiveButton("Ok") { dialog, e ->
+                        findlink.save = false
+                        this.db!!.updatePostLink(findlink)
+                    }
+                    .setNegativeButton("Cancel") { dialog, e -> };
+            builder.create().show()
         }
     }
 
     fun getOAuthRequestToken(): RequestToken {
-        return jtwitter.getOAuthRequestToken();
+        return jtwitter.oAuthRequestToken;
     }
 
     fun getOAuthAccessToken(requestToken: RequestToken?, url: String?): AccessToken? {

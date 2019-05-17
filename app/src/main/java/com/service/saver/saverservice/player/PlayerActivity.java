@@ -10,23 +10,22 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.RandomTrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.exoplayer2.upstream.BandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.service.saver.saverservice.R;
@@ -36,10 +35,9 @@ import com.service.saver.saverservice.folder.model.FileModel;
 import java.util.List;
 
 public class PlayerActivity extends AppCompatActivity {
-    private BandwidthMeter bandwidthMeter;
     private TrackSelector trackSelector;
-    private TrackSelection.Factory videoTrackSelectionFactory;
-    private SimpleExoPlayerView simpleExoPlayerView;
+    private TrackSelection.Factory trackSelectionFactory;
+    private PlayerView simpleExoPlayerView;
     private List<FileModel> list;
     private LoadControl loadControl;
     private SimpleExoPlayer player;
@@ -61,10 +59,18 @@ public class PlayerActivity extends AppCompatActivity {
         list = FileModelFragment.Companion.getFILE_MODEL_LIST();
         initButtons();
         loadControl = new DefaultLoadControl();
-        bandwidthMeter = new DefaultBandwidthMeter();
-        videoTrackSelectionFactory = new AdaptiveVideoTrackSelection.Factory(bandwidthMeter);
-        trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
-        player = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
+        String abrAlgorithm = intent.getStringExtra("abr_algorithm");
+        if (abrAlgorithm == null || "default".equals(abrAlgorithm)) {
+            trackSelectionFactory = new AdaptiveTrackSelection.Factory();
+        } else if ("random".equals(abrAlgorithm)) {
+            trackSelectionFactory = new RandomTrackSelection.Factory();
+        } else {
+            finish();
+            return;
+        }
+
+        trackSelector = new DefaultTrackSelector(trackSelectionFactory);
+        player = ExoPlayerFactory.newSimpleInstance(this, new DefaultRenderersFactory(this), trackSelector, loadControl);
         simpleExoPlayerView.setPlayer(player);
         addListenerToPlayer();
         play(position);
@@ -121,8 +127,8 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void play(int position) {
         String filepath = list.get(position).getFilepath();
-        player.prepare(new ExtractorMediaSource(getURI(filepath), new DefaultDataSourceFactory(this,
-                Util.getUserAgent(this, getString(R.string.app_name))), new DefaultExtractorsFactory(), null, null));
+        player.prepare(new ExtractorMediaSource.Factory(new DefaultDataSourceFactory(this,
+                Util.getUserAgent(this, getString(R.string.app_name)))).setExtractorsFactory(new DefaultExtractorsFactory()).createMediaSource(getURI(filepath)));
         player.setPlayWhenReady(true);
 
     }
@@ -132,11 +138,8 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void addListenerToPlayer() {
-        player.addListener(new ExoPlayer.EventListener() {
-            @Override
-            public void onTimelineChanged(Timeline timeline, Object manifest) {
+        player.addListener(new Player.EventListener() {
 
-            }
 
             @Override
             public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
@@ -150,7 +153,7 @@ public class PlayerActivity extends AppCompatActivity {
 
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                if (playbackState == ExoPlayer.STATE_ENDED) {
+                if (playbackState == Player.STATE_ENDED) {
                     playnext(position + 1);
                 }
             }
@@ -160,10 +163,12 @@ public class PlayerActivity extends AppCompatActivity {
 
             }
 
-            @Override
-            public void onPositionDiscontinuity() {
-
-            }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        this.player.stop();
+        super.onBackPressed();
     }
 }
