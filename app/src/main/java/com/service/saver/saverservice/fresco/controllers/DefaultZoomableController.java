@@ -6,8 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.support.annotation.IntDef;
 import android.view.MotionEvent;
+
+import androidx.annotation.IntDef;
 
 import com.facebook.common.logging.FLog;
 import com.service.saver.saverservice.fresco.gesture.TransformGestureDetector;

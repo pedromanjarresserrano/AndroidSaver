@@ -1,6 +1,6 @@
 package com.service.saver.saverservice.twitter
 
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
@@ -75,7 +75,11 @@ class TwitterClient {
                     val status = jtwitter.showStatus(java.lang.Long.parseLong(split1))
                     val mediaEntities = Arrays.asList<MediaEntity>(*status.mediaEntities)
                     if (mediaEntities.isNotEmpty()) {
-                        entites(mediaEntities, false, "")
+                        val user = status.user;
+                        if (user != null)
+                            entites(mediaEntities, true, user.screenName)
+                        else
+                            entites(mediaEntities,false, "")
                     }
                 }
             } catch (e: Exception) {
@@ -88,19 +92,15 @@ class TwitterClient {
     fun entites(mediaEntities: List<MediaEntity>, onfolder: Boolean, user: String) {
         mediaEntities.sortedBy { it.videoAspectRatioHeight }
         val mediaEntity = mediaEntities[0]
-        if (mediaEntity.type.equals("photo", ignoreCase = true))
-            mediaEntities.let { (e) ->
-                {
-                    var postlink = PostLink()
-                    postlink.url = e.mediaURL
-                    if (onfolder)
-                        postlink.username = user
-                    savePostLink(e.mediaURL, postlink)
-
-                }
-
+        if (mediaEntity.type.equals("photo", ignoreCase = true)) {
+            mediaEntities.forEach { e ->
+                var postlink = PostLink()
+                postlink.url = e.mediaURL
+                if (onfolder)
+                    postlink.username = user
+                savePostLink(e.mediaURL, postlink)
             }
-        else {
+        } else {
             val videoVariants = Arrays.asList(*mediaEntity.videoVariants)
             videoVariants.sortBy { it.bitrate }
             val split = videoVariants[videoVariants.size - 1].url.split("\\?".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -119,14 +119,18 @@ class TwitterClient {
         if (findlink == null) {
             this.db!!.agregarPostLink(postlink)
         } else {
-            val builder = AlertDialog.Builder(this.context);
-            builder.setTitle("Already download").setMessage("The file " + postlink.url + " is already download, download again?")
-                    .setPositiveButton("Ok") { dialog, e ->
-                        findlink.save = false
-                        this.db!!.updatePostLink(findlink)
-                    }
-                    .setNegativeButton("Cancel") { dialog, e -> };
-            builder.create().show()
+            Needle.onMainThread().execute {
+                val builder = this.context?.let { AlertDialog.Builder(it) }
+                if (builder != null) {
+                    builder.setTitle("Already download").setMessage("The file " + postlink.url + " is already download, download again?")
+                        .setPositiveButton("Ok") { dialog, e ->
+                            findlink.save = false
+                            this.db!!.updatePostLink(findlink)
+                        }
+                        .setNegativeButton("Cancel") { dialog, e -> };
+                    builder.create().show()
+                }
+            }
         }
     }
 

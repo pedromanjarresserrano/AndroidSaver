@@ -4,8 +4,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,19 +68,10 @@ class CommonFragment : Fragment() {
         try {
             oAuthRequestToken = jtwitter.getOAuthRequestToken()
         } catch (e: Exception) {
-          //  e.printStackTrace()
+            //  e.printStackTrace()
         }
-        view.btn_twitter.setOnClickListener {
-            if (oAuthRequestToken != null) {
-                val redirectURL = oAuthRequestToken!!.getAuthenticationURL()
-                val i = Intent(Intent.ACTION_VIEW)
-                i.data = Uri.parse(redirectURL)
-                activity!!.startActivity(i)
-            } else {
-                Toast.makeText(activity, "Already logged in Twitter", Toast.LENGTH_LONG).show()
+        loadBtnLoginTwitter(view, oAuthRequestToken)
 
-            }
-        }
 
         view.btn_load_pin.setOnClickListener {
             val text = view.txt_twitter_pin.editableText.toString()
@@ -137,11 +128,28 @@ class CommonFragment : Fragment() {
                     jtwitter.jtwitter.oAuthAccessToken = null
                     loggedtwiiter == false
                     view.btn_twitter.setText("Login Twitter")
+                    oAuthRequestToken = null;
+                    loadBtnLoginTwitter(view, jtwitter.getOAuthRequestToken())
+
                 }.setNegativeButton("Cancel", { _, _ -> }).show()
             }
         }
 
         return view
+    }
+
+    private fun loadBtnLoginTwitter(view: View, oAuthRequestToken: RequestToken?) {
+        view.btn_twitter.setOnClickListener {
+            if (oAuthRequestToken != null) {
+                val redirectURL = oAuthRequestToken!!.getAuthenticationURL()
+                val i = Intent(Intent.ACTION_VIEW)
+                i.data = Uri.parse(redirectURL)
+                activity!!.startActivity(i)
+            } else {
+                Toast.makeText(activity, "Already logged in Twitter", Toast.LENGTH_LONG).show()
+
+            }
+        }
     }
 
     companion object {

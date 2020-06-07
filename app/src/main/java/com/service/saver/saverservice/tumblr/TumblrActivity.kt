@@ -2,7 +2,7 @@ package com.service.saver.saverservice.tumblr
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.service.saver.saverservice.MainTabActivity.client
 import com.service.saver.saverservice.R
 import com.service.saver.saverservice.domain.PostLink

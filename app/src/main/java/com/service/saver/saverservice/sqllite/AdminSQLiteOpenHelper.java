@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.service.saver.saverservice.domain.PostLink;
 import com.service.saver.saverservice.domain.UserLink;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,7 +18,7 @@ import java.util.Locale;
 public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "saver_db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public AdminSQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -36,11 +35,14 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int version1, int version2) {
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(PostLink.DROP_TABLE);
         db.execSQL(PostLink.TABLE_CREATE);
         db.execSQL(UserLink.DROP_TABLE);
         db.execSQL(UserLink.TABLE_CREATE);
+        if (newVersion > oldVersion) {
+            //  db.execSQL("ALTER TABLE "+UserLink.TABLE_NAME +" ADD COLUMN avatar_url TEXT");
+        }
     }
 
     public long agregarUserLink(UserLink userLink) {
@@ -98,7 +100,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
         // close the db connection
         cursor.close();
-
+        db.close();
         return postLink;
     }
 
@@ -107,22 +109,26 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(UserLink.TABLE_NAME,
-                new String[]{"id", "username", "createDate"},
+                new String[]{"id", "username", "avatar_url", "createDate"},
                 "username" + "=?",
                 new String[]{String.valueOf(username)}, null, null, null, null);
         UserLink userLink = null;
         if (cursor != null) {
             cursor.moveToFirst();
             if (cursor.getCount() > 0)
-                // prepare note object
+            // prepare note object
+            {
+                String avatar_url = cursor.getString(cursor.getColumnIndex("avatar_url"));
                 userLink = new UserLink(
                         cursor.getLong(cursor.getColumnIndex("id")),
                         cursor.getString(cursor.getColumnIndex("username")),
+                        avatar_url == null ? "" : avatar_url,
                         getDate(cursor.getString(cursor.getColumnIndex("createDate"))));
+            }
         }
         // close the db connection
         cursor.close();
-
+        db.close();
         return userLink;
     }
 
@@ -147,6 +153,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                 postLinks.add(postLink);
             } while (cursor.moveToNext());
         }
+        cursor.close();
         // close db connection
         db.close();
         // return notes list
@@ -175,6 +182,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                 postLinks.add(postLink);
             } while (cursor.moveToNext());
         }
+        cursor.close();
         // close db connection
         db.close();
         // return notes list
@@ -215,13 +223,16 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
+                String avatar_url = cursor.getString(cursor.getColumnIndex("avatar_url"));
                 UserLink userLink = new UserLink(
                         cursor.getLong(cursor.getColumnIndex("id")),
                         cursor.getString(cursor.getColumnIndex("username")),
+                        avatar_url == null ? "" : avatar_url,
                         getDate(cursor.getString(cursor.getColumnIndex("createDate"))));
                 postLinks.add(userLink);
             } while (cursor.moveToNext());
         }
+        cursor.close();
         // close db connection
         db.close();
         // return notes list
@@ -247,6 +258,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put("username", userLink.getUsername());
+        values.put("avatar_url", userLink.getAvatar_url());
         values.put("createDate", getDate(userLink.getCreateDate()));
         // updating row
         return db.update(UserLink.TABLE_NAME, values, "id = ?",

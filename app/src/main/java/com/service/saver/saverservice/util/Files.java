@@ -15,6 +15,8 @@ import java.util.List;
 
 public class Files {
 
+    private static final String absolutePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
+
     public static String getCacheDir() {
         File file = getCacheDirByFile();
         if (!file.mkdirs()) {
@@ -24,15 +26,23 @@ public class Files {
     }
 
     public static File getRunningDirByFile() {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "SaverService");
+        return new File(absolutePath, "SaverService");
+    }
+
+    public static File getDir(String s) {
+        return new File(s);
+    }
+
+    public static String getAbsolutePath() {
+        return absolutePath + "/SaverService/";
     }
 
     public static File getRunningDirByFile(String s) {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "SaverService/" + s.replaceAll("[^a-zA-Z0-9]", ""));
+        return new File(absolutePath, "SaverService/" + s.replaceAll("[^a-zA-Z0-9]", ""));
     }
 
     public static File getCacheDirByFile() {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath(), "SaverService/cache");
+        return new File(absolutePath, "SaverService/cache");
     }
 
     public static List<File> getfiles(File dir) {
@@ -44,6 +54,11 @@ public class Files {
                     if (!endsWith(listFile[i].getAbsolutePath(), Arrays.asList(".sss", ".tss", ".txt")))
                         list.add(listFile[i]);
         return list;
+    }
+
+
+    public static List<File> getfiles(String s) {
+        return getfiles(new File(s));
     }
 
     private static boolean endsWith(String s, List<String> suffixs) {

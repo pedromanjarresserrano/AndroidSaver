@@ -2,27 +2,24 @@ package com.service.saver.saverservice;
 
 import android.Manifest;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import com.google.android.material.tabs.TabLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
-import android.util.DisplayMetrics;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.service.saver.saverservice.domain.UserLink;
@@ -212,7 +209,7 @@ public class MainTabActivity extends AppCompatActivity {
             jtwitter = new TwitterClient(this);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -229,7 +226,8 @@ public class MainTabActivity extends AppCompatActivity {
         clipDataListener.onValidLinkCapture(() -> {
             Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
         });
-/*
+        db = new AdminSQLiteOpenHelper(this.getBaseContext());
+
         List<UserLink> allUserLinks = db.allUserLinks();
         System.out.println(allUserLinks.toString());
         for (String e : test) {
@@ -238,7 +236,7 @@ public class MainTabActivity extends AppCompatActivity {
             UserLink userLink = db.getUserLink(e);
             if (userLink == null)
                 db.agregarUserLink(user);
-        }*/
+        }
         //ActivityCompat.requestPermissions(MainTabActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission_group.STORAGE}, 1);
     }
 

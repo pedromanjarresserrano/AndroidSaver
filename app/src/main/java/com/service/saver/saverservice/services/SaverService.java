@@ -10,10 +10,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.FileProvider;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.FileProvider;
 
 import com.liulishuo.okdownload.DownloadContext;
 import com.liulishuo.okdownload.DownloadListener;
@@ -90,7 +91,7 @@ public class SaverService extends IntentService {
 
             @Override
             public void taskEnd(@NonNull DownloadTask task, @NonNull EndCause cause, @Nullable Exception realCause, @NonNull SpeedCalculator taskSpeed) {
-                System.out.println("ERROR");
+                System.out.println("ERROR"+cause);
             }
 
             @Override

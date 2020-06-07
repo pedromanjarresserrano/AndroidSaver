@@ -1,9 +1,9 @@
 package com.service.saver.saverservice.folder
 
+import androidx.fragment.app.Fragment
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import android.view.*
@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.fragment_filemodel_list.view.*
 import needle.Needle
 
 
-class FileModelFragment : Fragment() {
+class FolderFragment : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -100,8 +100,8 @@ class FileModelFragment : Fragment() {
         var loading = false;
         var location = Files.getAbsolutePath();
         @JvmStatic
-        fun newInstance(): FileModelFragment {
-            val fragment = FileModelFragment()
+        fun newInstance(): FolderFragment {
+            val fragment = FolderFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment

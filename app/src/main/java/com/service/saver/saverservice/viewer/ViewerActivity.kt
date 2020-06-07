@@ -1,14 +1,12 @@
 package com.service.saver.saverservice.viewer
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.drawee.interfaces.DraweeController
 import com.service.saver.saverservice.R
-import com.service.saver.saverservice.R.id.fullscreen_content
 import kotlinx.android.synthetic.main.activity_viewer.*
 import java.io.File
 
@@ -16,14 +14,9 @@ import java.io.File
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-class ViewerActivity : Activity() {
+class ViewerActivity : AppCompatActivity() {
     private val mHideHandler = Handler()
     private val mHidePart2Runnable = Runnable {
-        // Delayed removal of status and navigation bar
-
-        // Note that some of these constants are new as of API 16 (Jelly Bean)
-        // and API 19 (KitKat). It is safe to use them, as they are inlined
-        // at compile-time and do nothing on earlier devices.
         fullscreen_content.systemUiVisibility =
                 View.SYSTEM_UI_FLAG_LOW_PROFILE or
                 View.SYSTEM_UI_FLAG_FULLSCREEN or
@@ -33,21 +26,10 @@ class ViewerActivity : Activity() {
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
     }
     private val mShowPart2Runnable = Runnable {
-        // Delayed display of UI elements
         actionBar?.show() }
     private var mVisible: Boolean = false
     private val mHideRunnable = Runnable { hide() }
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private val mDelayHideTouchListener = View.OnTouchListener { _, _ ->
-        if (AUTO_HIDE) {
-            delayedHide(AUTO_HIDE_DELAY_MILLIS)
-        }
-        false
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

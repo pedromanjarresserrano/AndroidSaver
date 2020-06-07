@@ -6,11 +6,13 @@ import java.util.*
 class UserLink : Serializable {
     var id: Number = -1;
     var username: String = ""
+    var avatar_url: String = ""
     var createDate: Date = Date()
 
-    constructor(id: Number, username: String, createDate: Date) {
+    constructor(id: Number, username: String, avatar_url: String, createDate: Date) {
         this.id = id
         this.username = username
+        this.avatar_url = avatar_url
         this.createDate = createDate
     }
 
@@ -24,7 +26,7 @@ class UserLink : Serializable {
 
     companion object {
         const val TABLE_NAME = "userlink";
-        const val TABLE_CREATE = "create table ${TABLE_NAME}(id INTEGER PRIMARY KEY,  username text UNIQUE, createDate date)"
+        const val TABLE_CREATE = "create table ${TABLE_NAME}(id INTEGER PRIMARY KEY,  username text UNIQUE, avatar_url text, createDate date)"
         const val DROP_TABLE = "drop table if exists ${TABLE_NAME}"
     }
 }

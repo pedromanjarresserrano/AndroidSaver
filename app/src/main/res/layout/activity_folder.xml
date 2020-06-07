@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
-    tools:context=".tumblr.TumblrActivity">
+    tools:context="com.service.saver.saverservice.FolderActivity">
 
+    <fragment
+        android:id="@+id/fragment"
+        android:layout_width="match_parent" android:layout_height="match_parent"  />
 </androidx.constraintlayout.widget.ConstraintLayout>

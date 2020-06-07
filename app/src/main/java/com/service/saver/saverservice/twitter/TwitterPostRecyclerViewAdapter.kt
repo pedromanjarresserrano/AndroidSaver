@@ -3,7 +3,7 @@ package com.service.saver.saverservice.twitter
 
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,21 +13,14 @@ import android.widget.TextView
 import com.facebook.drawee.view.SimpleDraweeView
 import com.service.saver.saverservice.MainTabActivity.jtwitter
 import com.service.saver.saverservice.R
-import com.service.saver.saverservice.twitter.TwitterPostFragment.OnListFragmentInteractionListener
-import com.service.saver.saverservice.twitter.dummy.DummyContent.DummyItem
 import kotlinx.android.synthetic.main.fragment_twitterpost.view.*
 import twitter4j.MediaEntity
 import twitter4j.Status
 
 
-/**
- * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
- * specified [OnListFragmentInteractionListener].
- * TODO: Replace the implementation with code for your data type.
- */
 class TwitterPostRecyclerViewAdapter(
         private val mValues: List<Status>)
-    : RecyclerView.Adapter<TwitterPostRecyclerViewAdapter.ViewHolder>() {
+    : androidx.recyclerview.widget.RecyclerView.Adapter<TwitterPostRecyclerViewAdapter.ViewHolder>() {
 
     private val mOnClickListener: View.OnClickListener
 
@@ -76,7 +69,7 @@ class TwitterPostRecyclerViewAdapter(
 
     override fun getItemCount(): Int = mValues.size
 
-    inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
+    inner class ViewHolder(val mView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(mView) {
         val text: TextView = mView.text
         val image: SimpleDraweeView = mView.iamge_post
         val content_text: TextView = mView.content_text

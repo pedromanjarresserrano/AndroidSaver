@@ -8,7 +8,7 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Animatable;
-import android.support.v4.view.ScrollingView;
+import androidx.core.view.ScrollingView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;

@@ -42,7 +42,7 @@
             android:contentDescription="@string/download"
             android:padding="10dp"
             android:scaleType="centerCrop"
-            android:src="@android:drawable/stat_sys_download"
+            app:srcCompat="@android:drawable/stat_sys_download"
             android:tint="#00FFFFFF"
             android:tintMode="src_over" />
     </LinearLayout>
