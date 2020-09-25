@@ -1,21 +1,21 @@
 package com.service.saver.saverservice.util;
 
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Files {
 
-    private static final String absolutePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
+    private static final String ABSOLUTE_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,##0.#");
 
     public static String getCacheDir() {
         File file = getCacheDirByFile();
@@ -26,7 +26,7 @@ public class Files {
     }
 
     public static File getRunningDirByFile() {
-        return new File(absolutePath, "SaverService");
+        return new File(ABSOLUTE_PATH, "SaverService");
     }
 
     public static File getDir(String s) {
@@ -34,45 +34,45 @@ public class Files {
     }
 
     public static String getAbsolutePath() {
-        return absolutePath + "/SaverService/";
+        return ABSOLUTE_PATH + "/SaverService/";
     }
 
     public static File getRunningDirByFile(String s) {
-        return new File(absolutePath, "SaverService/" + s.replaceAll("[^a-zA-Z0-9]", ""));
+        return new File(ABSOLUTE_PATH, "SaverService/" + s.replaceAll("[^a-zA-Z0-9]", ""));
     }
 
     public static File getCacheDirByFile() {
-        return new File(absolutePath, "SaverService/cache");
+        return new File(ABSOLUTE_PATH, "SaverService/cache");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<File> getfiles(File dir) {
         File listFile[] = dir.listFiles();
-        List<File> list = new ArrayList<>();
-        if (listFile != null && listFile.length > 0)
-            for (int i = 0; i < listFile.length; i++)
-                if (!endsWith(listFile[i].getAbsolutePath(), Arrays.asList("/cache", "/.CACHE")))
-                    if (!endsWith(listFile[i].getAbsolutePath(), Arrays.asList(".sss", ".tss", ".txt")))
-                        list.add(listFile[i]);
-        return list;
+        List<File> collect = Arrays.asList(listFile)
+                .stream()
+                .filter(e -> !endsWith(e.getAbsolutePath(), Arrays.asList("/cache", "/.CACHE", ".sss", ".tss", ".txt")))
+                .collect(Collectors.toList());
+        return collect;
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<File> getfiles(String s) {
         return getfiles(new File(s));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private static boolean endsWith(String s, List<String> suffixs) {
-        for (String ends : suffixs) {
-            if (s.endsWith(ends))
-                return true;
-        }
-        return false;
+        return suffixs.stream()
+                .filter(e -> s.endsWith(e))
+                .findFirst()
+                .isPresent();
     }
 
     public static String readableFileSize(long size) {
         if (size <= 0) return "0";
         final String[] units = new String[]{"B", "kB", "MB", "GB", "TB"};
         int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
-        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+        return DECIMAL_FORMAT.format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 }

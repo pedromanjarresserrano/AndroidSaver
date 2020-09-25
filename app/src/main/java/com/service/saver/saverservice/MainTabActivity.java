@@ -4,10 +4,13 @@ import android.Manifest;
 import android.content.ClipboardManager;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import androidx.annotation.Nullable;
 import com.google.android.material.tabs.TabLayout;
+
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -188,6 +191,7 @@ public class MainTabActivity extends AppCompatActivity {
     );
     private AdminSQLiteOpenHelper db = null;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

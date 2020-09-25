@@ -7,6 +7,8 @@
     tools:context="com.service.saver.saverservice.FolderActivity">
 
     <fragment
-        android:id="@+id/fragment"
-        android:layout_width="match_parent" android:layout_height="match_parent"  />
+        android:id="@+id/folderfiles"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:name="com.service.saver.saverservice.folder.FolderFragment"
+        tools:layout="@layout/fragment_filemodel_list" />
 </androidx.constraintlayout.widget.ConstraintLayout>

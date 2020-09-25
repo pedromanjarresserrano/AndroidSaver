@@ -6,12 +6,13 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:background="#FFFFBB33"
+        android:background="@color/titlebackgroundcolor"
         android:contentDescription="@string/app_name"
         android:paddingTop="20dp"
         android:scaleType="fitCenter"
         android:text="Twitter User
-" />
+"
+        android:textColor="@color/icons" />
     <EditText
         android:id="@+id/username"
         android:inputType="textEmailAddress"

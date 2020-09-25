@@ -7,7 +7,7 @@
     android:layout_margin="2dp"
     android:background="#FFF3E4">
 
-    <com.facebook.drawee.view.SimpleDraweeView xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/preview_file"
         android:layout_width="150dp"
         android:layout_height="150dp"
@@ -17,7 +17,10 @@
         app:layout_constraintBottom_toTopOf="@+id/nombre_file"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:roundAsCircle="false"
+        app:roundBottomEnd="false"
+        app:roundedCornerRadius="20dp" />
 
     <TextView
         android:id="@+id/nombre_file"

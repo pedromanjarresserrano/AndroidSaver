@@ -2,6 +2,9 @@ package com.service.saver.saverservice.util;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +17,7 @@ public class ClipDataListener {
     private List<String> listlinks = new ArrayList<>();
     private Runnable runnable = null;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public ClipDataListener(ClipboardManager clip) {
         ClipboardManager.OnPrimaryClipChangedListener listener = () -> {
             getLink(clip);
@@ -27,6 +31,7 @@ public class ClipDataListener {
         this.runnable = e;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void getLink(ClipboardManager clipBoard) {
         ClipData clipData = clipBoard.getPrimaryClip();
         if (clipData != null) {
@@ -42,11 +47,9 @@ public class ClipDataListener {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private boolean checkOnList(List<String> lista, String object) {
-        for (String s : lista) {
-            return s.equals(object);
-        }
-        return false;
+        return lista.stream().filter(e->e.equals(object)).findFirst().isPresent();
     }
 
 

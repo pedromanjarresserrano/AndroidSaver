@@ -3,17 +3,19 @@ package com.service.saver.saverservice.folder
 import androidx.fragment.app.Fragment
 import android.content.Context
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import android.view.*
+import androidx.annotation.RequiresApi
 import com.service.saver.saverservice.R
 import com.service.saver.saverservice.folder.model.FileModel
 import com.service.saver.saverservice.util.Files
 import kotlinx.android.synthetic.main.fragment_filemodel_list.view.*
 import needle.Needle
 
-
+@RequiresApi(Build.VERSION_CODES.N)
 class FolderFragment : Fragment() {
 
 

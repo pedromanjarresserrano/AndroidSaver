@@ -4,7 +4,9 @@
     <color name="primary">#607D8B</color>
     <color name="primary_dark">#455A64</color>
     <color name="primary_light">#CFD8DC</color>
-    <color name="accent">#FF9800</color>
+    <color name="accent">#FF0000</color>
+    <color name="accent_dark">#3C0000</color>
+    <color name="accent_dark_light">#653C0000</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
     <color name="icons">#FFFFFF</color>
@@ -13,7 +15,7 @@
     <color name="colorPrimary">#484848</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#d7d7d7</color>
-    <color name="titlebackgroundcolor">#edd76400</color>
+    <color name="titlebackgroundcolor">#EDFF0000</color>
     <color name="background_footer">#85b1b1b1</color>
     <color name="grid_folder_background">#0076a0</color>
     <color name="white">#ffffff</color>
