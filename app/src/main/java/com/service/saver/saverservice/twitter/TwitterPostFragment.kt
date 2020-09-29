@@ -3,6 +3,7 @@ package com.service.saver.saverservice.twitter
 import androidx.appcompat.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -20,7 +21,10 @@ import twitter4j.Paging
 import twitter4j.Status
 import java.util.stream.Collectors
 import android.view.WindowManager
+import androidx.recyclerview.widget.GridLayoutManager
+import com.service.saver.saverservice.util.LoadingDialog
 import needle.Needle
+import java.lang.Exception
 import java.util.*
 
 
@@ -34,19 +38,20 @@ class TwitterPostFragment : Fragment() {
     private var db: AdminSQLiteOpenHelper? = null
 
     private val itemscount = 10
+    private var loadingDialog: LoadingDialog? = null
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_twitterpost_list, container, false)
         setHasOptionsMenu(true)
-        var linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this.context)
+        var gridLayoutManager = GridLayoutManager(this.context, 2)
         with(view.list) {
-            layoutManager = linearLayoutManager
-            addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(activity, layoutManager!!.layoutDirection))
+            layoutManager = gridLayoutManager
+            addItemDecoration(DividerItemDecoration(activity, layoutManager!!.layoutDirection))
 
         }
-        mScrollListener = object : EndlessRecyclerOnScrollListener(linearLayoutManager) {
+        mScrollListener = object : EndlessRecyclerOnScrollListener(gridLayoutManager) {
             override fun onLoadMore(current_page: Int) {
                 view.list.stopScroll();
                 loadPage()
@@ -54,8 +59,8 @@ class TwitterPostFragment : Fragment() {
             }
         }
 
-        view.list.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: androidx.recyclerview.widget.RecyclerView, newState: Int) {
+        view.list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
                 if (!recyclerView!!.canScrollVertically(1)) {
@@ -69,6 +74,7 @@ class TwitterPostFragment : Fragment() {
         })
         view.list.adapter = TwitterPostRecyclerViewAdapter(POST_LIST)
         db = AdminSQLiteOpenHelper(this.context)
+        this.loadingDialog = LoadingDialog(this.activity)
         return view
     }
 
@@ -83,19 +89,30 @@ class TwitterPostFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun loadUser(user: String) {
-        paging = Paging(1, itemscount)
-        val collect = MainTabActivity.jtwitter.jtwitter.getUserTimeline(user, paging).stream()/*.m  ap { e -> e.mediaEntities }*/.collect(Collectors.toList());
-        POST_LIST.clear();
-        POST_LIST.addAll(collect)
-        view!!.list.adapter!!.notifyDataSetChanged()
-        view!!.list.scrollToPosition(0)
+        try {
+
+            loadingDialog!!.startLoadingDialog()
+            this.user = user;
+            paging = Paging(1, itemscount)
+            val collect = MainTabActivity.jtwitter.jtwitter.getUserTimeline(user, paging).stream()/*.m  ap { e -> e.mediaEntities }*/.collect(Collectors.toList())
+            POST_LIST.clear();
+            POST_LIST.addAll(collect)
+            requireView().list.adapter!!.notifyDataSetChanged()
+            requireView().list.scrollToPosition(0)
+            loadingDialog!!.dismissDialog()
+        } catch (e: Exception) {
+            Log.e("Error", "ERROR LOAD USER", e);
+            loadingDialog!!.dismissDialog()
+
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun loadPage() {
-        val adapter = view!!.list.adapter
+        val adapter = requireView().list.adapter
         Needle.onBackgroundThread().execute {
             if (!updating) {
+                loadingDialog!!.startLoadingDialog()
                 updating = true
 
                 paging = Paging(paging.page + 1, itemscount)
@@ -104,22 +121,24 @@ class TwitterPostFragment : Fragment() {
                 Needle.onMainThread().execute {
                     adapter!!.notifyDataSetChanged()
                     updating = false
+                    loadingDialog!!.dismissDialog()
+                    requireView().list.scrollToPosition(itemscount * (paging.page - 1))
                 }
             }
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater!!.inflate(R.menu.twitter_menu, menu)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item!!.itemId) {
             R.id.load_twitter -> {
                 val builder = activity?.let { AlertDialog.Builder(it) }
                 // Get the layout inflater
-                val inflater = activity!!.layoutInflater
+                val inflater = requireActivity().layoutInflater
                 var servername = EditText(this.context);
                 if (builder != null) {
                     builder.setTitle("Add user")
@@ -138,26 +157,27 @@ class TwitterPostFragment : Fragment() {
                                 db!!.agregarUserLink(user)
                                 this.view?.let { loadUser(username) };
                             }
-                            .setNegativeButton("Cancel") { dialog, id -> dialog.cancel() }
+                            .setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
 
                     builder.create().show()
                 }
                 return true
             }
             R.id.list_user_twitter -> {
-                val inflater = activity!!.layoutInflater
-                var create: AlertDialog = AlertDialog.Builder(activity!!).create();
+                val inflater = requireActivity().layoutInflater
+                var create: AlertDialog = AlertDialog.Builder(requireActivity()).create();
                 val usersTwitter: List<UserLink> = db!!.allUserLinks()
                 val view = inflater.inflate(R.layout.user_view_list, null)
-                val alertDialog = AlertDialog.Builder(activity!!)
-                val list = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.user_view_list_reecycler)
-                list.setLayoutManager(androidx.recyclerview.widget.LinearLayoutManager(this.context));
+                val alertDialog = AlertDialog.Builder(requireActivity())
+                val list = view.findViewById<RecyclerView>(R.id.user_view_list_reecycler)
+                list.layoutManager = LinearLayoutManager(this.context);
                 list.setHasFixedSize(true)
                 val userAdapter = UserRecyclerViewAdapter(usersTwitter, object : OnUserListListInteractionListener {
-                    override fun OnUserListListInteractionListener(user: UserLink?) {
+                    override fun onUserListListInteractionListener(user: UserLink?) {
                         if (user != null) {
 
                             loadUser(user!!.username)
+
                         }
                         create?.cancel()
                     }
@@ -194,7 +214,7 @@ class TwitterPostFragment : Fragment() {
      * for more information.
      */
     interface OnUserListListInteractionListener {
-        fun OnUserListListInteractionListener(item: UserLink?)
+        fun onUserListListInteractionListener(item: UserLink?)
     }
 
     companion object {

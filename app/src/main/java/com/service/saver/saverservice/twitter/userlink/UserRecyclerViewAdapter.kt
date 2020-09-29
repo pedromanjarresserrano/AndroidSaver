@@ -2,7 +2,6 @@ package com.service.saver.saverservice.twitter.userlink
 
 
 import android.net.Uri
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,18 +33,33 @@ class UserRecyclerViewAdapter(
         holder.text.text = item.username
         val db = AdminSQLiteOpenHelper(holder.mView.context)
         if (item.avatar_url.isNullOrEmpty()) {
-            val profileImageURL = MainTabActivity.jtwitter.jtwitter.showUser(item.username).get400x400ProfileImageURL()
-            item.avatar_url = profileImageURL
-            db.updateUserLink(item)
-            val imageuri = Uri.parse(profileImageURL)
-            holder.image.setImageURI(imageuri, holder.mView.context)
+            try {
+                Needle.onBackgroundThread().execute {
+                    try {
+
+                        val profileImageURL = MainTabActivity.jtwitter.jtwitter.showUser(item.username).get400x400ProfileImageURL()
+                        item.avatar_url = profileImageURL
+                        val imageuri = Uri.parse(profileImageURL)
+                        holder.image.setImageURI(imageuri, holder.mView.context)
+                        db.updateUserLink(item)
+                    } catch (e: Exception) {
+                        if (e.message == "User not found.")
+                            db.deleteUserLink(item);
+                    }
+                }
+
+            } catch (e: Exception) {
+                if (e.message == "User not found.") {
+                    db.deleteUserLink(item);
+                }
+            }
         } else {
             val imageuri = Uri.parse(item.avatar_url)
             holder.image.setImageURI(imageuri, holder.mView.context)
         }
 
         holder.mView.setOnClickListener {
-            mOnClickListener.OnUserListListInteractionListener(item)
+            mOnClickListener.onUserListListInteractionListener(item)
         }
 
 

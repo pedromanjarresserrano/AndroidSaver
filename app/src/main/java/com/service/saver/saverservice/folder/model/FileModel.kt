@@ -7,11 +7,12 @@ class FileModel : Serializable {
     var name: String? = null
     var filepath: String? = null
     var isFolder: Boolean = false
-
-    constructor(id: Long?, name: String, filepath: String, b: Boolean) {
+    var parent: String = ""
+    constructor(id: Long?, name: String, filepath: String, b: Boolean, parent: String) {
         this.id = id
         this.name = name
         this.filepath = filepath
         this.isFolder = b
+        this.parent= parent
     }
 }

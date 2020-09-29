@@ -2,9 +2,13 @@ package com.service.saver.saverservice.player;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -32,6 +36,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.folder.FileModelFragment;
 import com.service.saver.saverservice.folder.model.FileModel;
+import com.service.saver.saverservice.util.Files;
 
 import java.util.List;
 
@@ -44,6 +49,7 @@ public class PlayerActivity extends AppCompatActivity {
     private SimpleExoPlayer player;
     private int position;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +63,12 @@ public class PlayerActivity extends AppCompatActivity {
         Intent intent = getIntent();
         position = intent.getIntExtra("position", 0);
         simpleExoPlayerView = findViewById(R.id.player_view);
-        list = FileModelFragment.Companion.getFILE_MODEL_LIST();
+        String parent = intent.getStringExtra("parent");
+        if (parent != null) {
+            list = Files.getFilesModel(parent);
+        } else {
+            list = FileModelFragment.Companion.getFILE_MODEL_LIST();
+        }
         initButtons();
         loadControl = new DefaultLoadControl();
         String abrAlgorithm = intent.getStringExtra("abr_algorithm");

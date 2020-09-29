@@ -8,9 +8,10 @@
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
+    android:background="@color/secondary_text"
     android:scrollbars="vertical"
     app:layoutManager="LinearLayoutManager"
-    tools:listitem="@layout/user_view_item"/>
+    tools:listitem="@layout/user_view_item" />
 
 
 

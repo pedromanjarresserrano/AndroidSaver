@@ -43,7 +43,7 @@
         <item name="colorControlActivated">@color/accent</item>
 
         <!-- inactive thumb color -->
-        <item name="colorSwitchThumbNormal">#@color/accent
+        <item name="colorSwitchThumbNormal">@color/accent
         </item>
 
         <!-- inactive track color (30% transparency) -->

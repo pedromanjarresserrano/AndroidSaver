@@ -6,11 +6,15 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.service.saver.saverservice.folder.model.FileModel;
+
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import needle.Needle;
 
 public class Files {
 
@@ -74,5 +78,12 @@ public class Files {
         final String[] units = new String[]{"B", "kB", "MB", "GB", "TB"};
         int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
         return DECIMAL_FORMAT.format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static List<FileModel> getFilesModel(String location) {
+        List<File> fileList = getfiles(location);
+        fileList.sort((x, y) -> Long.compare(x.lastModified(), y.lastModified()));
+        return fileList.stream().map((f) -> new FileModel(fileList.indexOf(f) + 0L, f.getName(), f.getAbsolutePath(), f.isDirectory(), f.getParent())).collect(Collectors.toList());
     }
 }

@@ -46,6 +46,7 @@ class MyFileModelRecyclerViewAdapter(
                 if (item.name!!.endsWith("mp4")) {
                     val intent = Intent(holder.mView.context, PlayerActivity::class.java)
                     intent.putExtra("position", position)
+                    intent.putExtra("parent", item.parent)
                     holder.mView.context.startActivity(intent)
                 } else {
                     val intent = Intent(holder.mView.context, ViewerActivity::class.java)

@@ -21,7 +21,8 @@
         android:layout_margin="@dimen/text_margin"
         android:layout_weight="1"
         android:textAlignment="center"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/delete_button_user_list"

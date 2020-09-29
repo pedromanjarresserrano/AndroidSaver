@@ -1,12 +1,9 @@
 package com.service.saver.saverservice.folder
 
 import androidx.fragment.app.Fragment
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import android.view.*
 import androidx.annotation.RequiresApi
 import com.service.saver.saverservice.R
@@ -25,16 +22,16 @@ class FolderFragment : Fragment() {
         setHasOptionsMenu(true)
         with(view.list) {
             layoutManager = androidx.recyclerview.widget.StaggeredGridLayoutManager(when {
-                activity!!.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> 3
+                requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> 3
                 else -> 5
             }, when {
-                activity!!.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
+                requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
                 else -> androidx.recyclerview.widget.StaggeredGridLayoutManager.HORIZONTAL
             })
             addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(activity, layoutManager!!.layoutDirection))
         }
         view.list.adapter = MyFileModelRecyclerViewAdapter(FILE_MODEL_LIST)
-        val intent = activity!!.intent
+        val intent = requireActivity().intent
         if (intent != null) {
             val extras = intent.extras
             if (extras != null) {
@@ -47,11 +44,11 @@ class FolderFragment : Fragment() {
     }
 
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater!!.inflate(R.menu.folder_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item!!.itemId) {
             R.id.reload_files_folder -> {
                 loadFiles()
@@ -61,10 +58,6 @@ class FolderFragment : Fragment() {
         }
     }
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-
-    }
 
     override fun onStart() {
         super.onStart()
@@ -81,10 +74,10 @@ class FolderFragment : Fragment() {
                 fileList.reverse()
                 FILE_MODEL_LIST.clear()
                 for (f in fileList) {
-                    val fileModel = FileModel(FILE_MODEL_LIST.size + 0L, f.name, f.absolutePath, f.isDirectory)
+                    val fileModel = FileModel(FILE_MODEL_LIST.size + 0L, f.name, f.absolutePath, f.isDirectory, f.parent)
                     FILE_MODEL_LIST.add(fileModel)
                     Needle.onMainThread().execute {
-                        this.view!!.list.adapter!!.notifyDataSetChanged()
+                        this.requireView().list.adapter!!.notifyDataSetChanged()
                     }
                 }
                 loading = false
