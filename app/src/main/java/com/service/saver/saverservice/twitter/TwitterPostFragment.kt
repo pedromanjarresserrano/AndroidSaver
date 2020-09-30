@@ -94,7 +94,6 @@ class TwitterPostFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.N)
     private fun loadUser(user: String) {
         try {
-            loadingDialog = LoadingDialog(this.activity)
             loadingDialog!!.startLoadingDialog()
             this.user = user;
             paging = Paging(1, itemscount)
@@ -116,7 +115,6 @@ class TwitterPostFragment : Fragment() {
         Needle.onBackgroundThread().execute {
             if (!updating) {
                 Needle.onMainThread().execute {
-                    loadingDialog = LoadingDialog(this.activity)
                     loadingDialog!!.startLoadingDialog()
                 }
 

@@ -1,6 +1,7 @@
 package com.service.saver.saverservice.twitter
 
 
+import android.graphics.Color
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -62,7 +63,8 @@ class TwitterPostRecyclerViewAdapter(
 
         } else {
           //  holder.image.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-           // holder.button_download.visibility = View.INVISIBLE
+            holder.image.setColorFilter(Color.BLACK)
+            // holder.button_download.visibility = View.INVISIBLE
         }
 
         holder.button_download.setOnClickListener {
