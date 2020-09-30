@@ -60,6 +60,7 @@ class TwitterPostRecyclerViewAdapter(
                 holder.image.setImageURI(imageuri, holder.mView.context)
             }
 
+            holder.image.setColorFilter(Color.TRANSPARENT)
 
         } else {
           //  holder.image.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
