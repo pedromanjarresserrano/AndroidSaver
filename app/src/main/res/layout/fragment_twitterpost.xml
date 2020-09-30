@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="435dp"
+    android:layout_height="355dp"
     android:background="@drawable/border"
     android:orientation="vertical">
 
@@ -12,19 +12,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textColor="#FFFFFF" />
 
-    <com.facebook.drawee.view.SimpleDraweeView
-        android:id="@+id/iamge_post"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="287dp"
-        android:layout_marginLeft="7dp"
-        android:layout_marginRight="7dp"
-        android:background="#000000"
-        android:backgroundTint="#00FFFFFF"
-        app:retryImageScaleType="fitCenter"
-        app:roundedCornerRadius="10dp"
-        app:srcCompat="?attr/actionBarDivider" />
+        android:layout_height="204dp">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/iamge_post"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000000"
+            android:backgroundTint="#00FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:retryImageScaleType="centerInside"
+            app:roundedCornerRadius="10dp"
+            app:srcCompat="?attr/actionBarDivider" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

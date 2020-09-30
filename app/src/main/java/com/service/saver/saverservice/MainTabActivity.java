@@ -233,11 +233,11 @@ public class MainTabActivity extends AppCompatActivity {
         clipDataListener.onValidLinkCapture(() -> {
             Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
         });
-        db = new AdminSQLiteOpenHelper(this.getBaseContext());
+   //     db = new AdminSQLiteOpenHelper(this.getBaseContext());
 
        // List<UserLink> allUserLinks = db.allUserLinks();
       //  System.out.println(allUserLinks.toString());
-/*        for (String e : test) {
+      /*  for (String e : test) {
             UserLink user = new UserLink();
             user.setUsername(e);
             UserLink userLink = db.getUserLink(e);

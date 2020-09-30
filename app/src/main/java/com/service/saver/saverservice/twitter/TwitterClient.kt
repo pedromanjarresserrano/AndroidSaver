@@ -79,7 +79,7 @@ class TwitterClient {
                         if (user != null)
                             entites(mediaEntities, true, user.screenName)
                         else
-                            entites(mediaEntities,false, "")
+                            entites(mediaEntities, false, "")
                     }
                 }
             } catch (e: Exception) {
@@ -123,12 +123,13 @@ class TwitterClient {
                 val builder = this.context?.let { AlertDialog.Builder(it) }
                 if (builder != null) {
                     builder.setTitle("Already download").setMessage("The file " + postlink.url + " is already download, download again?")
-                        .setPositiveButton("Ok") { dialog, e ->
-                            findlink.save = false
-                            this.db!!.updatePostLink(findlink)
-                        }
-                        .setNegativeButton("Cancel") { dialog, e -> };
-                    builder.create().show()
+                            .setPositiveButton("Ok") { _, _ ->
+                                findlink.save = false
+                                this.db!!.updatePostLink(findlink)
+                            }
+                            .setNegativeButton("Cancel") { _, _ -> };
+                    val alertDialog = builder.create()
+                    alertDialog.show()
                 }
             }
         }

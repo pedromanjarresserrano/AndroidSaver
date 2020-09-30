@@ -141,7 +141,7 @@ class CommonFragment : Fragment() {
     private fun loadBtnLoginTwitter(view: View, oAuthRequestToken: RequestToken?) {
         view.btn_twitter.setOnClickListener {
             if (oAuthRequestToken != null) {
-                val redirectURL = oAuthRequestToken!!.getAuthenticationURL()
+                val redirectURL = oAuthRequestToken.getAuthenticationURL()
                 val i = Intent(Intent.ACTION_VIEW)
                 i.data = Uri.parse(redirectURL)
                 activity!!.startActivity(i)

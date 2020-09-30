@@ -46,11 +46,11 @@ class FileModelFragment : Fragment() {
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater!!.inflate(R.menu.folder_menu, menu)
+        inflater.inflate(R.menu.folder_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item!!.itemId) {
+        when (item.itemId) {
             R.id.reload_files_folder -> {
                 loadFiles()
                 return true

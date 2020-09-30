@@ -25,11 +25,12 @@ class TwitterPostRecyclerViewAdapter(
     private val mOnClickListener: View.OnClickListener
 
     init {
-        mOnClickListener = View.OnClickListener { v ->
+        mOnClickListener = View.OnClickListener { _ ->
             //val item = v.tag as DummyItem
             // Notify the active callbacks interface (the activity, if the fragment is attached to
             // one) that an item has been selected.
         }
+        setHasStableIds(true)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -65,13 +66,18 @@ class TwitterPostRecyclerViewAdapter(
             }
 
         } else {
-            holder.image.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+          //  holder.image.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             holder.button_download.visibility = View.INVISIBLE
         }
 
     }
 
     override fun getItemCount(): Int = mValues.size
+
+    override fun getItemId(position: Int): Long {
+
+        return mValues.get(position).id
+    }
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
         val text: TextView = mView.text

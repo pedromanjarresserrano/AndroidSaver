@@ -21,11 +21,12 @@ public class LoadingDialog {
         builder.setView(inflater.inflate(R.layout.loading_dialog, null));
         builder.setCancelable(false);
         dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.show();
-
     }
 
     public void dismissDialog() {
-        dialog.dismiss();
+        if (dialog != null)
+            dialog.dismiss();
     }
 }
