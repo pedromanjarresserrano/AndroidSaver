@@ -2,14 +2,13 @@ package com.service.saver.saverservice.twitter
 
 
 import android.net.Uri
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import com.facebook.drawee.view.SimpleDraweeView
 import com.service.saver.saverservice.MainTabActivity.jtwitter
 import com.service.saver.saverservice.R
@@ -59,15 +58,19 @@ class TwitterPostRecyclerViewAdapter(
            //     holder.image.setOnClickListener{ it.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(mediaEntity.videoVariants.sortedBy { it.bitrate }.last().url))) }
                 holder.image.setImageURI(imageuri, holder.mView.context)
             }
-            holder.button_download.setOnClickListener {
-                jtwitter.entites(mediaEntities, true, item.user.name);
-                Toast.makeText(holder.mView.context, "Downloading", Toast.LENGTH_SHORT).show()
 
-            }
 
         } else {
           //  holder.image.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            holder.button_download.visibility = View.INVISIBLE
+           // holder.button_download.visibility = View.INVISIBLE
+        }
+
+        holder.button_download.setOnClickListener {
+            val url = "https://twitter.com/" + item.user.screenName
+                    .toString() + "/status/" + item.id;
+            jtwitter.saveTweet(url);
+            Toast.makeText(holder.mView.context, "Downloading", Toast.LENGTH_SHORT).show()
+
         }
 
     }
