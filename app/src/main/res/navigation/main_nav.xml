@@ -8,8 +8,7 @@
     <fragment
         android:id="@+id/commonFragment"
         android:name="com.service.saver.saverservice.CommonFragment"
-        android:label="fragment_common"
-        tools:layout="@layout/fragment_common" />
+        android:label="CommonFragment"/>
     <fragment
         android:id="@+id/fileModelFragment"
         android:name="com.service.saver.saverservice.folder.FileModelFragment"
@@ -18,4 +17,8 @@
         android:id="@+id/twitterPostFragment"
         android:name="com.service.saver.saverservice.twitter.TwitterPostFragment"
         android:label="TwitterPostFragment" />
+    <fragment
+        android:id="@+id/itemLinkFragment"
+        android:name="com.service.saver.saverservice.links.ItemLinkFragment"
+        android:label="ItemLinkFragment" />
 </navigation>

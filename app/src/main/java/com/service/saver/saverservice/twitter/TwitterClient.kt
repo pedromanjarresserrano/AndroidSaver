@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.service.saver.saverservice.domain.PostLink
+import com.service.saver.saverservice.domain.TempLink
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper
 import needle.Needle
 import twitter4j.MediaEntity
@@ -122,14 +123,15 @@ class TwitterClient {
             Needle.onMainThread().execute {
                 val builder = this.context?.let { AlertDialog.Builder(it) }
                 if (builder != null) {
-                    builder.setTitle("Already download").setMessage("The file " + postlink.url + " is already download, download again?")
-                            .setPositiveButton("Ok") { _, _ ->
-                                findlink.save = false
-                                this.db!!.updatePostLink(findlink)
-                            }
-                            .setNegativeButton("Cancel") { _, _ -> };
-                    val alertDialog = builder.create()
-                    alertDialog.show()
+                    /*   builder.setTitle("Already download").setMessage("The file " + postlink.url + " is already download, download again?")
+                               .setPositiveButton("Ok") { _, _ ->
+                                   findlink.save = false
+                                   this.db!!.updatePostLink(findlink)
+                               }
+                               .setNegativeButton("Cancel") { _, _ -> };
+                       val alertDialog = builder.create()
+                       alertDialog.show()*/
+                    this.db!!.agregarTempLink(TempLink(-1, findlink.url, Date()))
                 }
             }
         }

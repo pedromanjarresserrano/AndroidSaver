@@ -11,6 +11,13 @@
         android:icon="@drawable/ic_baseline_folder_24" />
     <item
         android:id="@+id/twitterPostFragment"
+        android:title="Twitter"
         android:icon="@mipmap/ic_twitter_icon"
-        android:title="Twitter" />
+         />
+    <item
+        android:id="@+id/itemLinkFragment"
+        android:title="Links"
+        android:icon="@drawable/ic_baseline_view_list_24"
+
+         />
 </menu>

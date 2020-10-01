@@ -28,7 +28,6 @@ class FolderFragment : Fragment() {
                 requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
                 else -> androidx.recyclerview.widget.StaggeredGridLayoutManager.HORIZONTAL
             })
-            addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(activity, layoutManager!!.layoutDirection))
         }
         view.list.adapter = MyFileModelRecyclerViewAdapter(FILE_MODEL_LIST)
         val intent = requireActivity().intent
@@ -80,13 +79,10 @@ class FolderFragment : Fragment() {
                         this.requireView().list.adapter!!.notifyDataSetChanged()
                     }
                 }
+
                 loading = false
-
-
             }
         }
-
-
     }
 
 
@@ -94,12 +90,5 @@ class FolderFragment : Fragment() {
         val FILE_MODEL_LIST = ArrayList<FileModel>();
         var loading = false;
         var location = Files.getAbsolutePath();
-        @JvmStatic
-        fun newInstance(): FolderFragment {
-            val fragment = FolderFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
     }
 }

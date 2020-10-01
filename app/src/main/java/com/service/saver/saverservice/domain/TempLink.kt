@@ -3,16 +3,14 @@ package com.service.saver.saverservice.domain
 import java.io.Serializable
 import java.util.*
 
-class UserLink : Serializable {
-    var id: Number = -1;
-    var username: String = ""
-    var avatar_url: String = ""
+class TempLink : Serializable {
+    var id: Long = -1;
+    var url: String = ""
     var createDate: Date = Date()
 
-    constructor(id: Number, username: String, avatar_url: String, createDate: Date) {
+    constructor(id: Long,  url: String, createDate: Date) {
         this.id = id
-        this.username = username
-        this.avatar_url = avatar_url
+        this.url = url
         this.createDate = createDate
     }
 
@@ -20,13 +18,13 @@ class UserLink : Serializable {
 
 
     override fun toString(): String {
-        return "$username"
+        return "$url"
     }
 
 
     companion object {
-        const val TABLE_NAME = "userlink";
-        const val TABLE_CREATE = "create table ${TABLE_NAME}(id INTEGER PRIMARY KEY,  username text UNIQUE, avatar_url text, createDate date)"
+        const val TABLE_NAME = "templink";
+        const val TABLE_CREATE = "create table ${TABLE_NAME}(id INTEGER PRIMARY KEY,  url text UNIQUE,  createDate date)"
         const val DROP_TABLE = "drop table if exists ${TABLE_NAME}"
     }
 }

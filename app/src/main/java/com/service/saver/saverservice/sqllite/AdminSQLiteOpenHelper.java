@@ -5,8 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.service.saver.saverservice.domain.PostLink;
+import com.service.saver.saverservice.domain.TempLink;
 import com.service.saver.saverservice.domain.UserLink;
 
 import java.text.SimpleDateFormat;
@@ -18,7 +20,7 @@ import java.util.Locale;
 public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "saver_db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     public AdminSQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -32,6 +34,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(PostLink.TABLE_CREATE);
         db.execSQL(UserLink.TABLE_CREATE);
+        db.execSQL(TempLink.TABLE_CREATE);
     }
 
     @Override
@@ -42,7 +45,10 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         //  db.execSQL(UserLink.TABLE_CREATE);
         if (newVersion > oldVersion) {
             //  db.execSQL("ALTER TABLE "+UserLink.TABLE_NAME +" ADD COLUMN avatar_url TEXT");
-            db.execSQL(PostLink.ALTER_TABLE);
+//            db.execSQL(PostLink.ALTER_TABLE);
+            db.execSQL(TempLink.DROP_TABLE);
+            db.execSQL(TempLink.TABLE_CREATE);
+
         }
     }
 
@@ -77,6 +83,23 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                 .TABLE_NAME, null, values);
         db.close();
         return id;
+    }
+
+
+    public long agregarTempLink(TempLink templink) {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("url", templink.getUrl());
+            values.put("createDate", getDate(templink.getCreateDate()));
+            long id = db.insert(TempLink
+                    .TABLE_NAME, null, values);
+            db.close();
+            return id;
+        } catch (Exception e) {
+            Log.e("error", "ERR/R", e);
+            return -1;
+        }
     }
 
     public PostLink getPostLink(String url) {
@@ -270,6 +293,52 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(UserLink.TABLE_NAME, "id = ?",
                 new String[]{String.valueOf(userLink.getId())});
+        db.close();
+    }
+
+
+    public ArrayList<TempLink> allTempLinks() {
+        List<TempLink> postLinks = new ArrayList<>();
+
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TempLink.TABLE_NAME + " ORDER BY  id DESC";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                TempLink userLink = new TempLink(
+                        cursor.getLong(cursor.getColumnIndex("id")),
+                        cursor.getString(cursor.getColumnIndex("url")),
+                        getDate(cursor.getString(cursor.getColumnIndex("createDate"))));
+                postLinks.add(userLink);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        // close db connection
+        db.close();
+        // return notes list
+        return (ArrayList<TempLink>) postLinks;
+    }
+
+    public int updateTempLink(TempLink postLink) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("url", postLink.getUrl());
+        values.put("createDate", getDate(postLink.getCreateDate()));
+        // updating row
+        return db.update(TempLink.TABLE_NAME, values, "id = ?",
+                new String[]{String.valueOf(postLink.getId())});
+    }
+
+
+    public void deleteTempLink(TempLink tem) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TempLink.TABLE_NAME, "id = ?",
+                new String[]{String.valueOf(tem.getId())});
         db.close();
     }
 }

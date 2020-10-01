@@ -18,4 +18,5 @@
     <string name="download">Download</string>
     <string name="open_twitter">Open Twitter</string>
     <string name="show_list_user">Show list user</string>
+    <string name="title_activity_splash_screen">SplashScreen</string>
 </resources>

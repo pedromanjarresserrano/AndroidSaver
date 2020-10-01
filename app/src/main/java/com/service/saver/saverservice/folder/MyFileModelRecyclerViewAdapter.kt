@@ -19,8 +19,11 @@ import java.io.File
 
 
 class MyFileModelRecyclerViewAdapter(
-        private val mValues: List<FileModel>) : androidx.recyclerview.widget.RecyclerView.Adapter<MyFileModelRecyclerViewAdapter.FileHolder>() {
+        private val mValues: List<FileModel>) : RecyclerView.Adapter<MyFileModelRecyclerViewAdapter.FileHolder>() {
 
+    init {
+        setHasStableIds(true)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileHolder {
         val view = LayoutInflater.from(parent.context)
@@ -59,6 +62,10 @@ class MyFileModelRecyclerViewAdapter(
                 holder.mView.context.startActivity(intent)
             }
         }
+    }
+    override fun getItemId(position: Int): Long {
+
+        return mValues!![position].id!!
     }
 
     override fun getItemCount(): Int = mValues.size

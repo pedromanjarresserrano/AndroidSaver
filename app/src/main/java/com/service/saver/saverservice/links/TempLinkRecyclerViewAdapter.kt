@@ -1,25 +1,27 @@
 package com.service.saver.saverservice.links
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import com.service.saver.saverservice.MainTabActivity
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.service.saver.saverservice.R
 import com.service.saver.saverservice.domain.TempLink
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper
 import kotlinx.android.synthetic.main.fragment_item_link.view.*
-import java.util.ArrayList
+import java.util.*
 
-class MyItemLinkRecyclerViewAdapter(
+
+class TempLinkRecyclerViewAdapter(
         private val values: ArrayList<TempLink>?,
         private val db: AdminSQLiteOpenHelper)
-    : RecyclerView.Adapter<MyItemLinkRecyclerViewAdapter.ViewHolder>() {
+    : RecyclerView.Adapter<TempLinkRecyclerViewAdapter.ViewHolder>() {
     init {
         setHasStableIds(true)
+
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -47,6 +49,10 @@ class MyItemLinkRecyclerViewAdapter(
     }
 
     override fun getItemCount(): Int = values!!.size
+    fun deleteItem(position: Int) {
+        values!!.removeAt(position)
+        notifyDataSetChanged()
+    }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val contentView: TextView = view.link_url

@@ -3,52 +3,33 @@ package com.service.saver.saverservice;
 import android.Manifest;
 import android.content.ClipboardManager;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
-
-import androidx.annotation.Nullable;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.tabs.TabLayout;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.widget.Toolbar;
 
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.DynamicDrawableSpan;
-import android.text.style.ImageSpan;
-import android.view.View;
-import android.widget.Toast;
-
-import com.service.saver.saverservice.domain.UserLink;
-import com.service.saver.saverservice.folder.FileModelFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper;
 import com.service.saver.saverservice.tumblr.util.TumblrClient;
 import com.service.saver.saverservice.twitter.TwitterClient;
-import com.service.saver.saverservice.twitter.TwitterPostFragment;
 import com.service.saver.saverservice.util.ClipDataListener;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MainTabActivity extends AppCompatActivity {
 
 
-    private ViewPager mViewPager;
     public static TumblrClient client;
     public static TwitterClient jtwitter;
     private int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
