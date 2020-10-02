@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.service.saver.saverservice.R
 import com.service.saver.saverservice.domain.TempLink
@@ -17,7 +16,8 @@ import java.util.*
 
 class TempLinkRecyclerViewAdapter(
         private val values: ArrayList<TempLink>?,
-        private val db: AdminSQLiteOpenHelper)
+        private val db: AdminSQLiteOpenHelper,
+        private val listener: TempLinkFragment.OnUpdateListInteractionListener)
     : RecyclerView.Adapter<TempLinkRecyclerViewAdapter.ViewHolder>() {
     init {
         setHasStableIds(true)
@@ -40,6 +40,7 @@ class TempLinkRecyclerViewAdapter(
             db.deleteTempLink(item)
             values.removeAt(position)
             notifyDataSetChanged();
+            this.listener.onUpdateListInteractionListener(item)
         }
     }
 

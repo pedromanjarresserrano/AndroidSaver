@@ -19,6 +19,6 @@
         android:label="TwitterPostFragment" />
     <fragment
         android:id="@+id/itemLinkFragment"
-        android:name="com.service.saver.saverservice.links.ItemLinkFragment"
+        android:name="com.service.saver.saverservice.links.TempLinkFragment"
         android:label="ItemLinkFragment" />
 </navigation>

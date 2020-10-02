@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -18,7 +20,8 @@ import com.service.saver.saverservice.domain.UserLink
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper
 import com.service.saver.saverservice.twitter.userlink.UserRecyclerViewAdapter
 import com.service.saver.saverservice.util.LoadingDialog
-import kotlinx.android.synthetic.main.fragment_filemodel_list.view.*
+import kotlinx.android.synthetic.main.fragment_filemodel_list.view.list
+import kotlinx.android.synthetic.main.fragment_twitterpost_list.view.*
 import needle.Needle
 import twitter4j.Paging
 import twitter4j.Status
@@ -79,6 +82,10 @@ class TwitterPostFragment : Fragment() {
                 loadingDialog!!.dismissDialog()
             }
         })
+
+        view.btn_open_user.setOnClickListener {
+            this.openUserDialog()
+        }
         return view
     }
 
@@ -97,13 +104,15 @@ class TwitterPostFragment : Fragment() {
             loadingDialog!!.startLoadingDialog()
             this.user = user;
             paging = Paging(1, itemscount)
-            val collect = MainTabActivity.jtwitter.jtwitter.getUserTimeline(user, paging).stream()/*.m  ap { e -> e.mediaEntities }*/.collect(Collectors.toList())
+            val collect = MainTabActivity.jtwitter.jtwitter.getUserTimeline(user, paging)
             POST_LIST.clear();
             POST_LIST.addAll(collect)
             requireView().list.adapter!!.notifyDataSetChanged()
             requireView().list.scrollToPosition(0)
+            requireView().btn_open_user.visibility = ImageButton.INVISIBLE
         } catch (e: Exception) {
             Log.e("Error", "ERROR LOAD USER", e);
+            Toast.makeText(this.context, "Error with user " + this.user, Toast.LENGTH_LONG)
             loadingDialog!!.dismissDialog()
 
         }
@@ -171,42 +180,47 @@ class TwitterPostFragment : Fragment() {
                 return true
             }
             R.id.list_user_twitter -> {
-                val inflater = requireActivity().layoutInflater
-                var create: AlertDialog = AlertDialog.Builder(requireActivity()).create();
-                val usersTwitter: List<UserLink> = db!!.allUserLinks()
-                val view = inflater.inflate(R.layout.user_view_list, null)
-                val alertDialog = AlertDialog.Builder(requireActivity())
-                val list = view.findViewById<RecyclerView>(R.id.user_view_list_reecycler)
-                list.layoutManager = LinearLayoutManager(this.context);
-                list.setHasFixedSize(true)
-                val userAdapter = UserRecyclerViewAdapter(usersTwitter, object : OnUserListListInteractionListener {
-                    override fun onUserListListInteractionListener(user: UserLink?) {
-                        if (user != null) {
-                            create?.cancel()
-
-                            loadUser(user.username)
-
-                        }
-                        create?.cancel()
-                    }
-                })
-                list.adapter = userAdapter
-                alertDialog.setView(view)
-                val lp = WindowManager.LayoutParams()
-                create = alertDialog.create()
-
-                lp.copyFrom(create.window!!.attributes)
-                lp.width = 150
-                lp.height = 500
-                lp.x = -170
-                lp.y = 100
-                create.window!!.attributes = lp
-                create.show();
+                openUserDialog()
 
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun openUserDialog() {
+        val inflater = requireActivity().layoutInflater
+        var create: AlertDialog = AlertDialog.Builder(requireActivity()).create();
+        val usersTwitter: List<UserLink> = db!!.allUserLinks()
+        val view = inflater.inflate(R.layout.user_view_list, null)
+        val alertDialog = AlertDialog.Builder(requireActivity())
+        val list = view.findViewById<RecyclerView>(R.id.user_view_list_reecycler)
+        list.layoutManager = LinearLayoutManager(this.context);
+        list.setHasFixedSize(true)
+        val userAdapter = UserRecyclerViewAdapter(usersTwitter, object : OnUserListListInteractionListener {
+            @RequiresApi(Build.VERSION_CODES.N)
+            override fun onUserListListInteractionListener(user: UserLink?) {
+                if (user != null) {
+                    create?.cancel()
+
+                    loadUser(user.username)
+
+                }
+                create?.cancel()
+            }
+        })
+        list.adapter = userAdapter
+        alertDialog.setView(view)
+        val lp = WindowManager.LayoutParams()
+        create = alertDialog.create()
+
+        lp.copyFrom(create.window!!.attributes)
+        lp.width = 150
+        lp.height = 500
+        lp.x = -170
+        lp.y = 100
+        create.window!!.attributes = lp
+        create.show();
     }
 
 

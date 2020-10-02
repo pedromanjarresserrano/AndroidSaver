@@ -22,15 +22,8 @@ class TwitterPostRecyclerViewAdapter(
         private val mValues: List<Status>)
     : RecyclerView.Adapter<TwitterPostRecyclerViewAdapter.ViewHolder>() {
 
-    private val mOnClickListener: View.OnClickListener
-
     init {
-        mOnClickListener = View.OnClickListener { _ ->
-            //val item = v.tag as DummyItem
-            // Notify the active callbacks interface (the activity, if the fragment is attached to
-            // one) that an item has been selected.
-        }
-        setHasStableIds(true)
+            setHasStableIds(true)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
