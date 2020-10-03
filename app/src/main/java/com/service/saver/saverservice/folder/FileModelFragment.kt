@@ -6,16 +6,22 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.*
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.service.saver.saverservice.R
 import com.service.saver.saverservice.folder.model.FileModel
 import com.service.saver.saverservice.util.Files
+import com.service.saver.saverservice.util.LoadingDialog
 import kotlinx.android.synthetic.main.fragment_filemodel_list.view.*
 import needle.Needle
 import java.lang.Exception
+import java.util.stream.Collectors
 
 @RequiresApi(Build.VERSION_CODES.N)
-class FileModelFragment : Fragment() {
+open class FileModelFragment : Fragment() {
 
+    val FILE_MODEL_LIST = ArrayList<FileModel>();
+    var loading = false;
+    var location = Files.getAbsolutePath();
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -29,7 +35,6 @@ class FileModelFragment : Fragment() {
                 requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
                 else -> androidx.recyclerview.widget.StaggeredGridLayoutManager.HORIZONTAL
             })
-            addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(activity, layoutManager!!.layoutDirection))
         }
         view.list.adapter = MyFileModelRecyclerViewAdapter(FILE_MODEL_LIST)
         val intent = requireActivity().intent
@@ -60,6 +65,13 @@ class FileModelFragment : Fragment() {
     }
 
 
+    override fun onResume() {
+        super.onResume()
+
+
+        loadFiles()
+    }
+
     override fun onStart() {
         super.onStart()
         loadFiles()
@@ -69,43 +81,23 @@ class FileModelFragment : Fragment() {
 
         Needle.onBackgroundThread().execute {
             if (!loading) {
+                requireView().progressBarFolderFiles_Container.visibility = ConstraintLayout.VISIBLE
                 loading = true
                 val fileList = Files.getfiles(location)
                 fileList.sortBy { it.lastModified() }
                 fileList.reverse()
                 FILE_MODEL_LIST.clear()
-                for (f in fileList) {
-                    val fileModel = FileModel(FILE_MODEL_LIST.size + 0L, f.name, f.absolutePath, f.isDirectory, f.parent)
-                    FILE_MODEL_LIST.add(fileModel)
-                    Needle.onMainThread().execute {
-                        try {
-                            this.requireView().list.adapter!!.notifyDataSetChanged()
-                        } catch (e: Exception) {
-                            println(e)
-                        }
-                    }
+                FILE_MODEL_LIST.addAll(fileList.stream()
+                        .map { FileModel(fileList.indexOf(it) + 0L, it.name, it.absolutePath, it.isDirectory, it.parent) }
+                        .collect(Collectors.toList()))
+
+                Needle.onMainThread().execute {
+                    this.requireView().list.adapter!!.notifyDataSetChanged()
+                    requireView().progressBarFolderFiles_Container.visibility = ConstraintLayout.INVISIBLE
                 }
                 loading = false
-
-
             }
         }
-
-
     }
 
-
-    companion object {
-        val FILE_MODEL_LIST = ArrayList<FileModel>();
-        var loading = false;
-        var location = Files.getAbsolutePath();
-
-        @JvmStatic
-        fun newInstance(): FileModelFragment {
-            val fragment = FileModelFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
-    }
 }

@@ -13,15 +13,15 @@ public class LoadingDialog {
 
     public LoadingDialog(Activity activity) {
         this.activity = activity;
+    }
+
+    public void startLoadingDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.activity);
         LayoutInflater inflater = activity.getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.loading_dialog, null));
         builder.setCancelable(false);
         dialog = builder.create();
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-    }
-
-    public void startLoadingDialog() {
         dialog.show();
     }
 

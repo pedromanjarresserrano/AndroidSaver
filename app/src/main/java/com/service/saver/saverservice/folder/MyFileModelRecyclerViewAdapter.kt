@@ -70,7 +70,7 @@ class MyFileModelRecyclerViewAdapter(
 
     override fun getItemCount(): Int = mValues.size
 
-    inner class FileHolder(val mView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(mView) {
+    inner class FileHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
 
         val filename = mView.nombre_file
         val draweeView = mView.preview_file;

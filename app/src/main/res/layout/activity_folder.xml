@@ -9,6 +9,6 @@
     <fragment
         android:id="@+id/folderfiles"
         android:layout_width="match_parent" android:layout_height="match_parent"
-        android:name="com.service.saver.saverservice.folder.FolderFragment"
+        android:name="com.service.saver.saverservice.folder.InnerFolderFragment"
         tools:layout="@layout/fragment_filemodel_list" />
 </androidx.constraintlayout.widget.ConstraintLayout>

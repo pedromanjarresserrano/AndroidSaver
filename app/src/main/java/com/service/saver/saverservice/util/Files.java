@@ -83,7 +83,7 @@ public class Files {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<FileModel> getFilesModel(String location) {
         List<File> fileList = getfiles(location);
-        fileList.sort((x, y) -> Long.compare(x.lastModified(), y.lastModified()));
+        fileList.sort((x, y) -> Long.compare(y.lastModified(), x.lastModified()));
         return fileList.stream().map((f) -> new FileModel(fileList.indexOf(f) + 0L, f.getName(), f.getAbsolutePath(), f.isDirectory(), f.getParent())).collect(Collectors.toList());
     }
 }

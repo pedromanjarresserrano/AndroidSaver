@@ -67,7 +67,7 @@ public class PlayerActivity extends AppCompatActivity {
         if (parent != null) {
             list = Files.getFilesModel(parent);
         } else {
-            list = FileModelFragment.Companion.getFILE_MODEL_LIST();
+            list = Files.getFilesModel(Files.getAbsolutePath());
         }
         initButtons();
         loadControl = new DefaultLoadControl();
