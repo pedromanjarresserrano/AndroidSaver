@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
-import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper;
@@ -24,160 +23,16 @@ import com.service.saver.saverservice.tumblr.util.TumblrClient;
 import com.service.saver.saverservice.twitter.TwitterClient;
 import com.service.saver.saverservice.util.ClipDataListener;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 
 public class MainTabActivity extends AppCompatActivity {
 
 
-    public static TumblrClient client;
-    public static TwitterClient jtwitter;
+    public static TumblrClient JTUMBLR;
+    public static TwitterClient JTWITTER;
     private int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
-    private List<String> test = Arrays.asList(
-            "bigblackcockzac",
-            "suprshok",
-            "GangBang_Heaven",
-            "GangBangOrgyX",
-            "gangbandxxx",
-            "wifefuckedhard",
-            "manofpleasure",
-            "DP_DAP_Fan",
-            "dp_fan1",
-            "penetrationdou",
-            "groupsexfreak",
-            "illicit69kitty",
-            "LongerDeeper",
-            "bbcgoldclub",
-            "Jessica58697455",
-            "BlackXStallions",
-            "BBCTARGET",
-            "BBCTARGET",
-            "CutteeLil",
-            "londonrae__",
-            "HWFantasies",
-            "asslickballs",
-            "I_R_propaganda",
-            "cansugrupsever",
-            "EastCoastSwag18",
-            "latinas999",
-            "InterracialTrip",
-            "BreedMeDaddyNow",
-            "jcwildin",
-            "blackisbette",
-            "hashtag",
-            "bbcslut",
-            "DCBlkStallion",
-            "NakedTL",
-            "breedingqueenxo",
-            "curvydrachel4",
-            "danishBBClover",
-            "Nikki4BBC1",
-            "TooHotLouLou",
-            "KarlRayne",
-            "rimming_rocks",
-            "BestRimjobPics",
-            "TiffaniTeaseXXX",
-            "TheDaddyPanda",
-            "ElleAtTheEssex",
-            "ScarletteBunny",
-            "LongerDeeper",
-            "jaidenwestX",
-            "HotWifeRules69",
-            "polinafus",
-            "Jessica58697455",
-            "lnterracialLust",
-            "white_kinky",
-            "siswet",
-            "AssReFocus",
-            "ActionProjeX",
-            "LucyCatOfficial",
-            "xxxfreaknasty2",
-            "DestinationKat",
-            "blacktowhitenet",
-            "candyxop8",
-            "DaiIySexVid",
-            "bbcluvssluts",
-            "whiteslut4bbc",
-            "CANDYKPR",
-            "lnterracialLust",
-            "ariettaadamsxxx",
-            "Moh_BBC",
-            "AlenaCroftXXX",
-            "blackbull124",
-            "Analgeddon_",
-            "buffaloswingcpl",
-            "thebrittanyxoxo",
-            "Mrs_DarkCuckold",
-            "BlacOnWhite69",
-            "CirenV",
-            "missddoll1",
-            "hotwife3bbc",
-            "missddoll1",
-            "BlackMilk_69x",
-            "Secretcuckold11",
-            "SAVAGE_SLUT",
-            "ProCumtributes",
-            "Pash1991",
-            "BIackedTv",
-            "Secretcuckold11",
-            "pornmansion4",
-            "degeneratexxxxx",
-            "Amber_JayneXX",
-            "Gatita_krystal1",
-            "girlwspadetatoo",
-            "LilFreakDaChamp",
-            "IRisLoveNBWO",
-            "DCBlkStallion",
-            "kinkywaveIR",
-            "BRichXXX",
-            "RealCurvesLA",
-            "toy4blck",
-            "PrincssSparkles",
-            "CULOMBIANAS1",
-            "InterracialEuro",
-            "devin0209",
-            "cuckold4s",
-            "Galaxy100Galaxy",
-            "KitPlavi",
-            "Elin17xxx",
-            "IRconfes",
-            "fucktheshitout2",
-            "jcmex28",
-            "Black_Cockxx",
-            "XMotherOfSighsX",
-            "DrunkOnBBC",
-            "missluna2019",
-            "SuccubusReborn",
-            "PoisonxGoddess",
-            "James00412717",
-            "uragokkun",
-            "adrianorice",
-            "CumshotPornVids",
-            "coverthebitch",
-            "CumSlutCentralx",
-            "Kianna_Dior",
-            "freakyboy_xxx",
-            "CumshotsVids",
-            "MilfsnCum",
-            "CumAllOver1",
-            "LoveHugeLoads",
-            "HotFacials",
-            "SwallowMiniClip",
-            "Orazio_Sw_",
-            "newsperminator",
-            "pornoperv69",
-            "cumchampion",
-            "PrazerMaior",
-            "R_sidney_V",
-            "cumswallowclips",
-            "blondefart",
-            "BlackAlphaKing",
-            "Stonerock991",
-            "anal_life69",
-            "mssnewbooty",
-            "Augusttaylorxxx"
-    );
-    private AdminSQLiteOpenHelper db = null;
+
+     private AdminSQLiteOpenHelper db = null;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -195,29 +50,30 @@ public class MainTabActivity extends AppCompatActivity {
                         MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             }
         }
-        if (client == null)
-            client = new TumblrClient(this);
-        if (jtwitter == null)
-            jtwitter = new TwitterClient(this);
+        if (JTUMBLR == null)
+            JTUMBLR = new TumblrClient(this);
+        if (JTWITTER == null)
+            JTWITTER = new TwitterClient(this);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
 
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_view);
         NavHostFragment fragmentById = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main_nav);
+        assert fragmentById != null;
         NavController navController = fragmentById.getNavController();
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
         ClipDataListener clipDataListener = new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
         clipDataListener.onValidLinkCapture(() -> {
             Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
         });
-   //     db = new AdminSQLiteOpenHelper(this.getBaseContext());
+        //     db = new AdminSQLiteOpenHelper(this.getBaseContext());
 
-       // List<UserLink> allUserLinks = db.allUserLinks();
-      //  System.out.println(allUserLinks.toString());
+        // List<UserLink> allUserLinks = db.allUserLinks();
+        //  System.out.println(allUserLinks.toString());
       /*  for (String e : test) {
             UserLink user = new UserLink();
             user.setUsername(e);
@@ -229,16 +85,14 @@ public class MainTabActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 1: {
 
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted, yay! Do the
+                    // permission was grantd, yay! Do the
                     // contacts-related task you need to do.
                 } else {
 
@@ -253,7 +107,6 @@ public class MainTabActivity extends AppCompatActivity {
             // permissions this app might request
         }
     }
-
 
 
 }

@@ -11,6 +11,7 @@ import com.service.saver.saverservice.folder.model.FileModel;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,11 +53,15 @@ public class Files {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<File> getfiles(File dir) {
         File listFile[] = dir.listFiles();
-        List<File> collect = Arrays.asList(listFile)
-                .stream()
-                .filter(e -> !endsWith(e.getAbsolutePath(), Arrays.asList("/cache", "/.CACHE", ".sss", ".tss", ".txt")))
-                .collect(Collectors.toList());
-        return collect;
+        if (listFile != null) {
+            List<File> collect = Arrays.asList(listFile)
+                    .stream()
+                    .filter(e -> !endsWith(e.getAbsolutePath(), Arrays.asList("/cache", "/.CACHE", ".sss", ".tss", ".txt")))
+                    .collect(Collectors.toList());
+            return collect;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
 

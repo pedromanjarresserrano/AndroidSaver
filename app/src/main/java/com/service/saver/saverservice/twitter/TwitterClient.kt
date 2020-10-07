@@ -1,9 +1,12 @@
 package com.service.saver.saverservice.twitter
 
-import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
+import com.service.saver.saverservice.CommonFragment
+import com.service.saver.saverservice.MainTabActivity
 import com.service.saver.saverservice.domain.PostLink
 import com.service.saver.saverservice.domain.TempLink
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper
@@ -19,10 +22,10 @@ import java.util.*
 
 class TwitterClient {
 
-    var twitteraccesstoken = ""
-    var twitteraccessSecret = ""
-    var consumerKey = "kcj3ehA8TNqzdaTaCGVdIHBQt"
-    var twitterconsumerSecret = "ZrKtiohW60UO83DEeRw2ftqshcAq1aXzbxlYJCOMgbPZNuIa34"
+    private var twitteraccesstoken = ""
+    private var twitteraccessSecret = ""
+    private var consumerKey = "kcj3ehA8TNqzdaTaCGVdIHBQt"
+    private var twitterconsumerSecret = "ZrKtiohW60UO83DEeRw2ftqshcAq1aXzbxlYJCOMgbPZNuIa34"
     var jtwitter: Twitter
     private var context: Context? = null
     private var settings: SharedPreferences? = null
@@ -41,8 +44,8 @@ class TwitterClient {
         if (context != null) {
             settings = context.getSharedPreferences("settings", 0)
             try {
-                val twitteraccesstoken = settings!!.getString("twitteraccesstoken", "")
-                val twitteraccessSecret = settings!!.getString("twitteraccessSecret", "")
+                val twitteraccesstoken = settings!!.getString(PREF_KEY_OAUTH_TOKEN, "")
+                val twitteraccessSecret = settings!!.getString(PREF_KEY_OAUTH_SECRET, "")
                 if (!(twitteraccessSecret.isNullOrEmpty() || twitteraccesstoken.isNullOrEmpty())) {
                     jtwitter.oAuthAccessToken = AccessToken(twitteraccesstoken as String, twitteraccessSecret as String)
                     this.twitteraccesstoken = twitteraccesstoken
@@ -60,8 +63,8 @@ class TwitterClient {
     fun setTokens(twitteraccesstoken: String, twitteraccessSecret: String) {
         val edit = settings!!.edit()
 
-        edit.putString("twitteraccesstoken", twitteraccesstoken).commit()
-        edit.putString("twitteraccessSecret", twitteraccessSecret).commit()
+        edit.putString(PREF_KEY_OAUTH_TOKEN, twitteraccesstoken).apply()
+        edit.putString(PREF_KEY_OAUTH_SECRET, twitteraccessSecret).apply()
         this.twitteraccesstoken = twitteraccesstoken
         this.twitteraccessSecret = twitteraccessSecret
         jtwitter.oAuthAccessToken = AccessToken(twitteraccesstoken, twitteraccessSecret)
@@ -153,6 +156,41 @@ class TwitterClient {
 
     fun isAuthenticate(): Boolean {
         return !(this.twitteraccessSecret.isNullOrEmpty() || this.twitteraccesstoken.isNullOrEmpty())
+    }
+
+    companion object {
+        const val TWITTER_CALLBACK_URL = "https://saverservice"
+        const val PREFERENCE_NAME = "settings"
+        const val PREF_KEY_OAUTH_TOKEN = "twitteraccesstoken"
+        const val PREF_KEY_OAUTH_SECRET = "twitteraccessSecret"
+
+        const val URL_TWITTER_OAUTH_VERIFIER = "oauth_verifier"
+
+        fun newInstance(): CommonFragment {
+            return CommonFragment()
+        }
+    }
+
+    fun handleTwitterCallback(url: String?) {
+        val uri: Uri = Uri.parse(url)
+
+        // oAuth verifier
+        val verifier: String? = uri.getQueryParameter(URL_TWITTER_OAUTH_VERIFIER)
+        try {
+
+            // Get the access token
+            val accessTokenResponse = MainTabActivity.JTWITTER.getOAuthAccessToken(CommonFragment.oAuthRequestToken, verifier)
+
+
+            // After getting access token, access token secret
+            // store them in application preferences
+            setTokens(accessTokenResponse!!.token, accessTokenResponse.tokenSecret)
+            // Store login status - true
+            Log.e("Twitter OAuth Token", "> " + accessTokenResponse.token)
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
     }
 
 }

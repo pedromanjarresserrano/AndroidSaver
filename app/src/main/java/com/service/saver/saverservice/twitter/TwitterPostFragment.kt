@@ -27,6 +27,7 @@ import twitter4j.Paging
 import twitter4j.Status
 import java.util.*
 import java.util.stream.Collectors
+import kotlin.collections.ArrayList
 
 
 class TwitterPostFragment : Fragment() {
@@ -35,7 +36,6 @@ class TwitterPostFragment : Fragment() {
     private var isAtBottom: Boolean = false
 
 
-    private var user: String = ""
     private var db: AdminSQLiteOpenHelper? = null
 
     private val itemscount = 10
@@ -96,23 +96,35 @@ class TwitterPostFragment : Fragment() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(POST_LIST.isNotEmpty()){
+            requireView().btn_open_user.visibility = ImageButton.INVISIBLE
+        }
+    }
+
     private var paging: Paging = Paging(1, itemscount)
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun loadUser(user: String) {
         try {
-            loadingDialog!!.startLoadingDialog()
-            this.user = user;
+            Needle.onMainThread().execute {
+                loadingDialog!!.startLoadingDialog()
+            }
+            USERNAME = user;
             paging = Paging(1, itemscount)
-            val collect = MainTabActivity.jtwitter.jtwitter.getUserTimeline(user, paging)
+            val collect = MainTabActivity.JTWITTER.jtwitter.getUserTimeline(user, paging)
             POST_LIST.clear();
             POST_LIST.addAll(collect)
             requireView().list.adapter!!.notifyDataSetChanged()
             requireView().list.scrollToPosition(0)
             requireView().btn_open_user.visibility = ImageButton.INVISIBLE
+            Needle.onMainThread().execute {
+                loadingDialog!!.dismissDialog()
+            }
         } catch (e: Exception) {
             Log.e("Error", "ERROR LOAD USER", e);
-            Toast.makeText(this.context, "Error with user " + this.user, Toast.LENGTH_LONG)
+            Toast.makeText(this.context, "Error with user " + user, Toast.LENGTH_LONG)
             loadingDialog!!.dismissDialog()
 
         }
@@ -131,7 +143,7 @@ class TwitterPostFragment : Fragment() {
                 updating = true
 
                 paging = Paging(paging.page + 1, itemscount)
-                val collect = MainTabActivity.jtwitter.jtwitter.getUserTimeline(user, paging).stream()/*.m  ap { e -> e.mediaEntities }*/.collect(Collectors.toList());
+                val collect = MainTabActivity.JTWITTER.jtwitter.getUserTimeline(USERNAME, paging).stream()/*.m  ap { e -> e.mediaEntities }*/.collect(Collectors.toList());
                 collect.forEach { e -> POST_LIST.add(e) }
                 Needle.onMainThread().execute {
                     adapter!!.notifyDataSetChanged()
@@ -152,6 +164,9 @@ class TwitterPostFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.load_twitter -> {
+                Needle.onMainThread().execute {
+                    loadingDialog!!.startLoadingDialog()
+                }
                 val builder = activity?.let { AlertDialog.Builder(it) }
                 // Get the layout inflater
                 //val inflater = requireActivity().layoutInflater
@@ -177,6 +192,9 @@ class TwitterPostFragment : Fragment() {
 
                     builder.create().show()
                 }
+                Needle.onMainThread().execute {
+                    loadingDialog!!.dismissDialog()
+                }
                 return true
             }
             R.id.list_user_twitter -> {
@@ -191,7 +209,7 @@ class TwitterPostFragment : Fragment() {
     private fun openUserDialog() {
         val inflater = requireActivity().layoutInflater
         var create: AlertDialog = AlertDialog.Builder(requireActivity()).create();
-        val usersTwitter: List<UserLink> = db!!.allUserLinks()
+        val usersTwitter: ArrayList<UserLink> = ArrayList(db!!.allUserLinks())
         val view = inflater.inflate(R.layout.user_view_list, null)
         val alertDialog = AlertDialog.Builder(requireActivity())
         val list = view.findViewById<RecyclerView>(R.id.user_view_list_reecycler)
@@ -201,12 +219,12 @@ class TwitterPostFragment : Fragment() {
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onUserListListInteractionListener(user: UserLink?) {
                 if (user != null) {
-                    create?.cancel()
+                    create.cancel()
 
                     loadUser(user.username)
 
                 }
-                create?.cancel()
+                create.cancel()
             }
         })
         list.adapter = userAdapter
@@ -243,6 +261,7 @@ class TwitterPostFragment : Fragment() {
 
         val POST_LIST: LinkedList<Status> = LinkedList();
         var updating: Boolean = false
+        private var USERNAME: String = ""
 
     }
 }

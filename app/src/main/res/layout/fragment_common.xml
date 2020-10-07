@@ -22,7 +22,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.547">
 
         <Button
             android:id="@+id/btn_tumblr"
@@ -52,47 +53,11 @@
             android:background="@drawable/button_round_twitter"
             android:drawableLeft="@mipmap/twitter_icon_white"
             android:padding="8dp"
-            android:text="Get Pin Twitter"
+            android:text="Login Twitter"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="206dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            android:paddingTop="8dp">
-
-            <TextView
-                android:layout_width="83dp"
-                android:layout_height="match_parent"
-                android:text="Pin Twitter"
-                android:textAlignment="center"
-                android:textColor="@color/icons"
-                android:textSize="18sp" />
-
-            <EditText
-                android:id="@+id/txt_twitter_pin"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="right|center_vertical"
-                android:imeOptions="actionNext"
-                android:singleLine="true"
-                android:textColor="@android:color/black"
-                android:textSize="20dp" />
-
-            <ImageButton
-                android:id="@+id/btn_load_pin"
-                android:layout_width="30dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".15"
-                android:background="@drawable/button_round_twitter"
-                app:srcCompat="@drawable/ic_fiber_pin" />
-
-        </LinearLayout>
 
         <Switch
             android:id="@+id/service_switch"
@@ -103,18 +68,17 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:padding="8dp"
-            android:text="Service"
+            android:text="Service (Stop/Start)"
             android:textColor="@color/icons"
             android:textSize="18sp"
+            android:theme="@style/SCBSwitch"
+            android:thumbTint="@color/accent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.502"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_twitter"
-            app:layout_constraintVertical_bias="0.281"
-            android:theme="@style/SCBSwitch"
-            android:thumbTint="@color/accent"
-            />
+            app:layout_constraintVertical_bias="0.281" />
 
     </LinearLayout>
 

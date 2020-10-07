@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import com.facebook.drawee.view.SimpleDraweeView
 import com.service.saver.saverservice.MainTabActivity
 import com.service.saver.saverservice.R
@@ -18,7 +19,7 @@ import needle.Needle
 
 
 class UserRecyclerViewAdapter(
-        private val mValues: List<UserLink>, private val mOnClickListener: TwitterPostFragment.OnUserListListInteractionListener
+        private val mValues: ArrayList<UserLink>, private val mOnClickListener: TwitterPostFragment.OnUserListListInteractionListener
 ) : androidx.recyclerview.widget.RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder>() {
 
 
@@ -37,7 +38,7 @@ class UserRecyclerViewAdapter(
                 Needle.onBackgroundThread().execute {
                     try {
 
-                        val profileImageURL = MainTabActivity.jtwitter.jtwitter.showUser(item.username).get400x400ProfileImageURL()
+                        val profileImageURL = MainTabActivity.JTWITTER.jtwitter.showUser(item.username).get400x400ProfileImageURL()
                         item.avatar_url = profileImageURL
                         val imageuri = Uri.parse(profileImageURL)
                         holder.image.setImageURI(imageuri, holder.mView.context)
@@ -63,6 +64,29 @@ class UserRecyclerViewAdapter(
         }
 
 
+        holder.button_delete.setOnClickListener {
+            val builder = holder.mView.context?.let { AlertDialog.Builder(it) }
+            builder!!.setTitle("Delete user?")
+
+            // Inflate and set the layout for the dialog
+            // Pass null as the parent view because its going in the dialog layout
+            //val view = inflater.inflate(R.layout.twitter_user_url, null)
+            builder
+                    .setPositiveButton("Delete") { _, _ ->
+                        db.deleteUserLink(item)
+                        deleteItem(position)
+                    }
+                    .setNegativeButton("No") { dialog, _ -> dialog.cancel() }
+
+            builder.create().show()
+        }
+
+
+    }
+
+    fun deleteItem(position: Int) {
+        mValues!!.removeAt(position)
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int = mValues.size

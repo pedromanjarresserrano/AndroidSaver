@@ -3,7 +3,7 @@ package com.service.saver.saverservice.tumblr
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.service.saver.saverservice.MainTabActivity.client
+import com.service.saver.saverservice.MainTabActivity.JTUMBLR
 import com.service.saver.saverservice.R
 import com.service.saver.saverservice.domain.PostLink
 import com.service.saver.saverservice.domain.UserLink
@@ -30,7 +30,7 @@ class TumblrActivity : AppCompatActivity() {
                 val blog = hostsplit[0]
                 Needle.onBackgroundThread().execute {
                     if (!(TumblrClient.TOKEN_SECRET!!.isEmpty() && TumblrClient.TOKEN_KEY!!.isEmpty())) {
-                        val post = client!!.blogPost(blog, java.lang.Long.valueOf(id))
+                        val post = JTUMBLR!!.blogPost(blog, java.lang.Long.valueOf(id))
                         val urlFile = TumblrClient.getUrlFile(post)
                         urlFile.forEach {
                             var postlink = PostLink()

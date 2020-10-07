@@ -11,7 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.drawee.view.SimpleDraweeView
-import com.service.saver.saverservice.MainTabActivity.jtwitter
+import com.service.saver.saverservice.MainTabActivity.JTWITTER
 import com.service.saver.saverservice.R
 import kotlinx.android.synthetic.main.fragment_twitterpost.view.*
 import twitter4j.MediaEntity
@@ -64,7 +64,7 @@ class TwitterPostRecyclerViewAdapter(
         holder.button_download.setOnClickListener {
             val url = "https://twitter.com/" + item.user.screenName
                     .toString() + "/status/" + item.id;
-            jtwitter.saveTweet(url);
+            JTWITTER.saveTweet(url);
             Toast.makeText(holder.mView.context, "Downloading", Toast.LENGTH_SHORT).show()
 
         }

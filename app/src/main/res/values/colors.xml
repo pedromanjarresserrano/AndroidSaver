@@ -31,6 +31,7 @@
     <color name="tumblr_color_light">#5c799f</color>
 
     <color name="twitter_color_light">#FF459ECF</color>
+    <color name="transparent">#00FFFFFF</color>
 
 
 </resources>

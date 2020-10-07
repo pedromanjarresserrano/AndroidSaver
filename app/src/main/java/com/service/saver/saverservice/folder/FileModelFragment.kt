@@ -3,6 +3,7 @@ package com.service.saver.saverservice.folder
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.*
 import androidx.annotation.RequiresApi
@@ -81,19 +82,24 @@ open class FileModelFragment : Fragment() {
 
         Needle.onBackgroundThread().execute {
             if (!loading) {
-                requireView().progressBarFolderFiles_Container.visibility = ConstraintLayout.VISIBLE
-                loading = true
-                val fileList = Files.getfiles(location)
-                fileList.sortBy { it.lastModified() }
-                fileList.reverse()
-                FILE_MODEL_LIST.clear()
-                FILE_MODEL_LIST.addAll(fileList.stream()
-                        .map { FileModel(fileList.indexOf(it) + 0L, it.name, it.absolutePath, it.isDirectory, it.parent) }
-                        .collect(Collectors.toList()))
+                try {
 
-                Needle.onMainThread().execute {
-                    this.requireView().list.adapter!!.notifyDataSetChanged()
-                    requireView().progressBarFolderFiles_Container.visibility = ConstraintLayout.INVISIBLE
+                    requireView().progressBarFolderFiles_Container.visibility = ConstraintLayout.VISIBLE
+                    loading = true
+                    val fileList = Files.getfiles(location)
+                    fileList.sortBy { it.lastModified() }
+                    fileList.reverse()
+                    FILE_MODEL_LIST.clear()
+                    FILE_MODEL_LIST.addAll(fileList.stream()
+                            .map { FileModel(fileList.indexOf(it) + 0L, it.name, it.absolutePath, it.isDirectory, it.parent) }
+                            .collect(Collectors.toList()))
+
+                    Needle.onMainThread().execute {
+                        this.requireView().list.adapter!!.notifyDataSetChanged()
+                        requireView().progressBarFolderFiles_Container.visibility = ConstraintLayout.INVISIBLE
+                    }
+                } catch (e: Exception) {
+                    Log.e("Error", "E/RR", e)
                 }
                 loading = false
             }

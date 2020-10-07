@@ -44,9 +44,9 @@
             android:layout_height="61dp"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
-            android:background="@color/accent"
+            android:background="@drawable/button_round_corners_red"
             android:contentDescription="@string/download"
-            android:padding="10dp"
+            android:padding="15dp"
             android:scaleType="centerCrop"
             android:tint="#00FFFFFF"
             android:tintMode="src_over"
@@ -55,7 +55,7 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/content_text"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/stat_sys_download" />
+            app:srcCompat="@drawable/ic_download" />
 
         <TextView
             android:id="@+id/content_text"

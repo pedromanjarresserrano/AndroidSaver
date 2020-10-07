@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -91,7 +92,7 @@ public class SaverService extends IntentService {
 
             @Override
             public void taskEnd(@NonNull DownloadTask task, @NonNull EndCause cause, @Nullable Exception realCause, @NonNull SpeedCalculator taskSpeed) {
-                System.out.println("ERROR"+cause);
+                System.out.println("ERROR" + cause);
             }
 
             @Override
@@ -171,13 +172,13 @@ public class SaverService extends IntentService {
                         removeSafe(postLink);
                     } catch (Exception e) {
                         removeSafe(postLink);
-                        e.printStackTrace();
+                        Log.e("ERROR", "E/RR", e);
                     }
                 }
                 try {
                     Thread.currentThread().sleep(1000L);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e("ERROR", "E/RR", e);
                 }
             }
         });

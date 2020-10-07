@@ -24,14 +24,11 @@
 
     <ImageButton
         android:id="@+id/download_again"
-        style="@android:style/Widget.Material.Light.ImageButton"
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_marginStart="2dp"
         android:background="@drawable/button_round_corners_red"
-        android:src="@android:drawable/stat_sys_download"
-        android:tint="#FFFFFF"
-        android:tintMode="src_in"
+        android:src="@drawable/ic_download"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.272"

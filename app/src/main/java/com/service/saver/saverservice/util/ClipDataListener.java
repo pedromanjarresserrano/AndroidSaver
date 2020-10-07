@@ -9,7 +9,7 @@ import androidx.annotation.RequiresApi;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.service.saver.saverservice.MainTabActivity.jtwitter;
+import static com.service.saver.saverservice.MainTabActivity.JTWITTER;
 
 
 public class ClipDataListener {
@@ -41,7 +41,7 @@ public class ClipDataListener {
                 if (!checkOnList(listlinks, text)) {
                     if (runnable != null)
                         runnable.run();
-                    jtwitter.saveTweet(text);
+                    JTWITTER.saveTweet(text);
                 }
             }
         }
