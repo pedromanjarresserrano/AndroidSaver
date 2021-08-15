@@ -18,7 +18,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.service.saver.saverservice.tumblr.util.TumblrClient;
 import com.service.saver.saverservice.twitter.TwitterClient;
 import com.service.saver.saverservice.util.ClipDataListener;
 
@@ -27,7 +26,6 @@ import java.util.Objects;
 public class MainTabActivity extends AppCompatActivity {
 
 
-    public static TumblrClient JTUMBLR;
     public static TwitterClient JTWITTER;
     private int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     public static ClipDataListener CLIPDATALISTENER;
@@ -48,8 +46,6 @@ public class MainTabActivity extends AppCompatActivity {
                                 MY_PERMISSIONS_REQUEST_READ_CONTACTS);
                     }
         }
-        if (JTUMBLR == null)
-            JTUMBLR = new TumblrClient(this);
         if (JTWITTER == null)
             JTWITTER = new TwitterClient(this);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();

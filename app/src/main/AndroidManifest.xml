@@ -34,15 +34,6 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".FolderActivity" />
-        <activity android:name=".tumblr.TumblrActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity>
 
         <receiver
             android:name=".services.BootCompleteReceiver"
