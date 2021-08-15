@@ -54,9 +54,10 @@
         </receiver>
 
         <service
-            android:name=".services.SaverService"
+            android:name="com.service.saver.saverservice.services.SaverService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="true"
+            />
 
         <provider
             android:name=".provider.GenericFileProvider"

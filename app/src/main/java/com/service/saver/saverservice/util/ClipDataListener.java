@@ -14,16 +14,20 @@ import static com.service.saver.saverservice.MainTabActivity.JTWITTER;
 
 public class ClipDataListener {
 
+    private ClipboardManager clip;
     private List<String> listlinks = new ArrayList<>();
     private Runnable runnable = null;
+    private static ClipboardManager.OnPrimaryClipChangedListener ON_PRIMARY_CLIP_CHANGED_LISTENER;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public ClipDataListener(ClipboardManager clip) {
-        ClipboardManager.OnPrimaryClipChangedListener listener = () -> {
+        this.clip = clip;
+        ON_PRIMARY_CLIP_CHANGED_LISTENER = () -> {
             getLink(clip);
         };
-        clip.addPrimaryClipChangedListener(listener);
-        getLink(clip);
+        clip.addPrimaryClipChangedListener(ON_PRIMARY_CLIP_CHANGED_LISTENER);
+
+        getLink(this.clip);
 
     }
 
@@ -49,8 +53,9 @@ public class ClipDataListener {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private boolean checkOnList(List<String> lista, String object) {
-        return lista.stream().filter(e->e.equals(object)).findFirst().isPresent();
+        return lista.stream().filter(e -> e.equals(object)).findFirst().isPresent();
     }
+
 
 
 }

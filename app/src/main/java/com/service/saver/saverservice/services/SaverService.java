@@ -5,12 +5,14 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,9 +30,11 @@ import com.liulishuo.okdownload.core.cause.EndCause;
 import com.liulishuo.okdownload.core.listener.DownloadListener4WithSpeed;
 import com.liulishuo.okdownload.core.listener.assist.Listener4SpeedAssistExtend;
 import com.service.saver.saverservice.BuildConfig;
+import com.service.saver.saverservice.MainTabActivity;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.domain.PostLink;
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper;
+import com.service.saver.saverservice.util.ClipDataListener;
 import com.service.saver.saverservice.util.Files;
 
 import java.io.File;
@@ -50,6 +54,7 @@ public class SaverService extends IntentService {
     private NotificationCompat.Builder mBuilder;
     private DownloadSerialQueue serialQueue;
     private AdminSQLiteOpenHelper db = null;
+    public static ClipDataListener CLIPDATALISTENER;
 
     public SaverService() {
         super("SaverService");
@@ -65,7 +70,12 @@ public class SaverService extends IntentService {
         set.commit();
         serialQueue = new DownloadSerialQueue(getListener());
         db = new AdminSQLiteOpenHelper(this.getBaseContext());
-
+        List<PostLink> allPostLinks = db.getAllPostLinks();
+        CLIPDATALISTENER = new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
+        CLIPDATALISTENER.onValidLinkCapture(() -> {
+            Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
+        });
+        System.out.println("Break");
     }
 
     @NonNull
@@ -118,11 +128,13 @@ public class SaverService extends IntentService {
 
             @Override
             public void connectEnd(@NonNull DownloadTask task, int blockIndex, int responseCode, @NonNull Map<String, List<String>> responseHeaderFields) {
+                System.out.println("ERROR");
 
             }
 
             @Override
             public void fetchStart(@NonNull DownloadTask task, int blockIndex, long contentLength) {
+                System.out.println("ERROR");
 
             }
 
@@ -180,6 +192,8 @@ public class SaverService extends IntentService {
                 } catch (InterruptedException e) {
                     Log.e("ERROR", "E/RR", e);
                 }
+
+
             }
         });
     }
@@ -212,5 +226,8 @@ public class SaverService extends IntentService {
         db.updatePostLink(postLink);
     }
 
-
+    @Override
+    public void onDestroy() {
+        System.out.println("Destroy");
+    }
 }

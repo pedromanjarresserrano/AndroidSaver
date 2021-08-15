@@ -85,7 +85,7 @@ class UserRecyclerViewAdapter(
     }
 
     fun deleteItem(position: Int) {
-        mValues!!.removeAt(position)
+        mValues.removeAt(position)
         notifyDataSetChanged()
     }
 

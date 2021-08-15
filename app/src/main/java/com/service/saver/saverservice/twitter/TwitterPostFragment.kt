@@ -77,11 +77,7 @@ class TwitterPostFragment : Fragment() {
         db = AdminSQLiteOpenHelper(this.context)
         this.loadingDialog = LoadingDialog(this.activity)
 
-        view.list.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                loadingDialog!!.dismissDialog()
-            }
-        })
+        view.list.viewTreeObserver.addOnGlobalLayoutListener { loadingDialog!!.dismissDialog() }
 
         view.btn_open_user.setOnClickListener {
             this.openUserDialog()
@@ -216,7 +212,7 @@ class TwitterPostFragment : Fragment() {
         list.layoutManager = LinearLayoutManager(this.context);
         list.setHasFixedSize(true)
         val userAdapter = UserRecyclerViewAdapter(usersTwitter, object : OnUserListListInteractionListener {
-            @RequiresApi(Build.VERSION_CODES.N)
+
             override fun onUserListListInteractionListener(user: UserLink?) {
                 if (user != null) {
                     create.cancel()

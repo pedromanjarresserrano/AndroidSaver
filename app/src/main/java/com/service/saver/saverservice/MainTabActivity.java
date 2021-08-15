@@ -18,7 +18,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper;
 import com.service.saver.saverservice.tumblr.util.TumblrClient;
 import com.service.saver.saverservice.twitter.TwitterClient;
 import com.service.saver.saverservice.util.ClipDataListener;
@@ -31,8 +30,8 @@ public class MainTabActivity extends AppCompatActivity {
     public static TumblrClient JTUMBLR;
     public static TwitterClient JTWITTER;
     private int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+    public static ClipDataListener CLIPDATALISTENER;
 
-     private AdminSQLiteOpenHelper db = null;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -42,13 +41,12 @@ public class MainTabActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-            }
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+                    }
         }
         if (JTUMBLR == null)
             JTUMBLR = new TumblrClient(this);
@@ -66,45 +64,19 @@ public class MainTabActivity extends AppCompatActivity {
         assert fragmentById != null;
         NavController navController = fragmentById.getNavController();
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
-        ClipDataListener clipDataListener = new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
-        clipDataListener.onValidLinkCapture(() -> {
+        CLIPDATALISTENER = new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
+        CLIPDATALISTENER.onValidLinkCapture(() -> {
             Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
         });
-        //     db = new AdminSQLiteOpenHelper(this.getBaseContext());
-
-        // List<UserLink> allUserLinks = db.allUserLinks();
-        //  System.out.println(allUserLinks.toString());
-      /*  for (String e : test) {
-            UserLink user = new UserLink();
-            user.setUsername(e);
-            UserLink userLink = db.getUserLink(e);
-            if (userLink == null)
-                db.agregarUserLink(user);
-        }*/
-        //ActivityCompat.requestPermissions(MainTabActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission_group.STORAGE}, 1);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was grantd, yay! Do the
-                    // contacts-related task you need to do.
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Toast.makeText(MainTabActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
-                }
-                return;
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(MainTabActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
 

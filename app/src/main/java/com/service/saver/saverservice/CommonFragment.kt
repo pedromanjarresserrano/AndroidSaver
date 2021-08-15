@@ -29,14 +29,6 @@ import twitter4j.auth.RequestToken
 import twitter4j.conf.ConfigurationBuilder
 
 
-/**
- * A fragment with a Google +1 button.
- * Activities that contain this fragment must implement the
- * [CommonFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [CommonFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CommonFragment : Fragment() {
     var loggedtwiiter = false
     var loggedtumblr = false
@@ -66,7 +58,7 @@ class CommonFragment : Fragment() {
                                 val oAuthTokenSecret = loginResult.getOAuthTokenSecret()
                                 JTUMBLR!!.setToken(oAuthToken, oAuthTokenSecret)
                                 loggedtumblr == true
-                                view.btn_tumblr.setText("Logged in Tumblr")
+                                view.btn_tumblr.text = "Logged in Tumblr"
                             }
                         })!!.initiate(requireActivity())
             }
@@ -93,13 +85,13 @@ class CommonFragment : Fragment() {
         statusservice = settings!!.getBoolean(STATUS_SERVICE_KEY, false)
         view.service_switch.isChecked = statusservice
         if (JTUMBLR.isAuthenticate()) {
-            loggedtumblr == true
-            view.btn_tumblr.setText("Logged in Tumblr")
+            loggedtumblr = true
+            view.btn_tumblr.text = "Logged in Tumblr"
             view.btn_tumblr.setOnClickListener {
                 AlertDialog.Builder(requireActivity()).setMessage("Logout Tumblr?").setPositiveButton("Logout") { _, _ ->
                     JTUMBLR!!.setToken("", "")
-                    loggedtumblr == false
-                    view.btn_tumblr.setText("Login Tumblr")
+                    loggedtumblr = false
+                    view.btn_tumblr.text = "Login Tumblr"
                 }.setNegativeButton("Cancel", { _, _ -> }).show()
             }
         }
@@ -112,7 +104,7 @@ class CommonFragment : Fragment() {
     private fun loadBtnLoginTwitter(view: View, oAuthRequestToken: RequestToken?) {
         view.btn_twitter.setOnClickListener {
             if (oAuthRequestToken != null) {
-                val redirectURL = oAuthRequestToken.getAuthenticationURL()
+                val redirectURL = oAuthRequestToken.authenticationURL
                 var create: AlertDialog = AlertDialog.Builder(requireActivity()).create();
                 val builder = activity?.let { AlertDialog.Builder(it) }
 
@@ -138,10 +130,6 @@ class CommonFragment : Fragment() {
                         }
                     }
 
-                    // Inflate and set the layout for the dialog
-                    // Pass null as the parent view because its going in the dialog layout
-                    //val view = inflater.inflate(R.layout.twitter_user_url, null)
-
                     create = builder.create()
 
                     lp.copyFrom(create.window!!.attributes)
@@ -161,13 +149,13 @@ class CommonFragment : Fragment() {
 
     private fun isAuthenticate(view: View) {
         if (JTWITTER.isAuthenticate()) {
-            loggedtwiiter == true
-            view.btn_twitter.setText("Logged in Twitter")
+            loggedtwiiter = true
+            view.btn_twitter.text = "Logged in Twitter"
             view.btn_twitter.setOnClickListener {
                 AlertDialog.Builder(requireActivity()).setMessage("Logout Twitter?").setPositiveButton("Logout") { _, _ ->
                     JTWITTER.jtwitter.oAuthAccessToken = null
-                    loggedtwiiter == false
-                    view.btn_twitter.setText("Login Twitter")
+                    loggedtwiiter = false
+                    view.btn_twitter.text = "Login Twitter"
                     oAuthRequestToken = null;
                     loadBtnLoginTwitter(view, JTWITTER.getOAuthRequestToken())
 
@@ -180,9 +168,6 @@ class CommonFragment : Fragment() {
         const val TWITTER_CALLBACK_URL = "https://saverservice"
         var oAuthRequestToken: RequestToken? = null
 
-        fun newInstance(): CommonFragment {
-            return CommonFragment()
-        }
     }
 
 
