@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -30,7 +31,6 @@ import com.liulishuo.okdownload.core.cause.EndCause;
 import com.liulishuo.okdownload.core.listener.DownloadListener4WithSpeed;
 import com.liulishuo.okdownload.core.listener.assist.Listener4SpeedAssistExtend;
 import com.service.saver.saverservice.BuildConfig;
-import com.service.saver.saverservice.MainTabActivity;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.domain.PostLink;
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper;
@@ -55,6 +55,7 @@ public class SaverService extends IntentService {
     private DownloadSerialQueue serialQueue;
     private AdminSQLiteOpenHelper db = null;
     public static ClipDataListener CLIPDATALISTENER;
+    private SharedPreferences settings;
 
     public SaverService() {
         super("SaverService");
@@ -70,12 +71,11 @@ public class SaverService extends IntentService {
         set.commit();
         serialQueue = new DownloadSerialQueue(getListener());
         db = new AdminSQLiteOpenHelper(this.getBaseContext());
-        List<PostLink> allPostLinks = db.getAllPostLinks();
         CLIPDATALISTENER = new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
         CLIPDATALISTENER.onValidLinkCapture(() -> {
             Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
         });
-        System.out.println("Break");
+        settings = getBaseContext().getSharedPreferences("settings", 0);
     }
 
     @NonNull

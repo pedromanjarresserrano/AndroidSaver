@@ -46,6 +46,15 @@ public class Files {
         return new File(ABSOLUTE_PATH, "SaverService/" + s.replaceAll("[^a-zA-Z0-9]", ""));
     }
 
+    public static String getStringRunningDirByFile(String base, String s) {
+        return base + "/" + s.replaceAll("[^a-zA-Z0-9]", "");
+    }
+
+    public static File getRunningDirByFile(String base, String s) {
+        return new File(base, "/" + s.replaceAll("[^a-zA-Z0-9]", ""));
+    }
+
+
     public static File getCacheDirByFile() {
         return new File(ABSOLUTE_PATH, "SaverService/cache");
     }

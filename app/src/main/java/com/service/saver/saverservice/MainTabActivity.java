@@ -25,11 +25,9 @@ import java.util.Objects;
 
 public class MainTabActivity extends AppCompatActivity {
 
-
+    public static ClipDataListener CLIPDATALISTENER;
     public static TwitterClient JTWITTER;
     private int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
-    public static ClipDataListener CLIPDATALISTENER;
-
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override

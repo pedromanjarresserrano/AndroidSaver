@@ -126,14 +126,6 @@ class TwitterClient {
             Needle.onMainThread().execute {
                 val builder = this.context?.let { AlertDialog.Builder(it) }
                 if (builder != null) {
-                    /*   builder.setTitle("Already download").setMessage("The file " + postlink.url + " is already download, download again?")
-                               .setPositiveButton("Ok") { _, _ ->
-                                   findlink.save = false
-                                   this.db!!.updatePostLink(findlink)
-                               }
-                               .setNegativeButton("Cancel") { _, _ -> };
-                       val alertDialog = builder.create()
-                       alertDialog.show()*/
                     this.db!!.agregarTempLink(TempLink(-1, findlink.url, Date()))
                 }
             }
