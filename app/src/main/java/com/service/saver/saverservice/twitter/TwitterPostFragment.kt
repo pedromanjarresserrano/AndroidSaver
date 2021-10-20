@@ -41,7 +41,7 @@ class TwitterPostFragment : Fragment() {
     private val itemscount = 10
     private var loadingDialog: LoadingDialog? = null
 
-    @RequiresApi(Build.VERSION_CODES.N)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_twitterpost_list, container, false)
@@ -101,7 +101,7 @@ class TwitterPostFragment : Fragment() {
 
     private var paging: Paging = Paging(1, itemscount)
 
-    @RequiresApi(Build.VERSION_CODES.N)
+
     private fun loadUser(user: String) {
         try {
             Needle.onMainThread().execute {
@@ -126,7 +126,7 @@ class TwitterPostFragment : Fragment() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
+
     private fun loadPage() {
         val adapter = requireView().list.adapter
         Needle.onBackgroundThread().execute {
@@ -156,7 +156,7 @@ class TwitterPostFragment : Fragment() {
         inflater.inflate(R.menu.twitter_menu, menu)
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.load_twitter -> {

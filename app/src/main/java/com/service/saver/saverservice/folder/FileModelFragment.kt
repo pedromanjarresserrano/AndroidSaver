@@ -17,7 +17,6 @@ import needle.Needle
 import java.lang.Exception
 import java.util.stream.Collectors
 
-@RequiresApi(Build.VERSION_CODES.N)
 open class FileModelFragment : Fragment() {
 
     val FILE_MODEL_LIST = ArrayList<FileModel>();
@@ -47,6 +46,7 @@ open class FileModelFragment : Fragment() {
                     location = stringExtra
             }
         }
+        loadFiles()
         return view
     }
 
@@ -66,25 +66,13 @@ open class FileModelFragment : Fragment() {
     }
 
 
-    override fun onResume() {
-        super.onResume()
-
-
-        loadFiles()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        loadFiles()
-    }
-
     private fun loadFiles() {
 
         Needle.onBackgroundThread().execute {
             if (!loading) {
                 try {
 
-                    requireView().progressBarFolderFiles_Container.visibility = ConstraintLayout.VISIBLE
+//                    requireView().progressBarFolderFiles_Container.visibility = ConstraintLayout.VISIBLE
                     loading = true
                     val fileList = Files.getfiles(location)
                     fileList.sortBy { it.lastModified() }

@@ -16,7 +16,6 @@ import needle.Needle
 import java.lang.Exception
 import java.util.stream.Collectors
 
-@RequiresApi(Build.VERSION_CODES.N)
 class InnerFolderFragment : FileModelFragment() {
 
 

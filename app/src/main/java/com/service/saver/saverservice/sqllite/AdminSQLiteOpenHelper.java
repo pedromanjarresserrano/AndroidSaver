@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import androidx.collection.ArraySet;
+
 import com.service.saver.saverservice.domain.PostLink;
 import com.service.saver.saverservice.domain.TempLink;
 import com.service.saver.saverservice.domain.UserLink;
@@ -20,7 +22,7 @@ import java.util.Locale;
 public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "saver_db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
 
     public AdminSQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,7 +47,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         //  db.execSQL(UserLink.TABLE_CREATE);
         if (newVersion > oldVersion) {
             //  db.execSQL("ALTER TABLE "+UserLink.TABLE_NAME +" ADD COLUMN avatar_url TEXT");
-//            db.execSQL(PostLink.ALTER_TABLE);
+            //db.execSQL(PostLink.ALTER_TABLE);
             db.execSQL(TempLink.DROP_TABLE);
             db.execSQL(TempLink.TABLE_CREATE);
 
@@ -76,6 +78,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("url", postLink.getUrl());
+        values.put("parent_url", postLink.getParent_url());
         values.put("username", postLink.getUsername());
         values.put("createDate", getDate(postLink.getCreateDate()));
         values.put("save", postLink.getSave() ? 1 : 0);
@@ -91,6 +94,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put("url", templink.getUrl());
+            values.put("parent_url", templink.getParent_url());
             values.put("createDate", getDate(templink.getCreateDate()));
             long id = db.insert(TempLink
                     .TABLE_NAME, null, values);
@@ -102,22 +106,53 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
     }
 
+    public List<PostLink> getAllPostLinkByParentLink(String parent_url) {
+        // get readable database as we are not inserting anything
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(PostLink.TABLE_NAME,
+                new String[]{"id", "url", "parent_url", "username", "createDate", "save"},
+                "parent_url" + "=?",
+                new String[]{String.valueOf(parent_url)}, null, null, null, null);
+        List<PostLink> postLinks = new ArrayList<>();
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    PostLink postLink = new PostLink(
+                            cursor.getLong(cursor.getColumnIndex("id")),
+                            cursor.getString(cursor.getColumnIndex("url")),
+                            cursor.getString(cursor.getColumnIndex("parent_url")),
+                            cursor.getString(cursor.getColumnIndex("username")),
+                            getDate(cursor.getString(cursor.getColumnIndex("createDate"))),
+                            cursor.getInt(cursor.getColumnIndex("save")) == 1);
+                    postLinks.add(postLink);
+                } while (cursor.moveToNext());
+            }
+        }
+        // close the db connection
+        cursor.close();
+        db.close();
+        return postLinks;
+    }
+
+
     public PostLink getPostLink(String url) {
         // get readable database as we are not inserting anything
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(PostLink.TABLE_NAME,
-                new String[]{"id", "url", "username", "createDate", "save"},
+                new String[]{"id", "url", "parent_url", "username", "createDate", "save"},
                 "url" + "=?",
                 new String[]{String.valueOf(url)}, null, null, null, null);
         PostLink postLink = null;
         if (cursor != null) {
             cursor.moveToFirst();
             if (cursor.getCount() > 0)
-                // prepare postLink object
+                // prepare postLink objectparent_url
                 postLink = new PostLink(
                         cursor.getLong(cursor.getColumnIndex("id")),
                         cursor.getString(cursor.getColumnIndex("url")),
+                        cursor.getString(cursor.getColumnIndex("parent_url")),
                         cursor.getString(cursor.getColumnIndex("username")),
                         getDate(cursor.getString(cursor.getColumnIndex("createDate"))),
                         cursor.getInt(cursor.getColumnIndex("save")) == 1 ? true : false);
@@ -171,6 +206,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                 PostLink postLink = new PostLink(
                         cursor.getLong(cursor.getColumnIndex("id")),
                         cursor.getString(cursor.getColumnIndex("url")),
+                        cursor.getString(cursor.getColumnIndex("parent_url")),
                         cursor.getString(cursor.getColumnIndex("username")),
                         getDate(cursor.getString(cursor.getColumnIndex("createDate"))),
                         cursor.getInt(cursor.getColumnIndex("save")) == 1 ? true : false);
@@ -200,6 +236,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                 PostLink postLink = new PostLink(
                         cursor.getLong(cursor.getColumnIndex("id")),
                         cursor.getString(cursor.getColumnIndex("url")),
+                        cursor.getString(cursor.getColumnIndex("parent_url")),
                         cursor.getString(cursor.getColumnIndex("username")),
                         getDate(cursor.getString(cursor.getColumnIndex("createDate"))),
                         cursor.getInt(cursor.getColumnIndex("save")) == 1 ? true : false);
@@ -302,7 +339,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
 
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TempLink.TABLE_NAME + " ORDER BY  id DESC";
-
+        String del = "DELETE FROM " + TempLink.TABLE_NAME;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -312,6 +349,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                 TempLink userLink = new TempLink(
                         cursor.getLong(cursor.getColumnIndex("id")),
                         cursor.getString(cursor.getColumnIndex("url")),
+                        cursor.getString(cursor.getColumnIndex("parent_url")),
                         getDate(cursor.getString(cursor.getColumnIndex("createDate"))));
                 postLinks.add(userLink);
             } while (cursor.moveToNext());

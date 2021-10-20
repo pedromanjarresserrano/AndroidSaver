@@ -34,11 +34,11 @@ class TwitterClient {
     constructor(context: Context?) {
         this.context = context
         val cb = ConfigurationBuilder()
-                .setIncludeEntitiesEnabled(true)
-                .setIncludeMyRetweetEnabled(true)
-                .setIncludeExtAltTextEnabled(true)
-                .setTweetModeExtended(true)
-                .setIncludeEmailEnabled(true)
+            .setIncludeEntitiesEnabled(true)
+            .setIncludeMyRetweetEnabled(true)
+            .setIncludeExtAltTextEnabled(true)
+            .setTweetModeExtended(true)
+            .setIncludeEmailEnabled(true)
         jtwitter = TwitterFactory(cb.build()).instance
         jtwitter.setOAuthConsumer(consumerKey, twitterconsumerSecret)
         if (context != null) {
@@ -47,7 +47,8 @@ class TwitterClient {
                 val twitteraccesstoken = settings!!.getString(PREF_KEY_OAUTH_TOKEN, "")
                 val twitteraccessSecret = settings!!.getString(PREF_KEY_OAUTH_SECRET, "")
                 if (!(twitteraccessSecret.isNullOrEmpty() || twitteraccesstoken.isNullOrEmpty())) {
-                    jtwitter.oAuthAccessToken = AccessToken(twitteraccesstoken as String, twitteraccessSecret as String)
+                    jtwitter.oAuthAccessToken =
+                        AccessToken(twitteraccesstoken as String, twitteraccessSecret as String)
                     this.twitteraccesstoken = twitteraccesstoken
                     this.twitteraccessSecret = twitteraccessSecret
 
@@ -81,9 +82,9 @@ class TwitterClient {
                     if (mediaEntities.isNotEmpty()) {
                         val user = status.user;
                         if (user != null)
-                            entites(mediaEntities, true, user.screenName)
+                            entites(mediaEntities, true, user.screenName, url)
                         else
-                            entites(mediaEntities, false, "")
+                            entites(mediaEntities, false, "", url)
                     }
                 }
             } catch (e: Exception) {
@@ -93,13 +94,19 @@ class TwitterClient {
     }
 
     @Throws(IOException::class)
-    fun entites(mediaEntities: List<MediaEntity>, onfolder: Boolean, user: String) {
+    fun entites(
+        mediaEntities: List<MediaEntity>,
+        onfolder: Boolean,
+        user: String,
+        parent_url: String
+    ) {
         mediaEntities.sortedBy { it.videoAspectRatioHeight }
         val mediaEntity = mediaEntities[0]
         if (mediaEntity.type.equals("photo", ignoreCase = true)) {
             mediaEntities.forEach { e ->
                 var postlink = PostLink()
                 postlink.url = e.mediaURL
+                postlink.parent_url = parent_url
                 if (onfolder)
                     postlink.username = user
                 savePostLink(e.mediaURL, postlink)
@@ -107,10 +114,12 @@ class TwitterClient {
         } else {
             val videoVariants = Arrays.asList(*mediaEntity.videoVariants)
             videoVariants.sortBy { it.bitrate }
-            val split = videoVariants[videoVariants.size - 1].url.split("\\?".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            val split = videoVariants[videoVariants.size - 1].url.split("\\?".toRegex())
+                .dropLastWhile { it.isEmpty() }.toTypedArray()
             val link = split[0]
             var postlink = PostLink()
             postlink.url = link
+            postlink.parent_url = parent_url
             if (onfolder)
                 postlink.username = user
             savePostLink(link, postlink)
@@ -126,7 +135,18 @@ class TwitterClient {
             Needle.onMainThread().execute {
                 val builder = this.context?.let { AlertDialog.Builder(it) }
                 if (builder != null) {
-                    this.db!!.agregarTempLink(TempLink(-1, findlink.url, Date()))
+                    try {
+                        this.db!!.agregarTempLink(
+                            TempLink(
+                                -1,
+                                findlink.url,
+                                postlink.parent_url,
+                                Date()
+                            )
+                        )
+                    } catch (e: Exception) {
+                        Log.d("Log.ERROR", e.toString())
+                    }
                 }
             }
         }
@@ -171,7 +191,10 @@ class TwitterClient {
         try {
 
             // Get the access token
-            val accessTokenResponse = MainTabActivity.JTWITTER.getOAuthAccessToken(CommonFragment.oAuthRequestToken, verifier)
+            val accessTokenResponse = MainTabActivity.JTWITTER.getOAuthAccessToken(
+                CommonFragment.oAuthRequestToken,
+                verifier
+            )
 
 
             // After getting access token, access token secret

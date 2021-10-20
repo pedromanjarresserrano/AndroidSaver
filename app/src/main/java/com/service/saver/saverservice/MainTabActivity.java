@@ -18,6 +18,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.service.saver.saverservice.services.SaverService;
 import com.service.saver.saverservice.twitter.TwitterClient;
 import com.service.saver.saverservice.util.ClipDataListener;
 
@@ -25,11 +26,10 @@ import java.util.Objects;
 
 public class MainTabActivity extends AppCompatActivity {
 
-    public static ClipDataListener CLIPDATALISTENER;
     public static TwitterClient JTWITTER;
     private int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+    public static Runnable linkCapture;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,10 +39,10 @@ public class MainTabActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-                    }
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            }
         }
         if (JTWITTER == null)
             JTWITTER = new TwitterClient(this);
@@ -58,10 +58,16 @@ public class MainTabActivity extends AppCompatActivity {
         assert fragmentById != null;
         NavController navController = fragmentById.getNavController();
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
-        CLIPDATALISTENER = new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
-        CLIPDATALISTENER.onValidLinkCapture(() -> {
-            Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
-        });
+        if (SaverService.CLIPDATALISTENER == null) {
+            SaverService.CLIPDATALISTENER = new ClipDataListener(getBaseContext());
+        }
+        linkCapture = () -> {
+            runOnUiThread(() -> {
+                Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
+            });
+        };
+        SaverService.CLIPDATALISTENER.onValidLinkCapture(linkCapture);
+
     }
 
     @Override

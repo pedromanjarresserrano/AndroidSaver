@@ -59,7 +59,6 @@ public class Files {
         return new File(ABSOLUTE_PATH, "SaverService/cache");
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<File> getfiles(File dir) {
         File listFile[] = dir.listFiles();
         if (listFile != null) {
@@ -74,12 +73,10 @@ public class Files {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<File> getfiles(String s) {
         return getfiles(new File(s));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private static boolean endsWith(String s, List<String> suffixs) {
         return suffixs.stream()
                 .filter(e -> s.endsWith(e))
@@ -94,7 +91,6 @@ public class Files {
         return DECIMAL_FORMAT.format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<FileModel> getFilesModel(String location) {
         List<File> fileList = getfiles(location);
         fileList.sort((x, y) -> Long.compare(y.lastModified(), x.lastModified()));

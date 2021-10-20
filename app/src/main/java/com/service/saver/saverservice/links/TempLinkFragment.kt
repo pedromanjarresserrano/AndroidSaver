@@ -34,8 +34,10 @@ class TempLinkFragment : Fragment() {
 
     private var listItems: ArrayList<TempLink>? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_item_link_list, container, false)
         db = AdminSQLiteOpenHelper(this.context)
         this.listItems = db!!.allTempLinks() as ArrayList<TempLink>?
@@ -50,29 +52,48 @@ class TempLinkFragment : Fragment() {
                 columnCount <= 1 -> LinearLayoutManager(context)
                 else -> GridLayoutManager(context, columnCount)
             }
-            adapter = TempLinkRecyclerViewAdapter(listItems, db!!, object : OnUpdateListInteractionListener {
-                override fun onUpdateListInteractionListener(item: TempLink?) {
-                    message()
-                }
-            })
-            val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-                override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+            adapter = TempLinkRecyclerViewAdapter(
+                listItems,
+                db!!,
+                object : OnUpdateListInteractionListener {
+                    override fun onUpdateListInteractionListener(item: TempLink?) {
+                        message()
+                    }
+                })
+            val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object :
+                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
                     //Toast.makeText((viewHolder as TempLinkRecyclerViewAdapter.ViewHolder).contentView.context, "on Move", Toast.LENGTH_SHORT).show()
                     return false
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
-                    Toast.makeText((viewHolder as TempLinkRecyclerViewAdapter.ViewHolder).contentView.context, "Delete", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        (viewHolder as TempLinkRecyclerViewAdapter.ViewHolder).contentView.context,
+                        "Delete",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     //Remove swiped item from list and notify the RecyclerView
                     val position = viewHolder.adapterPosition
-                    with(view as RecyclerView) {
-                        (adapter as TempLinkRecyclerViewAdapter).deleteItem(position)
-                        adapter!!.notifyDataSetChanged()
-                    }
+                    (adapter as TempLinkRecyclerViewAdapter).deleteItem(position)
+                    adapter!!.notifyDataSetChanged()
+
                 }
             }
-            val dividerItemDecoration = DividerItemDecoration(view.getContext(), DividerItemDecoration.HORIZONTAL)
-            dividerItemDecoration.setDrawable(ColorDrawable(resources.getColor(R.color.accent_dark_light, null)))
+            val dividerItemDecoration =
+                DividerItemDecoration(view.getContext(), DividerItemDecoration.HORIZONTAL)
+            dividerItemDecoration.setDrawable(
+                ColorDrawable(
+                    resources.getColor(
+                        R.color.accent_dark_light,
+                        null
+                    )
+                )
+            )
 
             addItemDecoration(dividerItemDecoration)
 

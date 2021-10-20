@@ -15,11 +15,12 @@ import com.service.saver.saverservice.player.PlayerActivity
 import com.service.saver.saverservice.viewer.ViewerActivity
 import kotlinx.android.synthetic.main.file_folder_item.view.*
 import java.io.File
-
+import kotlin.random.Random
 
 
 class MyFileModelRecyclerViewAdapter(
-        private val mValues: List<FileModel>) : RecyclerView.Adapter<MyFileModelRecyclerViewAdapter.FileHolder>() {
+    private val mValues: List<FileModel>
+) : RecyclerView.Adapter<MyFileModelRecyclerViewAdapter.FileHolder>() {
 
     init {
         setHasStableIds(true)
@@ -27,7 +28,7 @@ class MyFileModelRecyclerViewAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.file_folder_item, parent, false)
+            .inflate(R.layout.file_folder_item, parent, false)
         return FileHolder(view)
     }
 
@@ -39,9 +40,9 @@ class MyFileModelRecyclerViewAdapter(
             holder.draweeView.setImageURI(uri, holder.mView.context)
         } else {
             val uri = Uri.Builder()
-                    .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
-                    .path(R.drawable.ic_folder.toString())
-                    .build()
+                .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
+                .path(R.drawable.ic_folder.toString())
+                .build()
             holder.draweeView.setImageURI(uri, holder.mView.context)
         }
         holder.mView.setOnClickListener {
@@ -56,16 +57,19 @@ class MyFileModelRecyclerViewAdapter(
                     intent.putExtra("filepath", item.filepath)
                     holder.mView.context.startActivity(intent)
                 }
-            }else{
+            } else {
                 val intent = Intent(holder.mView.context, FolderActivity::class.java)
                 intent.putExtra("filepath", item.filepath)
                 holder.mView.context.startActivity(intent)
             }
         }
     }
-    override fun getItemId(position: Int): Long {
 
-        return mValues!![position].id!!
+    override fun getItemId(position: Int): Long {
+        return if (position < mValues.size)
+            mValues!![position].id!!
+        else
+            Random(123).nextLong()
     }
 
     override fun getItemCount(): Int = mValues.size

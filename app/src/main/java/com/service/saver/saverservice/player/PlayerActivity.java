@@ -49,7 +49,6 @@ public class PlayerActivity extends AppCompatActivity {
     private SimpleExoPlayer player;
     private int position;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

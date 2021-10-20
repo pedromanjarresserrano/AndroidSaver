@@ -31,6 +31,7 @@ import com.liulishuo.okdownload.core.cause.EndCause;
 import com.liulishuo.okdownload.core.listener.DownloadListener4WithSpeed;
 import com.liulishuo.okdownload.core.listener.assist.Listener4SpeedAssistExtend;
 import com.service.saver.saverservice.BuildConfig;
+import com.service.saver.saverservice.MainTabActivity;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.domain.PostLink;
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper;
@@ -71,11 +72,17 @@ public class SaverService extends IntentService {
         set.commit();
         serialQueue = new DownloadSerialQueue(getListener());
         db = new AdminSQLiteOpenHelper(this.getBaseContext());
-        CLIPDATALISTENER = new ClipDataListener((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
-        CLIPDATALISTENER.onValidLinkCapture(() -> {
-            Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
-        });
+        if (SaverService.CLIPDATALISTENER == null) {
+            setupClipListener();
+        }
         settings = getBaseContext().getSharedPreferences("settings", 0);
+    }
+
+    private void setupClipListener() {
+        if (SaverService.CLIPDATALISTENER == null) {
+            CLIPDATALISTENER = new ClipDataListener(getBaseContext());
+        }
+        CLIPDATALISTENER.getLink();
     }
 
     @NonNull
@@ -192,6 +199,7 @@ public class SaverService extends IntentService {
                 } catch (InterruptedException e) {
                     Log.e("ERROR", "E/RR", e);
                 }
+                setupClipListener();
 
 
             }

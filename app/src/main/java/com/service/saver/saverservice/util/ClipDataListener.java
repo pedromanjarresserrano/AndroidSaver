@@ -1,43 +1,47 @@
 package com.service.saver.saverservice.util;
 
+import static android.content.Context.CLIPBOARD_SERVICE;
+
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.service.saver.saverservice.MainTabActivity.JTWITTER;
+
+import androidx.annotation.RequiresApi;
+
+import com.service.saver.saverservice.domain.PostLink;
+import com.service.saver.saverservice.domain.TempLink;
+import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper;
 
 
 public class ClipDataListener {
 
-    private ClipboardManager clip;
+    public static ClipboardManager CLIP;
     private List<String> listlinks = new ArrayList<>();
-    private Runnable runnable = null;
-    private static ClipboardManager.OnPrimaryClipChangedListener ON_PRIMARY_CLIP_CHANGED_LISTENER;
+    private static Runnable runnable = null;
+    private AdminSQLiteOpenHelper db = null;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public ClipDataListener(ClipboardManager clip) {
-        this.clip = clip;
-        ON_PRIMARY_CLIP_CHANGED_LISTENER = () -> {
-            getLink(clip);
-        };
-        clip.addPrimaryClipChangedListener(ON_PRIMARY_CLIP_CHANGED_LISTENER);
-
-        getLink(this.clip);
-
+    public ClipDataListener(Context ctx) {
+        if (CLIP == null) {
+            CLIP = (ClipboardManager) ctx.getSystemService(CLIPBOARD_SERVICE);
+        }
+        db = new AdminSQLiteOpenHelper(ctx);
+        CLIP.addPrimaryClipChangedListener(() -> getLink());
     }
 
     public void onValidLinkCapture(Runnable e) {
-        this.runnable = e;
+        if (this.runnable == null)
+            this.runnable = e;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void getLink(ClipboardManager clipBoard) {
-        ClipData clipData = clipBoard.getPrimaryClip();
+    public void getLink() {
+        ClipData clipData = CLIP.getPrimaryClip();
         if (clipData != null) {
             ClipData.Item item = clipData.getItemAt(0);
             String text = item.getText().toString();
@@ -46,16 +50,22 @@ public class ClipDataListener {
                     if (runnable != null)
                         runnable.run();
                     JTWITTER.saveTweet(text);
+                    //clipData.
                 }
             }
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private boolean checkOnList(List<String> lista, String object) {
-        return lista.stream().filter(e -> e.equals(object)).findFirst().isPresent();
+    private boolean checkOnList(List<String> lista, String url) {
+        List<PostLink> postLink = db.getAllPostLinkByParentLink(url);
+        Optional<PostLink> first1 = postLink.stream().filter(e -> e.getSave() == false).findFirst();
+        if (first1.isPresent()) {
+            return true;
+        } else {
+            List<TempLink> tempLink = db.allTempLinks();
+            Optional<TempLink> first = tempLink.stream().filter(e -> e.getParent_url().equalsIgnoreCase(url)).findFirst();
+            return first.isPresent();
+        }
     }
-
-
 
 }
