@@ -33,34 +33,36 @@ class MyFileModelRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: FileHolder, position: Int) {
-        val item = mValues[position]
-        holder.filename.text = item.name
-        if (!item.isFolder) {
-            val uri = Uri.fromFile(File(item.filepath))
-            holder.draweeView.setImageURI(uri, holder.mView.context)
-        } else {
-            val uri = Uri.Builder()
-                .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
-                .path(R.drawable.ic_folder.toString())
-                .build()
-            holder.draweeView.setImageURI(uri, holder.mView.context)
-        }
-        holder.mView.setOnClickListener {
+        if (position < mValues.size) {
+            val item = mValues[position]
+            holder.filename.text = item.name
             if (!item.isFolder) {
-                if (item.name!!.endsWith("mp4")) {
-                    val intent = Intent(holder.mView.context, PlayerActivity::class.java)
-                    intent.putExtra("position", position)
-                    intent.putExtra("parent", item.parent)
-                    holder.mView.context.startActivity(intent)
+                val uri = Uri.fromFile(File(item.filepath))
+                holder.draweeView.setImageURI(uri, holder.mView.context)
+            } else {
+                val uri = Uri.Builder()
+                    .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
+                    .path(R.drawable.ic_folder.toString())
+                    .build()
+                holder.draweeView.setImageURI(uri, holder.mView.context)
+            }
+            holder.mView.setOnClickListener {
+                if (!item.isFolder) {
+                    if (item.name!!.endsWith("mp4")) {
+                        val intent = Intent(holder.mView.context, PlayerActivity::class.java)
+                        intent.putExtra("position", position)
+                        intent.putExtra("parent", item.parent)
+                        holder.mView.context.startActivity(intent)
+                    } else {
+                        val intent = Intent(holder.mView.context, ViewerActivity::class.java)
+                        intent.putExtra("filepath", item.filepath)
+                        holder.mView.context.startActivity(intent)
+                    }
                 } else {
-                    val intent = Intent(holder.mView.context, ViewerActivity::class.java)
+                    val intent = Intent(holder.mView.context, FolderActivity::class.java)
                     intent.putExtra("filepath", item.filepath)
                     holder.mView.context.startActivity(intent)
                 }
-            } else {
-                val intent = Intent(holder.mView.context, FolderActivity::class.java)
-                intent.putExtra("filepath", item.filepath)
-                holder.mView.context.startActivity(intent)
             }
         }
     }

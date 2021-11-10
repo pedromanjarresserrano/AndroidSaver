@@ -1,6 +1,7 @@
 package com.service.saver.saverservice.twitter
 
 
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.view.LayoutInflater
@@ -19,16 +20,16 @@ import twitter4j.Status
 
 
 class TwitterPostRecyclerViewAdapter(
-        private val mValues: List<Status>)
-    : RecyclerView.Adapter<TwitterPostRecyclerViewAdapter.ViewHolder>() {
+    private val mValues: List<Status>
+) : RecyclerView.Adapter<TwitterPostRecyclerViewAdapter.ViewHolder>() {
 
     init {
-            setHasStableIds(true)
+        setHasStableIds(true)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.fragment_twitterpost, parent, false)
+            .inflate(R.layout.fragment_twitterpost, parent, false)
         return ViewHolder(view)
     }
 
@@ -46,24 +47,33 @@ class TwitterPostRecyclerViewAdapter(
             val mediaEntity = mediaEntities[0]
             val imageuri = Uri.parse(mediaEntity.mediaURL)
             if (mediaEntity.type.equals("photo", ignoreCase = true)) {
-              //  holder.image.setOnClickListener { it.context.startActivity(Intent(Intent.ACTION_VIEW, imageuri)) }
+                //  holder.image.setOnClickListener { it.context.startActivity(Intent(Intent.ACTION_VIEW, imageuri)) }
                 holder.image.setImageURI(imageuri, holder.mView.context)
             } else {
-           //     holder.image.setOnClickListener{ it.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(mediaEntity.videoVariants.sortedBy { it.bitrate }.last().url))) }
+                holder.image.setOnClickListener {
+                    it.context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse(mediaEntity.videoVariants.sortedBy { it.bitrate }.last().url)
+                        )
+                    )
+                }
                 holder.image.setImageURI(imageuri, holder.mView.context)
             }
 
             holder.image.setColorFilter(Color.TRANSPARENT)
 
         } else {
-          //  holder.image.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            holder.image.setColorFilter(Color.BLACK)
+            //  holder.image.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            holder.image.setColorFilter(Color.TRANSPARENT)
+            holder.image.visibility = View.INVISIBLE
+            holder.image.maxHeight = 0
             // holder.button_download.visibility = View.INVISIBLE
         }
 
         holder.button_download.setOnClickListener {
             val url = "https://twitter.com/" + item.user.screenName
-                    .toString() + "/status/" + item.id;
+                .toString() + "/status/" + item.id;
             JTWITTER.saveTweet(url);
             Toast.makeText(holder.mView.context, "Downloading", Toast.LENGTH_SHORT).show()
 

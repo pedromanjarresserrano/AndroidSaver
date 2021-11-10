@@ -9,11 +9,17 @@
         android:id="@+id/fileModelFragment"
         android:title="Folders"
         android:icon="@drawable/ic_baseline_folder_24" />
-    <item
+   <!-- <item
         android:id="@+id/twitterPostFragment"
         android:title="Twitter"
         android:icon="@mipmap/ic_twitter_icon"
-         />
+        />
+    <item
+        android:id="@+id/twitterFeedPostFragment"
+        android:title="Twitter Feed"
+        android:icon="@mipmap/ic_twitter_icon"
+        />
+    -->
     <item
         android:id="@+id/itemLinkFragment"
         android:title="Links"

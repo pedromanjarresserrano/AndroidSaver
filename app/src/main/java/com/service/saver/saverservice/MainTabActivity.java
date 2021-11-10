@@ -1,14 +1,12 @@
 package com.service.saver.saverservice;
 
 import android.Manifest;
-import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -19,6 +17,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.service.saver.saverservice.services.SaverService;
+import com.service.saver.saverservice.services.Util;
 import com.service.saver.saverservice.twitter.TwitterClient;
 import com.service.saver.saverservice.util.ClipDataListener;
 
@@ -34,6 +33,7 @@ public class MainTabActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
+        Context baseContext = getBaseContext();
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -58,15 +58,13 @@ public class MainTabActivity extends AppCompatActivity {
         assert fragmentById != null;
         NavController navController = fragmentById.getNavController();
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
-        if (SaverService.CLIPDATALISTENER == null) {
-            SaverService.CLIPDATALISTENER = new ClipDataListener(getBaseContext());
-        }
         linkCapture = () -> {
             runOnUiThread(() -> {
                 Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
             });
         };
-        SaverService.CLIPDATALISTENER.onValidLinkCapture(linkCapture);
+        Util.scheduleJob(this);
+        SaverService.setOnValidLinkCapture(linkCapture);
 
     }
 

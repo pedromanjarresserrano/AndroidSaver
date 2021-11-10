@@ -61,7 +61,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         values.put("username", userLink.getUsername());
         values.put("createDate", getDate(userLink.getCreateDate()));
         long id = db.insert(UserLink.TABLE_NAME, null, values);
-        db.close();
         return id;
 
     }
@@ -84,7 +83,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         values.put("save", postLink.getSave() ? 1 : 0);
         long id = db.insert(PostLink
                 .TABLE_NAME, null, values);
-        db.close();
         return id;
     }
 
@@ -98,7 +96,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
             values.put("createDate", getDate(templink.getCreateDate()));
             long id = db.insert(TempLink
                     .TABLE_NAME, null, values);
-            db.close();
             return id;
         } catch (Exception e) {
             Log.e("error", "ERR/R", e);
@@ -131,7 +128,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
         // close the db connection
         cursor.close();
-        db.close();
         return postLinks;
     }
 
@@ -159,7 +155,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
         // close the db connection
         cursor.close();
-        db.close();
         return postLink;
     }
 
@@ -187,7 +182,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
         // close the db connection
         cursor.close();
-        db.close();
         return userLink;
     }
 
@@ -215,7 +209,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         // close db connection
-        db.close();
         // return notes list
         return postLinks;
     }
@@ -245,7 +238,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         // close db connection
-        db.close();
         // return notes list
         return postLinks;
     }
@@ -295,7 +287,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         // close db connection
-        db.close();
         // return notes list
         return postLinks;
     }
@@ -330,7 +321,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(UserLink.TABLE_NAME, "id = ?",
                 new String[]{String.valueOf(userLink.getId())});
-        db.close();
     }
 
 
@@ -356,7 +346,6 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         // close db connection
-        db.close();
         // return notes list
         return (ArrayList<TempLink>) postLinks;
     }
@@ -377,6 +366,5 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TempLink.TABLE_NAME, "id = ?",
                 new String[]{String.valueOf(tem.getId())});
-        db.close();
     }
 }

@@ -1,11 +1,11 @@
 package com.service.saver.saverservice.services;
 
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ClipboardManager;
+import android.app.job.JobParameters;
+import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,7 +13,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,10 +30,10 @@ import com.liulishuo.okdownload.core.cause.EndCause;
 import com.liulishuo.okdownload.core.listener.DownloadListener4WithSpeed;
 import com.liulishuo.okdownload.core.listener.assist.Listener4SpeedAssistExtend;
 import com.service.saver.saverservice.BuildConfig;
-import com.service.saver.saverservice.MainTabActivity;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.domain.PostLink;
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper;
+import com.service.saver.saverservice.twitter.TwitterActivity;
 import com.service.saver.saverservice.util.ClipDataListener;
 import com.service.saver.saverservice.util.Files;
 
@@ -49,7 +48,8 @@ import needle.Needle;
  * Created by Pedro R on 4/03/2017.
  */
 
-public class SaverService extends IntentService {
+public class SaverService extends JobService {
+    private static Runnable LINK_CAPTURE;
     private List<PostLink> listlinks = new ArrayList<>();
     private NotificationManager mNotifyManager;
     private NotificationCompat.Builder mBuilder;
@@ -58,13 +58,12 @@ public class SaverService extends IntentService {
     public static ClipDataListener CLIPDATALISTENER;
     private SharedPreferences settings;
 
-    public SaverService() {
-        super("SaverService");
+    public static void setOnValidLinkCapture(Runnable linkCapture) {
+        LINK_CAPTURE = linkCapture;
     }
 
     @Override
     public void onCreate() {
-        super.onCreate();
         mNotifyManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         final DownloadContext.QueueSet set = new DownloadContext.QueueSet();
         set.setParentPathFile(Files.getRunningDirByFile());
@@ -81,8 +80,8 @@ public class SaverService extends IntentService {
     private void setupClipListener() {
         if (SaverService.CLIPDATALISTENER == null) {
             CLIPDATALISTENER = new ClipDataListener(getBaseContext());
+            CLIPDATALISTENER.onValidLinkCapture(LINK_CAPTURE);
         }
-        CLIPDATALISTENER.getLink();
     }
 
     @NonNull
@@ -110,6 +109,8 @@ public class SaverService extends IntentService {
             @Override
             public void taskEnd(@NonNull DownloadTask task, @NonNull EndCause cause, @Nullable Exception realCause, @NonNull SpeedCalculator taskSpeed) {
                 System.out.println("ERROR" + cause);
+                if (TwitterActivity.Companion.getInstance() != null)
+                    TwitterActivity.Companion.getInstance().finish();
             }
 
             @Override
@@ -136,12 +137,13 @@ public class SaverService extends IntentService {
             @Override
             public void connectEnd(@NonNull DownloadTask task, int blockIndex, int responseCode, @NonNull Map<String, List<String>> responseHeaderFields) {
                 System.out.println("ERROR");
-
+                if (TwitterActivity.Companion.getInstance() != null)
+                    TwitterActivity.Companion.getInstance().finish();
             }
 
             @Override
             public void fetchStart(@NonNull DownloadTask task, int blockIndex, long contentLength) {
-                System.out.println("ERROR");
+                System.out.println("Start");
 
             }
 
@@ -165,13 +167,15 @@ public class SaverService extends IntentService {
                         .setContentIntent(PendingIntent.getActivity(getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
 
                 mNotifyManager.notify(task.getId(), mBuilder.build());
+                if (TwitterActivity.Companion.getInstance() != null)
+                    TwitterActivity.Companion.getInstance().finish();
             }
 
         };
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    public boolean onStartJob(JobParameters params) {
         mBuilder = getmBuilder();
 
 
@@ -204,21 +208,26 @@ public class SaverService extends IntentService {
 
             }
         });
+        this.jobFinished(params, true);
+        return true;
+    }
+
+    @Override
+    public boolean onStopJob(JobParameters params) {
+        return true;
     }
 
     @NonNull
     private NotificationCompat.Builder getmBuilder() {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            String chanel_id = "3000";
+            String chanel_id = "3002";
             CharSequence name = "Channel Name";
             String description = "Chanel Description";
-            int importance = NotificationManager.IMPORTANCE_NONE;
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel mChannel = null;
             mChannel = new NotificationChannel(chanel_id, name, importance);
             mChannel.setDescription(description);
-            mChannel.enableLights(true);
-            mChannel.setLightColor(Color.BLUE);
             mNotifyManager.createNotificationChannel(mChannel);
             return new NotificationCompat.Builder(this, chanel_id).setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND).setVibrate(new long[]{0L});
         } else {

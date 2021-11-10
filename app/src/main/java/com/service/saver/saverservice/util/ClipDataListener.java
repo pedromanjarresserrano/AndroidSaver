@@ -46,7 +46,7 @@ public class ClipDataListener {
             ClipData.Item item = clipData.getItemAt(0);
             String text = item.getText().toString();
             if (text.contains("//twitter.com/") && text.contains("status")) {
-                if (!checkOnList(listlinks, text)) {
+                if (!checkOnList(text)) {
                     if (runnable != null)
                         runnable.run();
                     JTWITTER.saveTweet(text);
@@ -56,7 +56,7 @@ public class ClipDataListener {
         }
     }
 
-    private boolean checkOnList(List<String> lista, String url) {
+    private boolean checkOnList(String url) {
         List<PostLink> postLink = db.getAllPostLinkByParentLink(url);
         Optional<PostLink> first1 = postLink.stream().filter(e -> e.getSave() == false).findFirst();
         if (first1.isPresent()) {

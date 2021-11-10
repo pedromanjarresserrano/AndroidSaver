@@ -18,6 +18,7 @@ import twitter4j.auth.AccessToken
 import twitter4j.auth.RequestToken
 import twitter4j.conf.ConfigurationBuilder
 import java.io.IOException
+import java.lang.Long.parseLong
 import java.util.*
 
 class TwitterClient {
@@ -77,8 +78,8 @@ class TwitterClient {
             try {
                 val split1 = getID(url)
                 if (jtwitter.oAuthAccessToken != null && !split1.isNullOrEmpty()) {
-                    val status = jtwitter.showStatus(java.lang.Long.parseLong(split1))
-                    val mediaEntities = Arrays.asList<MediaEntity>(*status.mediaEntities)
+                    val status = jtwitter.showStatus(parseLong(split1))
+                    val mediaEntities = listOf(*status.mediaEntities)
                     if (mediaEntities.isNotEmpty()) {
                         val user = status.user;
                         if (user != null)

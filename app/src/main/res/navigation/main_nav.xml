@@ -18,6 +18,10 @@
         android:name="com.service.saver.saverservice.twitter.TwitterPostFragment"
         android:label="TwitterPostFragment" />
     <fragment
+        android:id="@+id/twitterFeedPostFragment"
+        android:name="com.service.saver.saverservice.twitter.TwitterFeedPostFragment"
+        android:label="TwitterFeedPostFragment" />
+    <fragment
         android:id="@+id/itemLinkFragment"
         android:name="com.service.saver.saverservice.links.TempLinkFragment"
         android:label="ItemLinkFragment" />

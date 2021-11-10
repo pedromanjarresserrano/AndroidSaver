@@ -1,6 +1,8 @@
 package com.service.saver.saverservice.folder
 
+import android.content.Context
 import android.content.res.Configuration
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -23,18 +25,22 @@ open class FileModelFragment : Fragment() {
     var loading = false;
     var location = Files.getAbsolutePath();
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_filemodel_list, container, false)
         setHasOptionsMenu(true)
         with(view.list) {
-            layoutManager = androidx.recyclerview.widget.StaggeredGridLayoutManager(when {
-                requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> 3
-                else -> 5
-            }, when {
-                requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
-                else -> androidx.recyclerview.widget.StaggeredGridLayoutManager.HORIZONTAL
-            })
+            layoutManager = androidx.recyclerview.widget.StaggeredGridLayoutManager(
+                when {
+                    requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> 3
+                    else -> 5
+                }, when {
+                    requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL
+                    else -> androidx.recyclerview.widget.StaggeredGridLayoutManager.HORIZONTAL
+                }
+            )
         }
         view.list.adapter = MyFileModelRecyclerViewAdapter(FILE_MODEL_LIST)
         val intent = requireActivity().intent
@@ -67,11 +73,9 @@ open class FileModelFragment : Fragment() {
 
 
     private fun loadFiles() {
-
-        Needle.onBackgroundThread().execute {
+        TaskLoadingFiles {
             if (!loading) {
                 try {
-
 //                    requireView().progressBarFolderFiles_Container.visibility = ConstraintLayout.VISIBLE
                     loading = true
                     val fileList = Files.getfiles(location)
@@ -79,19 +83,43 @@ open class FileModelFragment : Fragment() {
                     fileList.reverse()
                     FILE_MODEL_LIST.clear()
                     FILE_MODEL_LIST.addAll(fileList.stream()
-                            .map { FileModel(fileList.indexOf(it) + 0L, it.name, it.absolutePath, it.isDirectory, it.parent) }
-                            .collect(Collectors.toList()))
-
-                    Needle.onMainThread().execute {
+                        .map {
+                            FileModel(
+                                fileList.indexOf(it) + 0L,
+                                it.name,
+                                it.absolutePath,
+                                it.isDirectory,
+                                it.parent
+                            )
+                        }
+                        .collect(Collectors.toList()))
+                    requireActivity().runOnUiThread {
+                        this.requireView().list.recycledViewPool.clear()
                         this.requireView().list.adapter!!.notifyDataSetChanged()
-                        requireView().progressBarFolderFiles_Container.visibility = ConstraintLayout.INVISIBLE
+                        requireView().progressBarFolderFiles_Container.visibility =
+                            ConstraintLayout.INVISIBLE
                     }
                 } catch (e: Exception) {
                     Log.e("Error", "E/RR", e)
                 }
                 loading = false
             }
-        }
+        }.execute()
     }
 
+    override fun onResume() {
+        super.onResume()
+        this.loadFiles()
+    }
+
+
+    companion object {
+        class TaskLoadingFiles(val handler: () -> Unit) : AsyncTask<Void, Void, Void>() {
+            override fun doInBackground(vararg params: Void?): Void? {
+                handler()
+                return null
+            }
+        }
+
+    }
 }

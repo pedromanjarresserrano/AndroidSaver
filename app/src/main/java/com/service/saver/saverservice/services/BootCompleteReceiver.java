@@ -9,6 +9,7 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
             context.startService(new Intent(context, SaverService.class));
+            Util.scheduleJob(context);
         }
     }
 }
