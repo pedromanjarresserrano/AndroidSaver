@@ -15,17 +15,18 @@ import com.service.saver.saverservice.domain.UserLink
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper
 import com.service.saver.saverservice.twitter.TwitterPostFragment
 import kotlinx.android.synthetic.main.user_view_item.view.*
-import needle.Needle
+
 
 
 class UserRecyclerViewAdapter(
-        private val mValues: ArrayList<UserLink>, private val mOnClickListener: TwitterPostFragment.OnUserListListInteractionListener
+    private val mValues: ArrayList<UserLink>,
+    private val mOnClickListener: TwitterPostFragment.OnUserListListInteractionListener
 ) : androidx.recyclerview.widget.RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.user_view_item, parent, false)
+            .inflate(R.layout.user_view_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -35,10 +36,13 @@ class UserRecyclerViewAdapter(
         val db = AdminSQLiteOpenHelper(holder.mView.context)
         if (item.avatar_url.isNullOrEmpty()) {
             try {
-                Needle.onBackgroundThread().execute {
+                com.service.saver.saverservice.util.Util.Companion.Task {
+
                     try {
 
-                        val profileImageURL = MainTabActivity.JTWITTER.jtwitter.showUser(item.username).get400x400ProfileImageURL()
+                        val profileImageURL =
+                            MainTabActivity.JTWITTER.jtwitter.showUser(item.username)
+                                .get400x400ProfileImageURL()
                         item.avatar_url = profileImageURL
                         val imageuri = Uri.parse(profileImageURL)
                         holder.image.setImageURI(imageuri, holder.mView.context)
@@ -47,7 +51,7 @@ class UserRecyclerViewAdapter(
                         if (e.message == "User not found.")
                             db.deleteUserLink(item);
                     }
-                }
+                }.execute()
 
             } catch (e: Exception) {
                 if (e.message == "User not found.") {
@@ -72,11 +76,11 @@ class UserRecyclerViewAdapter(
             // Pass null as the parent view because its going in the dialog layout
             //val view = inflater.inflate(R.layout.twitter_user_url, null)
             builder
-                    .setPositiveButton("Delete") { _, _ ->
-                        db.deleteUserLink(item)
-                        deleteItem(position)
-                    }
-                    .setNegativeButton("No") { dialog, _ -> dialog.cancel() }
+                .setPositiveButton("Delete") { _, _ ->
+                    db.deleteUserLink(item)
+                    deleteItem(position)
+                }
+                .setNegativeButton("No") { dialog, _ -> dialog.cancel() }
 
             builder.create().show()
         }
@@ -91,7 +95,8 @@ class UserRecyclerViewAdapter(
 
     override fun getItemCount(): Int = mValues.size
 
-    inner class ViewHolder(val mView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(mView) {
+    inner class ViewHolder(val mView: View) :
+        androidx.recyclerview.widget.RecyclerView.ViewHolder(mView) {
         val text: TextView = mView.username_list
         val image: SimpleDraweeView = mView.iamge_user
         val button_delete: Button = mView.delete_button_user_list

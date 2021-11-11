@@ -3,6 +3,7 @@ package com.service.saver.saverservice.twitter
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.AsyncTask
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import com.service.saver.saverservice.CommonFragment
@@ -10,7 +11,7 @@ import com.service.saver.saverservice.MainTabActivity
 import com.service.saver.saverservice.domain.PostLink
 import com.service.saver.saverservice.domain.TempLink
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper
-import needle.Needle
+import com.service.saver.saverservice.twitter.TwitterActivity.Companion.getInstance
 import twitter4j.MediaEntity
 import twitter4j.Twitter
 import twitter4j.TwitterFactory
@@ -74,7 +75,7 @@ class TwitterClient {
     }
 
     fun saveTweet(url: String) {
-        Needle.onBackgroundThread().execute {
+        com.service.saver.saverservice.util.Util.Companion.Task {
             try {
                 val split1 = getID(url)
                 if (jtwitter.oAuthAccessToken != null && !split1.isNullOrEmpty()) {
@@ -91,7 +92,7 @@ class TwitterClient {
             } catch (e: Exception) {
                 Log.e("ERROR", e.message)
             }
-        }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
 
     @Throws(IOException::class)
@@ -132,8 +133,9 @@ class TwitterClient {
         val findlink = this.db!!.getPostLink(link);
         if (findlink == null) {
             this.db!!.agregarPostLink(postlink)
+            if (getInstance() != null) getInstance().finish()
         } else {
-            Needle.onMainThread().execute {
+            com.service.saver.saverservice.util.Util.Companion.Task {
                 val builder = this.context?.let { AlertDialog.Builder(it) }
                 if (builder != null) {
                     try {
@@ -149,7 +151,7 @@ class TwitterClient {
                         Log.d("Log.ERROR", e.toString())
                     }
                 }
-            }
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
         }
     }
 

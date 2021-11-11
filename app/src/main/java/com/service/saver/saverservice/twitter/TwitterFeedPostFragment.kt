@@ -22,7 +22,6 @@ import com.service.saver.saverservice.twitter.userlink.UserRecyclerViewAdapter
 import com.service.saver.saverservice.util.LoadingDialog
 import kotlinx.android.synthetic.main.fragment_filemodel_list.view.list
 import kotlinx.android.synthetic.main.fragment_twitterpost_list.view.*
-import needle.Needle
 import twitter4j.Paging
 import twitter4j.Status
 import java.util.*
@@ -41,7 +40,7 @@ class TwitterFeedPostFragment : Fragment() {
 
     private val itemscount = 25
     private var loadingDialog: LoadingDialog? = null
-
+/*
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -165,7 +164,7 @@ class TwitterFeedPostFragment : Fragment() {
             }
         }
     }
-
+*/
 
     companion object {
 

@@ -54,7 +54,9 @@
             android:label="SaverService"
             android:permission="android.permission.BIND_JOB_SERVICE"
             />
-        <activity android:name=".twitter.TwitterActivity">
+        <activity android:name=".twitter.TwitterActivity"
+            android:theme="@style/Theme.Transparent">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 

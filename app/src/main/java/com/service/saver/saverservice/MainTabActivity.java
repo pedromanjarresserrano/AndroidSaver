@@ -17,9 +17,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.service.saver.saverservice.services.SaverService;
-import com.service.saver.saverservice.services.Util;
+import com.service.saver.saverservice.services.UtilService;
 import com.service.saver.saverservice.twitter.TwitterClient;
-import com.service.saver.saverservice.util.ClipDataListener;
 
 import java.util.Objects;
 
@@ -63,7 +62,7 @@ public class MainTabActivity extends AppCompatActivity {
                 Toast.makeText(this, "Link Capture", Toast.LENGTH_SHORT).show();
             });
         };
-        Util.scheduleJob(this);
+        UtilService.scheduleJob(this);
         SaverService.setOnValidLinkCapture(linkCapture);
 
     }

@@ -27,7 +27,7 @@ class PostLink : Serializable {
 
     companion object {
         const val TABLE_NAME = "postlink";
-        const val TABLE_CREATE = "create table  ${TABLE_NAME}(id INTEGER PRIMARY KEY, url text UNIQUE, username text, createDate DATETIME  , save integer)"
+        const val TABLE_CREATE = "create table  ${TABLE_NAME}(id INTEGER PRIMARY KEY, url text UNIQUE, parent_url text, username text, createDate DATETIME  , save integer)"
         const val DROP_TABLE = "drop table if exists ${TABLE_NAME}"
         const val ALTER_TABLE = "ALTER TABLE ${TABLE_NAME} ADD COLUMN parent_url text DEFAULT ''"
     }

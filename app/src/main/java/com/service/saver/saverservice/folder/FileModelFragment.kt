@@ -14,8 +14,8 @@ import com.service.saver.saverservice.R
 import com.service.saver.saverservice.folder.model.FileModel
 import com.service.saver.saverservice.util.Files
 import com.service.saver.saverservice.util.LoadingDialog
+import com.service.saver.saverservice.util.Util
 import kotlinx.android.synthetic.main.fragment_filemodel_list.view.*
-import needle.Needle
 import java.lang.Exception
 import java.util.stream.Collectors
 
@@ -73,7 +73,7 @@ open class FileModelFragment : Fragment() {
 
 
     private fun loadFiles() {
-        TaskLoadingFiles {
+        Util.Companion.Task {
             if (!loading) {
                 try {
 //                    requireView().progressBarFolderFiles_Container.visibility = ConstraintLayout.VISIBLE
@@ -104,7 +104,7 @@ open class FileModelFragment : Fragment() {
                 }
                 loading = false
             }
-        }.execute()
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
 
     override fun onResume() {
@@ -113,13 +113,4 @@ open class FileModelFragment : Fragment() {
     }
 
 
-    companion object {
-        class TaskLoadingFiles(val handler: () -> Unit) : AsyncTask<Void, Void, Void>() {
-            override fun doInBackground(vararg params: Void?): Void? {
-                handler()
-                return null
-            }
-        }
-
-    }
 }

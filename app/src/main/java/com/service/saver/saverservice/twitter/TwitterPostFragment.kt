@@ -22,7 +22,7 @@ import com.service.saver.saverservice.twitter.userlink.UserRecyclerViewAdapter
 import com.service.saver.saverservice.util.LoadingDialog
 import kotlinx.android.synthetic.main.fragment_filemodel_list.view.list
 import kotlinx.android.synthetic.main.fragment_twitterpost_list.view.*
-import needle.Needle
+//import needle.Needle
 import twitter4j.Paging
 import twitter4j.Status
 import java.util.*
@@ -40,7 +40,7 @@ class TwitterPostFragment : Fragment() {
 
     private val itemscount = 10
     private var loadingDialog: LoadingDialog? = null
-
+/*
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -249,7 +249,7 @@ class TwitterPostFragment : Fragment() {
      * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface OnUserListListInteractionListener {
+   */ interface OnUserListListInteractionListener {
         fun onUserListListInteractionListener(item: UserLink?)
     }
 

@@ -4,12 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.service.saver.saverservice.CommonFragment
 import com.service.saver.saverservice.MainTabActivity
 import com.service.saver.saverservice.R
 import com.service.saver.saverservice.domain.PostLink
 import com.service.saver.saverservice.domain.TempLink
-import com.service.saver.saverservice.services.Util
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper
 
 class TwitterActivity : AppCompatActivity() {
@@ -33,7 +31,6 @@ class TwitterActivity : AppCompatActivity() {
                     if (MainTabActivity.JTWITTER == null)
                         MainTabActivity.JTWITTER = TwitterClient(this)
                     MainTabActivity.JTWITTER.saveTweet(text)
-                    Util.scheduleJob(this)
 
                 }
             }

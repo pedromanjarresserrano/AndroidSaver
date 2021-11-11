@@ -12,7 +12,6 @@ import com.service.saver.saverservice.folder.model.FileModel
 import com.service.saver.saverservice.util.Files
 import com.service.saver.saverservice.util.LoadingDialog
 import kotlinx.android.synthetic.main.fragment_filemodel_list.view.*
-import needle.Needle
 import java.lang.Exception
 import java.util.stream.Collectors
 

@@ -9,8 +9,8 @@ import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
@@ -33,7 +33,6 @@ import com.service.saver.saverservice.BuildConfig;
 import com.service.saver.saverservice.R;
 import com.service.saver.saverservice.domain.PostLink;
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper;
-import com.service.saver.saverservice.twitter.TwitterActivity;
 import com.service.saver.saverservice.util.ClipDataListener;
 import com.service.saver.saverservice.util.Files;
 
@@ -41,8 +40,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import needle.Needle;
 
 /**
  * Created by Pedro R on 4/03/2017.
@@ -109,8 +106,6 @@ public class SaverService extends JobService {
             @Override
             public void taskEnd(@NonNull DownloadTask task, @NonNull EndCause cause, @Nullable Exception realCause, @NonNull SpeedCalculator taskSpeed) {
                 System.out.println("ERROR" + cause);
-                if (TwitterActivity.Companion.getInstance() != null)
-                    TwitterActivity.Companion.getInstance().finish();
             }
 
             @Override
@@ -137,8 +132,7 @@ public class SaverService extends JobService {
             @Override
             public void connectEnd(@NonNull DownloadTask task, int blockIndex, int responseCode, @NonNull Map<String, List<String>> responseHeaderFields) {
                 System.out.println("ERROR");
-                if (TwitterActivity.Companion.getInstance() != null)
-                    TwitterActivity.Companion.getInstance().finish();
+
             }
 
             @Override
@@ -151,6 +145,8 @@ public class SaverService extends JobService {
             @Override
             public void fetchEnd(@NonNull DownloadTask task, int blockIndex, long contentLength) {
                 File file = task.getFile();
+                PostLink postLink = (PostLink) task.getTag(0);
+                removeSafe(postLink);
                 Uri uri;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     uri = FileProvider.getUriForFile(getBaseContext(), BuildConfig.APPLICATION_ID + ".provider", file);
@@ -167,8 +163,7 @@ public class SaverService extends JobService {
                         .setContentIntent(PendingIntent.getActivity(getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
 
                 mNotifyManager.notify(task.getId(), mBuilder.build());
-                if (TwitterActivity.Companion.getInstance() != null)
-                    TwitterActivity.Companion.getInstance().finish();
+
             }
 
         };
@@ -179,7 +174,8 @@ public class SaverService extends JobService {
         mBuilder = getmBuilder();
 
 
-        Needle.onBackgroundThread().execute(() -> {
+        new com.service.saver.saverservice.util.Util.Companion.Task(() -> {
+
             while (true) {
                 listlinks = db.getAllUnSavePostLinks();
                 if (!listlinks.isEmpty()) {
@@ -191,8 +187,8 @@ public class SaverService extends JobService {
                         serialQueue.enqueue(new DownloadTask.Builder((namelink.length > 1 ? namelink[1] : linkUrl), Files.getRunningDirByFile(postLink.getUsername().replace("#", "")))
                                 .setFilename((namelink.length > 1 ? namelink[0] : split[split.length - 1]))
                                 .setPassIfAlreadyCompleted(true)
-                                .build());
-                        removeSafe(postLink);
+                                .build().addTag(0, postLink));
+                       // removeSafe(postLink);
                     } catch (Exception e) {
                         removeSafe(postLink);
                         Log.e("ERROR", "E/RR", e);
@@ -207,7 +203,7 @@ public class SaverService extends JobService {
 
 
             }
-        });
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         this.jobFinished(params, true);
         return true;
     }
@@ -232,10 +228,7 @@ public class SaverService extends JobService {
             return new NotificationCompat.Builder(this, chanel_id).setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND).setVibrate(new long[]{0L});
         } else {
             return new NotificationCompat.Builder(this).setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND).setVibrate(new long[]{0L});
-
         }
-
-
     }
 
     private void removeSafe(PostLink postLink) {

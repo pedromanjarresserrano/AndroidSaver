@@ -22,7 +22,7 @@ import java.util.Locale;
 public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "saver_db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     public AdminSQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,11 +41,12 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // db.execSQL(PostLink.DROP_TABLE);
-        // db.execSQL(PostLink.TABLE_CREATE);
+
         //  db.execSQL(UserLink.DROP_TABLE);
         //  db.execSQL(UserLink.TABLE_CREATE);
         if (newVersion > oldVersion) {
+            db.execSQL(PostLink.DROP_TABLE);
+            db.execSQL(PostLink.TABLE_CREATE);
             //  db.execSQL("ALTER TABLE "+UserLink.TABLE_NAME +" ADD COLUMN avatar_url TEXT");
             //db.execSQL(PostLink.ALTER_TABLE);
             db.execSQL(TempLink.DROP_TABLE);

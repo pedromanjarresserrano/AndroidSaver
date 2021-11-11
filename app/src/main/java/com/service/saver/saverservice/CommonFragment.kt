@@ -2,7 +2,6 @@ package com.service.saver.saverservice
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.SharedPreferences.Editor
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,11 +16,9 @@ import androidx.fragment.app.Fragment
 import com.service.saver.saverservice.MainTabActivity.JTWITTER
 import com.service.saver.saverservice.services.SaverService
 import kotlinx.android.synthetic.main.fragment_common.view.*
-import needle.Needle
-import twitter4j.TwitterFactory
-import twitter4j.auth.AccessToken
 import twitter4j.auth.RequestToken
-import twitter4j.conf.ConfigurationBuilder
+import android.view.MotionEvent
+import com.service.saver.saverservice.services.UtilService
 
 
 class CommonFragment : Fragment() {
@@ -33,10 +30,28 @@ class CommonFragment : Fragment() {
 
     private val STATUS_SERVICE_KEY = "statusservice"
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         settings = requireContext().getSharedPreferences("settings", 0)
-        webView = WebView(requireContext())
+        webView = object : WebView(requireContext()) {
+            override fun onCheckIsTextEditor(): Boolean {
+                return true
+            }
+        }
+        webView!!.settings.javaScriptEnabled = true
+        webView!!.isFocusable = true
+        webView!!.isFocusableInTouchMode = true
+        webView!!.requestFocus(View.FOCUS_DOWN)
+        webView!!.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_UP -> if (!v.hasFocus()) {
+                    v.requestFocus()
+                }
+            }
+            false
+        }
         val view = inflater.inflate(R.layout.fragment_common, container, false)
         try {
             oAuthRequestToken = JTWITTER.getOAuthRequestToken()
@@ -48,9 +63,10 @@ class CommonFragment : Fragment() {
         val service = Intent(activity, SaverService::class.java)
         view.service_switch.setOnCheckedChangeListener { _, b: Boolean ->
             if (b)
-                requireActivity().startService(service)
+                UtilService.scheduleJob(requireContext())
             else
-                requireActivity().stopService(service)
+                UtilService.stopJob(requireContext())
+
             settings!!.edit().putBoolean(STATUS_SERVICE_KEY, b).apply()
         }
 
@@ -81,13 +97,16 @@ class CommonFragment : Fragment() {
                     webView!!.loadUrl(redirectURL)
 
                     webView!!.webViewClient = object : WebViewClient() {
-                        override fun shouldOverrideUrlLoading(webView: WebView, url: String): Boolean {
+                        override fun shouldOverrideUrlLoading(
+                            webView: WebView,
+                            url: String
+                        ): Boolean {
                             if (url.startsWith(TWITTER_CALLBACK_URL))
-                                Needle.onBackgroundThread().execute {
+                                com.service.saver.saverservice.util.Util.Companion.Task {
                                     JTWITTER.handleTwitterCallback(url)
                                     create.cancel()
                                     isAuthenticate(view)
-                                }
+                                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
                             else
                                 webView.loadUrl(url)
                             return true
@@ -102,6 +121,9 @@ class CommonFragment : Fragment() {
                     lp.x = -170
                     lp.y = 100
                     create.window!!.attributes = lp
+                    create.window!!.setSoftInputMode(
+                        WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE
+                    );
                     create.show();
                 } else {
                     Toast.makeText(activity, "Already logged in Twitter", Toast.LENGTH_LONG).show()
@@ -116,14 +138,15 @@ class CommonFragment : Fragment() {
             loggedtwiiter = true
             view.btn_twitter.text = "Logged in Twitter"
             view.btn_twitter.setOnClickListener {
-                AlertDialog.Builder(requireActivity()).setMessage("Logout Twitter?").setPositiveButton("Logout") { _, _ ->
-                    JTWITTER.jtwitter.oAuthAccessToken = null
-                    loggedtwiiter = false
-                    view.btn_twitter.text = "Login Twitter"
-                    oAuthRequestToken = null;
-                    loadBtnLoginTwitter(view, JTWITTER.getOAuthRequestToken())
+                AlertDialog.Builder(requireActivity()).setMessage("Logout Twitter?")
+                    .setPositiveButton("Logout") { _, _ ->
+                        JTWITTER.jtwitter.oAuthAccessToken = null
+                        loggedtwiiter = false
+                        view.btn_twitter.text = "Login Twitter"
+                        oAuthRequestToken = null;
+                        loadBtnLoginTwitter(view, JTWITTER.getOAuthRequestToken())
 
-                }.setNegativeButton("Cancel", { _, _ -> }).show()
+                    }.setNegativeButton("Cancel", { _, _ -> }).show()
             }
         }
     }

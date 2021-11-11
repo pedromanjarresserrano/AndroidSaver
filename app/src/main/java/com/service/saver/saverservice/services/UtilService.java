@@ -4,6 +4,7 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.PersistableBundle;
 
@@ -11,11 +12,13 @@ import com.service.saver.saverservice.twitter.TwitterActivity;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Util {
+public class UtilService {
+
+    private static int JOB_ID = 0;
 
     public static void scheduleJob(Context context) {
         ComponentName serviceComponent = new ComponentName(context, SaverService.class);
-        JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent)
+        JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, serviceComponent)
                 .setMinimumLatency(1)
                 .setOverrideDeadline(1);
         builder.setTriggerContentMaxDelay(0);
@@ -32,7 +35,7 @@ public class Util {
     public static void scheduleJob(@NotNull Context context, @NotNull Runnable callback) {
         ComponentName serviceComponent = new ComponentName(context, SaverService.class);
 
-        JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponent)
+        JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, serviceComponent)
                 .setMinimumLatency(1)
                 .setOverrideDeadline(1);
 
@@ -47,4 +50,11 @@ public class Util {
         }
 
     }
+
+    public static void stopJob(@NotNull Context context) {
+        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.cancel(JOB_ID);
+
+    }
+
 }
