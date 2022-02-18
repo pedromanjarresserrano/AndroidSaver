@@ -54,6 +54,8 @@ public class SaverService extends JobService {
     private AdminSQLiteOpenHelper db = null;
     public static ClipDataListener CLIPDATALISTENER;
     private SharedPreferences settings;
+    public static Integer COUNTER = 0;
+    public static Boolean IN_BACK = Boolean.FALSE;
 
     public static void setOnValidLinkCapture(Runnable linkCapture) {
         LINK_CAPTURE = linkCapture;
@@ -194,14 +196,16 @@ public class SaverService extends JobService {
                         Log.e("ERROR", "E/RR", e);
                     }
                 }
+                COUNTER += 1;
                 try {
                     Thread.currentThread().sleep(1000L);
                 } catch (InterruptedException e) {
                     Log.e("ERROR", "E/RR", e);
                 }
                 setupClipListener();
-
-
+                if(COUNTER == 60 && IN_BACK){
+                    System.exit(0);
+                }
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         this.jobFinished(params, true);

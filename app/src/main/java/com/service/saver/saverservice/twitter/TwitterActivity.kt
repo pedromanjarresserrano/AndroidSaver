@@ -8,6 +8,7 @@ import com.service.saver.saverservice.MainTabActivity
 import com.service.saver.saverservice.R
 import com.service.saver.saverservice.domain.PostLink
 import com.service.saver.saverservice.domain.TempLink
+import com.service.saver.saverservice.services.SaverService
 import com.service.saver.saverservice.sqllite.AdminSQLiteOpenHelper
 
 class TwitterActivity : AppCompatActivity() {
@@ -31,7 +32,8 @@ class TwitterActivity : AppCompatActivity() {
                     if (MainTabActivity.JTWITTER == null)
                         MainTabActivity.JTWITTER = TwitterClient(this)
                     MainTabActivity.JTWITTER.saveTweet(text)
-
+                    SaverService.COUNTER = 0
+                    SaverService.IN_BACK = true
                 }
             }
 
