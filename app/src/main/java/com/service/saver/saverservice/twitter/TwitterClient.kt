@@ -90,7 +90,7 @@ class TwitterClient {
                     }
                 }
             } catch (e: Exception) {
-                Log.e("ERROR", e.message)
+                Log.e("ERROR", e.message.toString())
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
@@ -114,7 +114,7 @@ class TwitterClient {
                 savePostLink(e.mediaURL, postlink)
             }
         } else {
-            val videoVariants = Arrays.asList(*mediaEntity.videoVariants)
+            val videoVariants = mutableListOf(*mediaEntity.videoVariants)
             videoVariants.sortBy { it.bitrate }
             val split = videoVariants[videoVariants.size - 1].url.split("\\?".toRegex())
                 .dropLastWhile { it.isEmpty() }.toTypedArray()

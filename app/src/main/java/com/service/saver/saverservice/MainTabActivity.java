@@ -64,6 +64,7 @@ public class MainTabActivity extends AppCompatActivity {
         };
         UtilService.scheduleJob(this);
         SaverService.setOnValidLinkCapture(linkCapture);
+        SaverService.IN_BACK = false;
 
     }
 

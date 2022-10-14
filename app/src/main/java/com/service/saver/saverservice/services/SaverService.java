@@ -162,7 +162,7 @@ public class SaverService extends JobService {
                         .setContentText("Downloaded " + task.getFilename())
                         .setSmallIcon(R.drawable.ic_cloud_download)
                         .setProgress(100, 100, false)
-                        .setContentIntent(PendingIntent.getActivity(getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
+                        .setContentIntent(PendingIntent.getActivity(getBaseContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT));
 
                 mNotifyManager.notify(task.getId(), mBuilder.build());
 
@@ -204,7 +204,7 @@ public class SaverService extends JobService {
                 }
                 setupClipListener();
                 if(COUNTER == 60 && IN_BACK){
-                    System.exit(0);
+//                    System.exit(0);
                 }
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
